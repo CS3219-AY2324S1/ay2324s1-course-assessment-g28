@@ -1,7 +1,8 @@
 steps:
-  - id: 'dockerize peerprep'
-    name: 'dockerize peerprep'
-    entrypoint: ''
-    args: []
-    dir: ''
-    env: []
+  - id: 'docker build peerprep'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep', '.']
+
+  - id: 'docker push peerprep'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep']
