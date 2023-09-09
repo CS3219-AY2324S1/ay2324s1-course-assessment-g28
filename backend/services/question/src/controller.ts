@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Question } from "./models/question.model";
+import { Question } from "./models/question";
 
 // Create Question Business Logic
 export const createQuestion = async (req: Request, res: Response) => {
