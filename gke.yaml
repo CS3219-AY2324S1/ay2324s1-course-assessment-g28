@@ -62,4 +62,4 @@ spec:
   selector:
     app: pp-web
   sessionAffinity: None
-  type: NodePort
+  type: LoadBalancer
