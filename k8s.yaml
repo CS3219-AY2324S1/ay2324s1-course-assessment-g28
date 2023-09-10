@@ -42,25 +42,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app: pp-web
   name: pp-web
-  namespace: default
 spec:
-  externalTrafficPolicy: Cluster
-  internalTrafficPolicy: Cluster
-  ipFamilies:
-  - IPv4
-  ipFamilyPolicy: SingleStack
-  ports:
-  - port: 3000
-    protocol: TCP
-    targetPort: 3000
   selector:
     app: pp-web
-  sessionAffinity: None
-  type: NodePort
-status:
-  loadBalancer:
-    ingress:
-    - hostname: localhost
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: LoadBalancer
