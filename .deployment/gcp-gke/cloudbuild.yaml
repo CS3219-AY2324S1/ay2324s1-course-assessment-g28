@@ -1,0 +1,16 @@
+steps:
+  - id: 'docker build peerprep-web'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-web', './frontend/']
+
+  - id: 'docker push peerprep-web'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-web']
+
+  - id: 'gke apply config'
+    name: "gcr.io/cloud-builders/gke-deploy"
+    args:
+    - apply
+    - --filename=./.deployment/gcp-gke/k8-templates/
+    - --location=asia-southeast1
+    - --cluster=autopilot-cluster-1
