@@ -27,9 +27,9 @@ spec:
         app: pp-web
     spec:
       containers:
-      - image: peerprep
+      - image: peerprep-web
         imagePullPolicy: Never
-        name: peerprep
+        name: peerprep-web
         resources: {}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File

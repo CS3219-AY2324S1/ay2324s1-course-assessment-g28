@@ -1,19 +1,19 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-peerprep/node_modules
-peerprep/.pnp
+frontend/node_modules
+frontend/.pnp
 .pnp.js
 
 # testing
-peerprep/coverage
+frontend/coverage
 
 # next.js
-peerprep/.next/
-peerprep/out/
+frontend/.next/
+frontend/out/
 
 # production
-peerprep/build
+frontend/build
 
 # misc
 .DS_Store

@@ -27,9 +27,9 @@ spec:
         app: pp-web
     spec:
       containers:
-      - image: asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep
+      - image: asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-web
         imagePullPolicy: Always
-        name: peerprep
+        name: peerprep-web
         resources: 
           limits:
             memory: "128Mi"

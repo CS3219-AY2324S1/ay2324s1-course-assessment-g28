@@ -1,11 +1,11 @@
 steps:
-  - id: 'docker build peerprep'
+  - id: 'docker build peerprep-web'
     name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep', './peerprep']
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-web', './peerprep']
 
-  - id: 'docker push peerprep'
+  - id: 'docker push peerprep-web'
     name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep']
+    args: ['push', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-web']
 
   - id: 'gke apply config'
     name: "gcr.io/cloud-builders/gke-deploy"
