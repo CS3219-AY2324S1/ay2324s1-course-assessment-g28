@@ -1,0 +1,65 @@
+# Google Kubernetes Engine (gke.yaml):
+# Provides the configuration for a GKE cluster.
+# Ensure that the Docker images are first pushed to Google Artefact Registry
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pp-web
+  name: pp-web
+  namespace: default
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: pp-web
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: pp-web
+    spec:
+      containers:
+      - image: asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-web
+        imagePullPolicy: Always
+        name: peerprep-web
+        resources: 
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: pp-web
+  name: pp-web
+  namespace: default
+spec:
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - port: 3000
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: pp-web
+  sessionAffinity: None
+  type: LoadBalancer
