@@ -1,4 +1,5 @@
 import Navbar from "@/components/PeerPrepNavbar";
+import QuestionsTable from "@/components/QuestionsTable";
 import cx from "classnames";
 import { useSession } from "next-auth/react";
 import { Poppins } from "next/font/google";
@@ -17,6 +18,7 @@ export default function Home() {
         <h1>
           Main Page
         </h1>
+        <QuestionsTable />
       </div>
     </main>
   );
