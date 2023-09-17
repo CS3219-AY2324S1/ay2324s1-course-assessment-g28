@@ -1,8 +1,5 @@
-import UserMenu from "@/components/UserMenu";
 import useUserInfo from "@/hooks/useUserInfo";
-import Link from "next/link";
 import {
-  Avatar,
   Button,
   Dropdown,
   DropdownItem,
@@ -11,10 +8,8 @@ import {
   Navbar,
   NavbarBrand,
   NavbarContent,
-  NavbarItem,
 } from "@nextui-org/react";
 import Image from "next/image";
-import { LOGOUT } from "@/route";
 import { signOut } from "next-auth/react";
 
 /**
