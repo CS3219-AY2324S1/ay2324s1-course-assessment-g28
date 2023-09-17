@@ -22,6 +22,13 @@ services:
       # Where our data will be persisted
     volumes:
       - my-db:/var/lib/mysql
+
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - 5672:5672
+    expose:
+      - 5672
 # Names our volume
 volumes:
   my-db:
