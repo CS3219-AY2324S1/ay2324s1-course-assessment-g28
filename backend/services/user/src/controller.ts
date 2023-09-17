@@ -11,7 +11,7 @@ const pool = new Pool({
   host: "postgres",
   database: "user",
   password: POSTGRES_PASSWORD,
-  port: Number(PG_PORT || "5432"),
+  port: Number(PG_PORT) || 5432,
 });
 
 export const createUser = async (req: Request, res: Response) => {
