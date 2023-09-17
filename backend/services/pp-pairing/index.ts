@@ -1,17 +1,19 @@
-import express, { Express, Request, Response } from 'express';
-import dotenv from 'dotenv';
-import pairingRouter from './src/routes/pairing'
+import { IncomingMessage } from 'http';
+import url from 'url';
+import { URLSearchParams } from 'url';
+import { WebSocketServer, WebSocket } from 'ws';
 
-dotenv.config();
+const wss = new WebSocketServer({ port: 8080, path: '/path' });
 
-const app: Express = express();
-const port = process.env.PORT || 3000;
+wss.on('connection', function connection(ws: WebSocket, req: IncomingMessage) {
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
-});
-app.use('/pairing', pairingRouter)
+  console.log(url.parse(req.url!, true).query);
 
-app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+  ws.on('error', console.error);
+
+  ws.on('message', function message(data) {
+    console.log('received: %s', data);
+  });
+
+  ws.send('something');
 });
