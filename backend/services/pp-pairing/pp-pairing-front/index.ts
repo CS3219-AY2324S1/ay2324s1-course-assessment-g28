@@ -8,13 +8,11 @@ import { v4 as uuidv4 } from "uuid";
 dotenv.config();
 const RABBITMQ_URL = process.env.RABBITMQ_URL!;
 
-
 amqp.connect(RABBITMQ_URL, function (error0, rmq_connection) {
   if (error0) {
     throw error0;
   }
   console.log(`Connected to ${RABBITMQ_URL}`);
-
 
   const wss = new WebSocketServer({ port: 8080, path: "/pairing" });
 
@@ -70,7 +68,11 @@ amqp.connect(RABBITMQ_URL, function (error0, rmq_connection) {
             });
 
             console.log(`Sent ${JSON.stringify(msg)}`);
-            ws.send("Queueing for match...");
+
+            let reply = {
+              data: "Queuing for match...",
+            };
+            ws.send(JSON.stringify(reply));
           }
         );
       });
