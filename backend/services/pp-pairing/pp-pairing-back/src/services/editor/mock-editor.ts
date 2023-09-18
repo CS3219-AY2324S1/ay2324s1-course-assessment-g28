@@ -5,3 +5,5 @@ class MockEditor implements EditorService {
     return `ws://localhost:${8080}/${uuidv4()}`;
   }
 }
+
+export default MockEditor;
