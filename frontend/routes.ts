@@ -3,5 +3,5 @@
  */
 
 export const HOME = "/";
-export const LOGIN = "/api/auth/signin"
+export const LOGIN = "/login"
 export const LOGOUT = "/api/auth/signout"
