@@ -14,7 +14,6 @@ export const createQuestion = async (req: Request, res: Response) => {
   }
 };
 
-// Read (or get) Question Business Logic
 export const getAllQuestions = async (req: Request, res: Response) => {
   try {
     const questions = await Question.find();
