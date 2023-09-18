@@ -3,11 +3,12 @@ import url from "url";
 import { WebSocketServer, WebSocket } from "ws";
 import amqp from "amqplib/callback_api";
 import dotenv from "dotenv";
+import { v4 as uuidv4 } from "uuid";
 
 dotenv.config();
 const RABBITMQ_URL = process.env.RABBITMQ_URL!;
 
-console.log(RABBITMQ_URL)
+console.log(`Connected to ${RABBITMQ_URL}`);
 
 amqp.connect(RABBITMQ_URL, function (error0, rmq_connection) {
   if (error0) {
@@ -19,31 +20,68 @@ amqp.connect(RABBITMQ_URL, function (error0, rmq_connection) {
   wss.on(
     "connection",
     function connection(ws: WebSocket, req: IncomingMessage) {
-      console.log(url.parse(req.url!, true).query);
+      let params = url.parse(req.url!, true).query;
+
+      if (!params.user) {
+        ws.send("Invalid request");
+        ws.close();
+        return;
+      }
+
+      let uuid = uuidv4();
 
       rmq_connection.createChannel(function (error1, channel) {
         if (error1) {
-          throw error1;
+          console.log(error1);
+          ws.send("Internal server error");
+          ws.close();
+          return;
         }
 
-        var queue = "hello";
-        var msg = "Hello world";
-
-        channel.assertQueue(queue, {
+        var exchange = "pairingResponses";
+        channel.assertExchange(exchange, "direct", {
           durable: false,
         });
 
-        channel.sendToQueue(queue, Buffer.from(msg));
-        console.log(" [x] Sent %s", msg);
+        channel.assertQueue(
+          "",
+          {
+            exclusive: true,
+          },
+          function (error2, q) {
+            if (error2) {
+              console.log(error2);
+              ws.send("Internal server error");
+              ws.close();
+              return;
+            }
 
-        ws.on("message", function message(data) {
-          channel.sendToQueue(queue, Buffer.from(data.toString()));
+            channel.bindQueue(q.queue, exchange, uuid);
+
+            channel.consume(q.queue, function (msg) {
+              ws.send(msg!.content.toString());
+            });
+          }
+        );
+
+        var workQueue = "pairingRequests";
+        channel.assertQueue(workQueue, {
+          durable: false,
         });
+
+        var msg = {
+          id: uuid,
+          data: {
+            user: params.user!,
+          },
+        };
+        channel.sendToQueue(workQueue, Buffer.from(JSON.stringify(msg)));
+        console.log(`Sent ${JSON.stringify(msg)}`);
+
+        ws.send("Queueing for match...");
       });
 
       ws.on("error", console.error);
-
-      ws.send("something");
     }
   );
 });
