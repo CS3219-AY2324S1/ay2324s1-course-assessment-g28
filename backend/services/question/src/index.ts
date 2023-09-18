@@ -3,9 +3,10 @@ import mongoose from "mongoose";
 import { config } from "dotenv";
 import {
   createQuestion,
-  deleteQuestionByTitle,
+  deleteQuestionById,
   getAllQuestions,
-  updateQuestionByTitle,
+  getQuestionById,
+  updateQuestionById,
 } from "./controller";
 
 async function initConnection(MONGO_URI: string) {
@@ -17,16 +18,15 @@ async function createEndpoints(router: express.Router) {
   router.post("/questions", createQuestion);
 
   // GET endpoints
-  router.get("/", (req: Request, res: Response) => {
-    res.send("Question Service");
-  });
+  router.get("/questions/:id", getQuestionById);
   router.get("/questions", getAllQuestions);
 
-  // PUT endpoints
-  router.put("/questions", updateQuestionByTitle);
+  // PUT/PATCH endpoints
+  router.put("/questions/:id", updateQuestionById); // we can use this for both put/patch because mongo supports takes Partial<Question> as json for update
+  router.patch("/questions/:id", updateQuestionById);
 
   // DELETE endpoints
-  router.delete("/questions", deleteQuestionByTitle);
+  router.delete("/questions/:id", deleteQuestionById);
 }
 
 async function main() {
