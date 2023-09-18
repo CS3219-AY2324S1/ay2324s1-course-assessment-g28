@@ -6,4 +6,3 @@ export const UserZod = z.object({
 });
 
 export type User = z.infer<typeof UserZod>;
-

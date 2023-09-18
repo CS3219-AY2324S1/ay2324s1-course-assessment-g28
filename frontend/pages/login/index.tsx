@@ -16,7 +16,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   return {
     props: {
-      providers: await getProviders() ?? [],
+      providers: (await getProviders()) ?? [],
     },
   };
 }
@@ -27,8 +27,10 @@ export default function LoginPage({
   return (
     <div>
       {Object.values(providers).map((p) => (
-          <Button onClick={() => signIn(p.id)} key={p.id}>Sign in with {p.name}</Button>
-        ))}
+        <Button onClick={() => signIn(p.id)} key={p.id}>
+          Sign in with {p.name}
+        </Button>
+      ))}
     </div>
   );
 }

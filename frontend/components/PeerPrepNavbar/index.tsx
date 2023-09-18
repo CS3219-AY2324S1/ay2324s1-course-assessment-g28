@@ -37,10 +37,7 @@ export default function PeerPrepNavbar() {
             </Button>
           </DropdownTrigger>
           <DropdownMenu aria-label="User actions">
-            <DropdownItem
-              onClick={() => signOut()}
-              className="text-black"
-            >
+            <DropdownItem onClick={() => signOut()} className="text-black">
               Logout
             </DropdownItem>
           </DropdownMenu>
