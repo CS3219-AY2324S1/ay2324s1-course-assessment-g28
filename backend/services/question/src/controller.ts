@@ -3,10 +3,11 @@ import { Question } from "./models/question";
 
 // Create Question Business Logic
 export const createQuestion = async (req: Request, res: Response) => {
+  console.log(req);
   try {
     const question = new Question(req.body);
     await question.save();
-    res.status(200).json(`${question.title} successfully added!`);
+    res.status(201).json(`${question.title} successfully added!`);
   } catch (error) {
     res.status(500).json({
       error: `Could not create question due to ${error}, request: ${req.body.toString()}`,
