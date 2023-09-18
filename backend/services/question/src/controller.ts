@@ -14,6 +14,22 @@ export const createQuestion = async (req: Request, res: Response) => {
   }
 };
 
+// Read (or get) Question Business Logic
+export const getQuestionById = async (req: Request, res: Response) => {
+  try {
+    const questionId = req.params.id;
+    const question = await Question.findOne({ id: questionId });
+    if (!question) {
+      res.status(404).json(`${questionId} not found!`);
+    }
+    res.status(200).json(question);
+  } catch (error) {
+    res.status(500).json({
+      error: `Could not get question by id due to ${error}, request: ${req.body.toString()}`,
+    });
+  }
+};
+
 export const getAllQuestions = async (req: Request, res: Response) => {
   try {
     const questions = await Question.find();
@@ -26,19 +42,14 @@ export const getAllQuestions = async (req: Request, res: Response) => {
 };
 
 // Update Question Business Logic
-export const updateQuestionByTitle = async (req: Request, res: Response) => {
+export const updateQuestionById = async (req: Request, res: Response) => {
   try {
-    if (req.body.title != req.body.question.title) {
-      throw Error(
-        `Unable to change title of existing question ${req.body.title}, please create a new question or remove the question`
-      );
-    }
-
+    const questionId = req.params.id;
     const question = await Question.findOneAndUpdate(
-      { title: req.body.title },
-      req.body.question
+      { id: questionId },
+      req.body
     );
-    res.status(200).json(`Successfully updated question ${req.body.title}!`);
+    res.status(200).json(`Successfully updated question ${questionId}!`);
   } catch (error) {
     res.status(500).json({
       error: `Could not update question due to ${error}, request: ${req.body.toString()}`,
@@ -47,10 +58,11 @@ export const updateQuestionByTitle = async (req: Request, res: Response) => {
 };
 
 // Delete Question Business Logic
-export const deleteQuestionByTitle = async (req: Request, res: Response) => {
+export const deleteQuestionById = async (req: Request, res: Response) => {
   try {
-    await Question.findOneAndDelete({ title: req.body.title });
-    res.status(200).json(`Successfully deleted question ${req.body.title}!`);
+    const questionId = req.params.id;
+    await Question.findOneAndDelete({ id: questionId });
+    res.status(200).json(`Successfully deleted question ${questionId}!`);
   } catch (error) {
     res.status(500).json({
       error: `Could not delete question due to error ${error}, request: ${req.body.toString()}`,
