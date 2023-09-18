@@ -1,5 +1,5 @@
 {
-  "name": "pp-pairing",
+  "name": "pp-pairing-front",
   "version": "1.0.0",
   "description": "PeerPrep microservices for getting and setting user information.",
   "main": "index.ts",
