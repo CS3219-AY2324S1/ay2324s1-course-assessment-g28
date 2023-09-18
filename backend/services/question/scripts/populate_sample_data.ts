@@ -10,8 +10,6 @@ async function populateQuestions() {
   const questionJson = JSON.parse(fs.readFileSync("./sample_questions.json"));
 
   for (let question of questionJson) {
-    console.log(question);
-    console.log(JSON.stringify(question), typeof JSON.stringify(question));
     try {
       const response = await fetch(`${QUESTION_API}/questions`, {
         method: "POST",
