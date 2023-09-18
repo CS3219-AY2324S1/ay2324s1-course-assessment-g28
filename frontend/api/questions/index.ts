@@ -34,7 +34,7 @@ export async function getQuestions({
 }
 
 export async function getQuestion(id: number) {
-  const url = getQuestionByIdPath(id) 
+  const url = getQuestionByIdPath(id);
   const res = await fetch(url, {
     method: HttpMethod.GET,
   });
@@ -67,6 +67,16 @@ export async function patchQuestion(
   const res = await fetch(url, {
     method: HttpMethod.PATCH,
     body: JSON.stringify(questionFieldsToUpdate),
+  });
+  if (res.status !== HttpStatus.OK_NO_CONTENT) {
+    throw new RequestError(res);
+  }
+}
+
+export async function deleteQuestion(id: number) {
+  const url = getQuestionByIdPath(id);
+  const res = await fetch(url, {
+    method: HttpMethod.DELETE,
   });
   if (res.status !== HttpStatus.OK_NO_CONTENT) {
     throw new RequestError(res);
