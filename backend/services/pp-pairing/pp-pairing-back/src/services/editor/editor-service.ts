@@ -3,3 +3,5 @@ interface EditorService {
   // to forward back to the user
   postPair: (user1: string, user2: string) => Promise<string>;
 }
+
+export default EditorService;
