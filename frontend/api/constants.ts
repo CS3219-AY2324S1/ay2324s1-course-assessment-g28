@@ -1,4 +1,4 @@
-import { ZodTypeAny, z } from "zod";
+import { z } from "zod";
 
 export enum HttpStatus {
   OK = 200,

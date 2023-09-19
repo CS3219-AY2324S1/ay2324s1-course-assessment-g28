@@ -15,14 +15,17 @@ export async function getQuestions({
   keyword,
   complexity,
 }: GetQuestionRequest) {
-  const url = new URL(QUESTION_API);
-  url.searchParams.append("size", size.toString());
-  url.searchParams.append("offset", offset.toString());
+  const params = new URLSearchParams({
+    size: size.toString(),
+    offset: offset.toString()
+  })
   if (keyword) {
-    url.searchParams.append("keyword", keyword);
+    params.append("keyword", keyword);
   }
-  url.searchParams.append("complexity", complexity.toString()); // sent as a number in string format
-  const res = await fetch(url, {
+  if (complexity) {
+    params.append("complexity", complexity.toString());
+  }
+  const res = await fetch(QUESTION_API + "?" + params.toString(), {
     method: HttpMethod.GET,
   });
   if (res.status !== HttpStatus.OK) {
