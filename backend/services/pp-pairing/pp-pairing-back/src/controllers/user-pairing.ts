@@ -17,7 +17,6 @@ function matchUser(userList: List<User>, user: User): null | [User, User] {
   }
 
   userList.append(user);
-
   return null;
 }
 
