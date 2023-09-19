@@ -34,21 +34,19 @@ function getWsCallback(rmq_conn: amqp.Connection) {
       });
     });
 
-    await channel.consume(return_queue.queue, async function (msg) {
+    await channel.consume(return_queue.queue, function (msg) {
       console.log(JSON.parse(msg!.content.toString()));
       if (msg?.properties.correlationId == correlationId) {
         ws.send(msg!.content);
       }
     });
 
-    console.log(return_queue.queue);
-
     var msg = {
       user: params.user,
     };
     channel.sendToQueue(request_queue.queue, Buffer.from(JSON.stringify(msg)), {
       correlationId,
-      replyTo: return_queue.queue,
+      replyTo: request_queue.queue,
     });
 
     console.log(`Sent ${JSON.stringify(msg)}`);

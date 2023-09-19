@@ -28,6 +28,12 @@ amqp.connect(config.RABBITMQ_URL, function (error0, connection) {
     logger.info(`Awaiting pairing requests on queue: {${queue}}`);
 
     channel.consume(queue, async function (msg) {
+      logger.debug(
+        `Received pairing request on queue: {${queue}}, with content {${msg?.content.toString()}, with correlationId {${
+          msg?.properties.correlationId
+        }}}`
+      );
+
       let user = new User(
         {
           replyTo: msg!.properties.replyTo,
@@ -56,7 +62,13 @@ amqp.connect(config.RABBITMQ_URL, function (error0, connection) {
             Buffer.from(JSON.stringify(reply)),
             {
               correlationId: m.reply_params.correlationId,
-            },
+            }
+          );
+
+          console.log(`queue: ${m.reply_params.replyTo}`);
+
+          logger.debug(
+            `Sending to correlationId: {${m.reply_params.correlationId}}, with message {${reply}}`
           );
         });
       }
