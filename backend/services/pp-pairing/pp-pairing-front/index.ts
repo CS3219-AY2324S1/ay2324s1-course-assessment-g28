@@ -56,6 +56,8 @@ amqp.connect(RABBITMQ_URL, function (error0, rmq_connection) {
               if (msg?.properties.correlationId == correlationId) {
                 ws.send(msg!.content);
               }
+            }, {
+              noAck: true
             });
 
             var workQueue = "pairing_requests";
