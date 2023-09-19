@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 dotenv.config();
 const RABBITMQ_URL = process.env.RABBITMQ_URL!;
 
-amqp.connect(RABBITMQ_URL, function (error0, rmq_connection) {
+amqp.connect(RABBITMQ_URL, function (error0, rmq_conn) {
   if (error0) {
     throw error0;
   }
@@ -29,13 +29,34 @@ amqp.connect(RABBITMQ_URL, function (error0, rmq_connection) {
 
       let correlationId = uuidv4();
 
-      rmq_connection.createChannel(function (error1, channel) {
+      rmq_conn.createChannel(function (error1, channel) {
         if (error1) {
           console.log(error1);
           ws.send("Internal server error");
           ws.close();
           return;
         }
+
+        channel.assertQueue(
+          "pairing_cancels",
+          {
+            durable: true,
+          },
+          function (error2, q) {
+            if (error2) {
+              console.log(error2);
+              ws.send("Internal server error");
+              ws.close();
+              return;
+            }
+
+            ws.on("close", () => {
+              channel.sendToQueue(q.queue, Buffer.from(JSON.stringify({})), {
+                correlationId,
+              });
+            });
+          }
+        );
 
         channel.assertQueue(
           "",
@@ -50,27 +71,41 @@ amqp.connect(RABBITMQ_URL, function (error0, rmq_connection) {
               return;
             }
 
-            channel.consume(q.queue, function (msg) {
-              console.log(JSON.parse(msg!.content.toString()));
-              var content = msg!.content.toJSON();
-              if (msg?.properties.correlationId == correlationId) {
-                ws.send(msg!.content);
+            channel.consume(
+              q.queue,
+              function (msg) {
+                console.log(JSON.parse(msg!.content.toString()));
+                var content = msg!.content.toJSON();
+                if (msg?.properties.correlationId == correlationId) {
+                  ws.send(msg!.content);
+                }
+              },
+              {
+                noAck: true,
               }
-            }, {
-              noAck: true
-            });
+            );
+          }
+        );
 
-            var workQueue = "pairing_requests";
+        channel.assertQueue(
+          "pairing_requests",
+          { durable: false },
+          function (error2, q) {
+            if (error2) {
+              console.log(error2);
+              ws.send("Internal server error");
+              ws.close();
+              return;
+            }
+
             var msg = {
               user: params.user,
             };
-            channel.sendToQueue(workQueue, Buffer.from(JSON.stringify(msg)), {
+            channel.sendToQueue(q.queue, Buffer.from(JSON.stringify(msg)), {
               correlationId,
               replyTo: q.queue,
             });
-
             console.log(`Sent ${JSON.stringify(msg)}`);
-
             let reply = {
               data: "Queuing for match...",
             };
