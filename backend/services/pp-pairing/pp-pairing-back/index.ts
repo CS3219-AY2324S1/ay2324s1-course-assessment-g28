@@ -1,7 +1,7 @@
 import amqp from "amqplib/callback_api";
 import dotenv from "dotenv";
 import { User } from "./src/models/user-list";
-import { List } from "linked-list";
+import { List } from "./src/models/linked-list";
 import matchUser from "./src/controllers/user-pairing";
 import MockEditor from "./src/services/editor/mock-editor";
 
