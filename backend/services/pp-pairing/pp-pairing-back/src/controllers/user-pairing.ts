@@ -33,4 +33,17 @@ function matchUser(userList: List<User>, user: User): null | [User, User] {
   return null;
 }
 
+function removeUser(userList: List<User>, correlationId: string): void {
+  let curr = userList.head;
+
+  while (curr) {
+    if (curr.reply_params.correlationId == correlationId) {
+      curr.detach();
+      return;
+    }
+  }
+
+  return;
+}
+
 export default matchUser;
