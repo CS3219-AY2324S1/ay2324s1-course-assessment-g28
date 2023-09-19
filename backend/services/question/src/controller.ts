@@ -50,7 +50,7 @@ export const updateQuestionById = async (req: Request, res: Response) => {
       { id: questionId },
       req.body
     );
-    res.status(200).json(`Successfully updated question ${questionId}!`);
+    res.status(204).json(`Successfully updated question ${questionId}!`);
   } catch (error) {
     res.status(500).json({
       error: `Could not update question due to ${error}, request: ${req.body.toString()}`,
