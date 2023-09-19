@@ -1,4 +1,4 @@
-import { List } from "linked-list";
+import { List } from "../models/linked-list";
 import { User } from "../models/user-list";
 
 function isMatch(user1: User, user2: User): boolean {
