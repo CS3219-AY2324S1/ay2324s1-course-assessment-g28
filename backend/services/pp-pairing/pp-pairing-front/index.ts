@@ -53,7 +53,10 @@ function getWsCallback(rmq_conn: amqp.Connection) {
 
     console.log(`Sent ${JSON.stringify(msg)}`);
     let reply = {
-      data: "Queuing for match...",
+      status: 200,
+      data: {
+        message: "Queuing for match...",
+      },
     };
     ws.send(JSON.stringify(reply));
 
