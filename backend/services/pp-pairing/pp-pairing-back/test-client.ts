@@ -5,3 +5,5 @@ class Something extends Item {}
 let test: Item = new Something();
 
 let things = new List<Something>();
+
+console.log(Number("asdf") || 100)
