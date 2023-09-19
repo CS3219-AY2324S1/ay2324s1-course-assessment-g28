@@ -1,7 +1,7 @@
 import amqp from "amqplib";
 import { User } from "./src/models/user";
 import { List } from "./src/models/linked-list";
-import matchUser from "./src/controllers/user-pairing";
+import { matchUser, removeUser } from "./src/controllers/user-pairing";
 import MockEditor from "./src/services/editor/mock-editor";
 import logger from "./src/utils/logger";
 import config from "./src/utils/config";
@@ -19,6 +19,15 @@ amqp.connect(config.RABBITMQ_URL).then(async (rmq_conn) => {
     }),
     channel.assertQueue("pairing_cancels", { durable: true }),
   ]);
+
+  channel.consume(cancel_queue.queue, async (msg) => {
+    logger.debug(
+      `Received cancel request on queue: {${request_queue.queue}}, with correlationId {${msg?.properties.correlationId}}}`
+    );
+    channel.ack(msg!);
+
+    removeUser(userList, msg!.properties.correlationId);
+  });
 
   channel.consume(request_queue.queue, async (msg) => {
     logger.debug(
@@ -59,7 +68,7 @@ amqp.connect(config.RABBITMQ_URL).then(async (rmq_conn) => {
         );
 
         logger.debug(
-          `Sending to correlationId: {${m.reply_params.correlationId}}, with message {${reply}}`
+          `Sending to correlationId: {${m.reply_params.correlationId}}, with message {${JSON.stringify(reply)}}`
         );
       });
     }
