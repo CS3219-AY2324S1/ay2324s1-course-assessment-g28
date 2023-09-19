@@ -44,7 +44,7 @@ function getWsCallback(rmq_conn: amqp.Connection) {
     console.log(return_queue.queue);
 
     var msg = {
-      user: params.user,
+      match_options: { user: params.user },
     };
     channel.sendToQueue(request_queue.queue, Buffer.from(JSON.stringify(msg)), {
       correlationId,
