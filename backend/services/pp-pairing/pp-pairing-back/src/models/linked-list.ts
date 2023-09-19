@@ -25,10 +25,10 @@ class ItemIterator<T extends Item> {
 
     if (value) {
       this.item = value.next;
-      return { value, done: false };
+      return { value, done: false } as IteratorResult<T, null>;
     }
 
-    return { value: null, done: true };
+    return { value: null, done: true } as IteratorResult<T, null>;
   }
 }
 
