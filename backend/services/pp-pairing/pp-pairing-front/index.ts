@@ -28,17 +28,20 @@ function getWsCallback(rmq_conn: amqp.Connection) {
 
     let correlationId = uuidv4();
 
-    ws.on("close", () => {
+    function cancelPairing() {
       channel.sendToQueue(cancel_queue.queue, Buffer.from(JSON.stringify({})), {
         correlationId,
       });
-    });
+    }
+    ws.on("close", cancelPairing);
 
     await channel.consume(return_queue.queue, async function (msg) {
       console.log(JSON.parse(msg!.content.toString()));
       if (msg?.properties.correlationId == correlationId) {
         ws.send(msg!.content);
       }
+      ws.off("close", cancelPairing);
+      ws.close();
     });
 
     console.log(return_queue.queue);
