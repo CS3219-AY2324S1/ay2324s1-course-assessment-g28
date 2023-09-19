@@ -21,7 +21,7 @@ const questionSchema = new mongoose.Schema<IQuestion>({
 questionSchema.pre("save", async function (next) {
   if (!this.id) {
     try {
-      const nextId = await getNextSequenceValue("your_collection_sequence");
+      const nextId = await getNextSequenceValue("Question");
       this.id = nextId;
       next();
     } catch (error: any) {
