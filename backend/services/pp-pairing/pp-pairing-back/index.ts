@@ -1,5 +1,4 @@
 import amqp from "amqplib/callback_api";
-import dotenv from "dotenv";
 import { User } from "./src/models/user";
 import { List } from "./src/models/linked-list";
 import matchUser from "./src/controllers/user-pairing";
@@ -64,8 +63,6 @@ amqp.connect(config.RABBITMQ_URL, function (error0, connection) {
               correlationId: m.reply_params.correlationId,
             }
           );
-
-          console.log(`queue: ${m.reply_params.replyTo}`);
 
           logger.debug(
             `Sending to correlationId: {${m.reply_params.correlationId}}, with message {${reply}}`
