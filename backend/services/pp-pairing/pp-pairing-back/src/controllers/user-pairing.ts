@@ -46,4 +46,4 @@ function removeUser(userList: List<User>, correlationId: string): void {
   return;
 }
 
-export default matchUser;
+export { matchUser, removeUser };
