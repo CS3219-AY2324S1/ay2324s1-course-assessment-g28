@@ -1,4 +1,4 @@
-import { Item } from "linked-list";
+import { Item } from "./linked-list";
 
 class User extends Item {
   reply_params: { replyTo: string; correlationId: string };
