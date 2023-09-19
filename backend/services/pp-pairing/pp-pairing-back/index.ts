@@ -4,17 +4,14 @@ import { User } from "./src/models/user-list";
 import { List } from "./src/models/linked-list";
 import matchUser from "./src/controllers/user-pairing";
 import MockEditor from "./src/services/editor/mock-editor";
+import logger from "./src/utils/logger";
+import config from "./src/utils/config";
 
-dotenv.config();
-const RABBITMQ_URL = process.env.RABBITMQ_URL!;
-
-console.log(`Connected to ${RABBITMQ_URL}`);
-
-amqp.connect(RABBITMQ_URL, function (error0, connection) {
+amqp.connect(config.RABBITMQ_URL, function (error0, connection) {
   if (error0) {
     throw error0;
   }
-  console.log(`Connected to ${RABBITMQ_URL}`);
+  logger.info(`Connected to ${config.RABBITMQ_URL}`);
 
   connection.createChannel(function (error1, channel) {
     if (error1) {
@@ -28,7 +25,7 @@ amqp.connect(RABBITMQ_URL, function (error0, connection) {
     channel.assertQueue(queue, {
       durable: false,
     });
-    console.log(`Awaiting pairing requests on queue: {${queue}}`);
+    logger.info(`Awaiting pairing requests on queue: {${queue}}`);
 
     channel.consume(queue, async function (msg) {
       let user = new User(
@@ -63,17 +60,6 @@ amqp.connect(RABBITMQ_URL, function (error0, connection) {
           );
         });
       }
-
-      // var reply = {
-      //   data: "Bonjour",
-      // };
-      // channel.sendToQueue(
-      //   msg!.properties.replyTo,
-      //   Buffer.from(JSON.stringify(reply)),
-      //   {
-      //     correlationId: msg!.properties.correlationId,
-      //   }
-      // );
     });
   });
 });
