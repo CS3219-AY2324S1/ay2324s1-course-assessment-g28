@@ -15,9 +15,7 @@ export default function Home() {
         poppins.className)}>
       <Navbar />
       <div>
-        <h1>
-          Main Page
-        </h1>
+        <h1>Main Page</h1>
         <QuestionsTable />
       </div>
     </main>
