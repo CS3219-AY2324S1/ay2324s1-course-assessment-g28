@@ -25,6 +25,8 @@ function matchUser(userList: List<User>, user: User): null | [User, User] {
       curr.detach();
       return [curr, user];
     }
+
+    curr = next;
   }
 
   userList.append(user);
