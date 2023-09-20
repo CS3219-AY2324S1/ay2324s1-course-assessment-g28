@@ -23,9 +23,10 @@ import {
   COMPLEXITY_OPTIONS,
   ColumnKey,
   MOCK_DATA,
+  QuestionComplexityOptions,
 } from "./config";
-import { QuestionComplexityOptions, QuestionType } from "@/api/questions";
 import { ChevronDownIcon } from "@/assets/icons/ChevronDown";
+import { QuestionBase } from "@/api/questions/types";
 
 const QuestionsTable = () => {
   const [filterValue, setFilterValue] = React.useState("");
@@ -73,9 +74,9 @@ const QuestionsTable = () => {
   }, [page, filteredItems, rowsPerPage]);
 
   const sortedQuestions = React.useMemo(() => {
-    return [...items].sort((a: QuestionType, b: QuestionType) => {
-      const first = a[sortDescriptor.column as keyof QuestionType] as number;
-      const second = b[sortDescriptor.column as keyof QuestionType] as number;
+    return [...items].sort((a: QuestionBase, b: QuestionBase) => {
+      const first = a?.[sortDescriptor.column as keyof QuestionBase];
+      const second = b?.[sortDescriptor.column as keyof QuestionBase];
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
@@ -240,7 +241,7 @@ const QuestionsTable = () => {
             {(columnKey: string | number) => (
               <TableCell>
                 {COLUMN_CONFIGS?.[columnKey as ColumnKey]?.render?.(question) ??
-                  question?.[columnKey as keyof QuestionType]}
+                  question?.[columnKey as keyof QuestionBase]}
               </TableCell>
             )}
           </TableRow>
