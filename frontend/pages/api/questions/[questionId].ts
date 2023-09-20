@@ -20,5 +20,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
 
-  forwardRequestAndGetResponse(req, res, process.env.QUESTIONS_API as string);
+  await forwardRequestAndGetResponse(req, res, process.env.QUESTIONS_API as string);
 }
