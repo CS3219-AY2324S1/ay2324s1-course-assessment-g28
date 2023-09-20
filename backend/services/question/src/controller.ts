@@ -33,8 +33,8 @@ export const getQuestionById = async (req: Request, res: Response) => {
 
 export const getQuestions = async (req: Request, res: Response) => {
   try {
-    const size = req.query.size;
-    const offset = req.query.offset;
+    const size = parseInt(String(req.query.size)) || 100000;
+    const offset = parseInt(String(req.query.offset)) || 0;
 
     const filter: { [key: string]: any } = {};
 
@@ -48,8 +48,13 @@ export const getQuestions = async (req: Request, res: Response) => {
       filter.complexity = req.query.complexity;
     }
 
-    const questions = await Question.find(filter);
-    res.status(200).json(questions);
+    const total = await Question.countDocuments(filter);
+
+    const questions = await Question.find(filter)
+      .skip(offset * size) // skip the first offset * size elements
+      .limit(size); // take the first (size) elements
+
+    res.status(200).json({ questions: questions, total: total });
   } catch (error) {
     res.status(500).json({
       error: `Could not get question due to error ${error}, request: ${req.body.toString()}`,
