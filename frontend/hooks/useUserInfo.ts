@@ -9,7 +9,10 @@ export enum UserStatus {
 export default function useUserInfo() {
   const { data, status } = useSession() ?? {};
   const { user } = data ?? {};
-  const isSignedIn = status === UserStatus.AUTHENTICATED;
 
-  return { user, isSignedIn };
+  const isLoading = status === UserStatus.LOADING;
+  const isSignedIn = status === UserStatus.AUTHENTICATED;
+  const isNotSignedIn = status === UserStatus.UNAUTHENTICATED;
+
+  return { user, isLoading, isSignedIn, isNotSignedIn };
 }
