@@ -12,9 +12,7 @@ export default function Home() {
     >
       <Navbar />
       <div>
-        <h1>
-          Main Page
-        </h1>
+        <h1>Main Page</h1>
       </div>
     </main>
   );
