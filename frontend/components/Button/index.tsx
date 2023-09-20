@@ -14,8 +14,8 @@ const Button = (props: PropsWithChildren<ButtonProps>) => {
     <NextButton
       onClick={onClick}
       className={cx(
-        "text-[#8657A6] rounded-full bg-opacity-60",
-        "transition hover:bg-opacity-80 transition-colors-opacity",
+        "text-[#8657A6] rounded-full bg-opacity-80",
+        "transition hover:bg-white transition-colors-opacity",
         classnames,
       )}
       style={styles}

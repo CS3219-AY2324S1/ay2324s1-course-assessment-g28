@@ -28,7 +28,7 @@ export default function LoginPage({
   providers,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
-    <div className="h-full w-full pt-[80px] pl-[140px]">
+    <div className="h-full w-full pt-[80px] pl-[180px]">
       <div
         className="w-[450px] text-justify"
         style={{ ...useAppearAnimation() }}
@@ -43,11 +43,14 @@ export default function LoginPage({
           aliquip ex ea commodo consequat.
         </div>
         <div className="flex justify-start">
-          {Object.values(providers).map((p) => (
-            <Button onClick={() => signIn(p.id)} key={p.id}>
-              Sign in with {p.name}
-            </Button>
-          ))}
+          {Object.values(providers).map((p) => {
+            const { id, name } = p ?? {};
+            return id && name ? (
+              <Button onClick={() => signIn(id)} key={id} classnames="glow">
+                Sign in with {name}
+              </Button>
+            ) : null;
+          })}
         </div>
       </div>
     </div>
