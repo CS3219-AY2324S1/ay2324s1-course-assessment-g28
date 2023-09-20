@@ -26,7 +26,6 @@ module.exports = {
     "no-trailing-spaces": 1,
     "comma-dangle": [1, "always-multiline"],
     "object-curly-spacing": [1, "always"],
-    "array-bracket-spacing": [1, "always", { singleValue: false }],
     "@typescript-eslint/no-unused-vars": 1,
     "@typescript-eslint/member-delimiter-style": [
       "warn",
