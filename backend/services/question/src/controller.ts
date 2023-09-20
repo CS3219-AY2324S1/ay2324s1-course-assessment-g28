@@ -83,7 +83,7 @@ export const deleteQuestionById = async (req: Request, res: Response) => {
   try {
     const questionId = req.params.id;
     await Question.findOneAndDelete({ id: questionId });
-    res.status(200).json(`Successfully deleted question ${questionId}!`);
+    res.status(204).json(`Successfully deleted question ${questionId}!`);
   } catch (error) {
     res.status(500).json({
       error: `Could not delete question due to error ${error}, request: ${req.body.toString()}`,
