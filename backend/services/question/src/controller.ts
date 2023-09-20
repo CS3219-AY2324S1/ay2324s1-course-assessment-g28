@@ -31,9 +31,24 @@ export const getQuestionById = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllQuestions = async (req: Request, res: Response) => {
+export const getQuestions = async (req: Request, res: Response) => {
   try {
-    const questions = await Question.find();
+    const size = req.query.size;
+    const offset = req.query.offset;
+
+    const filter: { [key: string]: any } = {};
+
+    if (req.query.keyword) {
+      filter.title = {
+        $regex: new RegExp(`^${String(req.query.keyword)}`, "i"),
+      };
+    }
+
+    if (req.query.complexity) {
+      filter.complexity = req.query.complexity;
+    }
+
+    const questions = await Question.find(filter);
     res.status(200).json(questions);
   } catch (error) {
     res.status(500).json({
