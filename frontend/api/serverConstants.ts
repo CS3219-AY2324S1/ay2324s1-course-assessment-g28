@@ -13,7 +13,8 @@ export async function forwardRequestAndGetResponse(req: NextApiRequest, res: Nex
   if (!backendResponse.ok) {
     throw new Error(`Error in response from backend: ${backendResponse}`);
   }
-  res.status(backendResponse.status).send(backendResponse.body); 
+  const data = await backendResponse.json();
+  res.status(backendResponse.status).json(data);
 }
 
 export function getBackendUrl(apiAddr: string, req: NextApiRequest) {
