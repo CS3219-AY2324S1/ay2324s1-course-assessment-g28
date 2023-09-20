@@ -19,6 +19,5 @@ export enum HttpMethod {
 }
 
 export const PagedResponse = z.object({
-  size: z.number().nonnegative(),
-  offset: z.number().nonnegative(),
+  total: z.number().nonnegative().int()
 });
