@@ -4,7 +4,7 @@ import { config } from "dotenv";
 import {
   createQuestion,
   deleteQuestionById,
-  getAllQuestions,
+  getQuestions,
   getQuestionById,
   updateQuestionById,
 } from "./controller";
@@ -19,7 +19,7 @@ async function createEndpoints(router: express.Router) {
 
   // GET endpoints
   router.get("/questions/:id", getQuestionById);
-  router.get("/questions", getAllQuestions);
+  router.get("/questions", getQuestions);
 
   // PUT/PATCH endpoints
   router.put("/questions/:id", updateQuestionById); // we can use this for both put/patch because mongo supports takes Partial<Question> as json for update
