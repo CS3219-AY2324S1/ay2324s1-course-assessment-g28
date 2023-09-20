@@ -54,7 +54,7 @@ export const getQuestions = async (req: Request, res: Response) => {
       .skip(offset * size) // skip the first offset * size elements
       .limit(size); // take the first (size) elements
 
-    res.status(200).json({ questions: questions, total: total });
+    res.status(200).json({ content: questions, total: total });
   } catch (error) {
     res.status(500).json({
       error: `Could not get question due to error ${error}, request: ${req.body.toString()}`,
