@@ -25,7 +25,7 @@ export default function LoginPage({
   providers,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
-    <div>
+    <div className="h-full">
       {Object.values(providers).map((p) => (
         <Button onClick={() => signIn(p.id)} key={p.id}>
           Sign in with {p.name}
