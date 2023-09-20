@@ -1,13 +1,14 @@
 const fs = require("fs");
+require('dotenv').config({ path: __dirname + "/../.env" })
 
 /**
  * This script uses sample_questions.json to populate the questions MongoDB using the CRUD API.
  */
 
-const QUESTION_API = "http://localhost:3000"; // Update with your own question API URL
+const QUESTION_API = `http://localhost:${process.env.PORT}`; // Update with your own question API URL
 
 async function populateQuestions() {
-  const questionJson = JSON.parse(fs.readFileSync("./sample_questions.json"));
+  const questionJson = JSON.parse(fs.readFileSync(__dirname + "/sample_questions.json"));
 
   for (let question of questionJson) {
     try {
