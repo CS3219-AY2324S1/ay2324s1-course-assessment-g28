@@ -21,7 +21,10 @@ const Layout = ({ children }: PropsWithChildren<unknown>) => {
     >
       <Navbar />
       <main
-        className={cx("flex min-h-screen flex-col items-center", POPPINS_CLASS)}
+        className={cx(
+          "flex min-h-screen flex-col items-center p-8",
+          POPPINS_CLASS,
+        )}
       >
         {children}
       </main>

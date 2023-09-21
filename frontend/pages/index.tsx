@@ -1,5 +1,11 @@
-import QuestionsTable from "@/components/QuestionsTable";
+import QuestionsCard from "@/components/QuestionsCard";
+import UserInfoCard from "@/components/UserInfoCard";
 
 export default function Home() {
-  return <QuestionsTable />;
+  return (
+    <div className="w-full flex gap-8">
+      <UserInfoCard />
+      <QuestionsCard />
+    </div>
+  );
 }
