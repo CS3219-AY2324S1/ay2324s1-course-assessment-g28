@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Table,
@@ -10,8 +10,6 @@ import {
   Input,
   Button,
   Pagination,
-  Selection,
-  SortDescriptor,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -22,86 +20,36 @@ import {
   COLUMN_CONFIGS,
   COMPLEXITY_OPTIONS,
   ColumnKey,
-  MOCK_DATA,
-  QuestionComplexityOptions,
+  DEFAULT_COMPLEXITY_SELECTION,
+  DEFAULT_PAGE_SIZE_SELECTION,
+  PAGE_SIZE_OPTIONS,
+  QuestionComplexityToNameMap,
 } from "./config";
 import { ChevronDownIcon } from "@/assets/icons/ChevronDown";
-import { QuestionBase } from "@/api/questions/types";
+import { QuestionBase, QuestionComplexity } from "@/api/questions/types";
+import { getQuestions } from "@/api/questions";
+import { QUESTION_API } from "@/api/routes";
+import useSWR from "swr";
 
 const QuestionsTable = () => {
-  const [filterValue, setFilterValue] = React.useState("");
-  const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
-    new Set([]),
+  const [filterValue, setFilterValue] = useState("");
+  const [selectedComplexity, setSelectedComplexity] = useState(
+    DEFAULT_COMPLEXITY_SELECTION,
   );
-  const [complexityFilter, setComplexityFilter] =
-    React.useState<Selection>("all");
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
-    column: ColumnKey.TITLE,
-    direction: "ascending",
-  });
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_SELECTION);
+  const [page, setPage] = useState(1);
 
-  const [page, setPage] = React.useState(1);
+  const options = {
+    size: pageSize ?? DEFAULT_PAGE_SIZE_SELECTION,
+    offset: page - 1,
+    complexity: selectedComplexity,
+    keyword: filterValue,
+  };
 
-  const hasSearchFilter = Boolean(filterValue);
-
-  const filteredItems = React.useMemo(() => {
-    let filteredQuestions = [...MOCK_DATA];
-    const isAllDifficultiesSelected =
-      complexityFilter == "all" ||
-      Array.from(complexityFilter).length == QuestionComplexityOptions.length;
-    if (hasSearchFilter) {
-      filteredQuestions = filteredQuestions.filter(
-        (question) =>
-          question?.title?.toLowerCase()?.includes(filterValue.toLowerCase()),
-      );
-    }
-    if (!isAllDifficultiesSelected) {
-      filteredQuestions = filteredQuestions.filter((question) =>
-        Array.from(complexityFilter).includes(question.complexity),
-      );
-    }
-    return filteredQuestions;
-  }, [filterValue, complexityFilter]);
-
-  const pages = Math.ceil(filteredItems.length / rowsPerPage);
-
-  const items = React.useMemo(() => {
-    const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-
-    return filteredItems.slice(start, end);
-  }, [page, filteredItems, rowsPerPage]);
-
-  const sortedQuestions = React.useMemo(() => {
-    return [...items].sort((a: QuestionBase, b: QuestionBase) => {
-      const first = a?.[sortDescriptor.column as keyof QuestionBase];
-      const second = b?.[sortDescriptor.column as keyof QuestionBase];
-      const cmp = first < second ? -1 : first > second ? 1 : 0;
-
-      return sortDescriptor.direction === "descending" ? -cmp : cmp;
-    });
-  }, [sortDescriptor, items]);
-
-  const onNextPage = React.useCallback(() => {
-    if (page < pages) {
-      setPage(page + 1);
-    }
-  }, [page, pages]);
-
-  const onPreviousPage = React.useCallback(() => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  }, [page]);
-
-  const onRowsPerPageChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setRowsPerPage(Number(e.target.value));
-      setPage(1);
-    },
-    [],
+  const { data, error, isLoading } = useSWR({ QUESTION_API, options }, () =>
+    getQuestions(options),
   );
+  const { content: questions } = data ?? {};
 
   const onSearchChange = React.useCallback((value?: string) => {
     if (value) {
@@ -124,7 +72,7 @@ const QuestionsTable = () => {
           <Input
             isClearable
             className="w-full sm:max-w-[44%] text-zinc-600"
-            placeholder="Search by name..."
+            placeholder="Search by question title..."
             // startContent={<SearchIcon />}
             value={filterValue}
             onClear={() => onClear()}
@@ -134,47 +82,44 @@ const QuestionsTable = () => {
         <Dropdown>
           <DropdownTrigger className="hidden sm:flex">
             <Button endContent={<ChevronDownIcon />} variant="flat">
-              Status
+              {QuestionComplexityToNameMap[selectedComplexity]}
             </Button>
           </DropdownTrigger>
           <DropdownMenu
-            disallowEmptySelection
-            aria-label="Table Columns"
-            closeOnSelect={false}
-            selectedKeys={complexityFilter}
-            selectionMode="multiple"
-            onSelectionChange={setComplexityFilter}
+            aria-label="Complexity dropdown"
+            selectionMode="single"
+            selectedKeys={[selectedComplexity]}
+            onAction={(key) => setSelectedComplexity(key as QuestionComplexity)}
           >
             {COMPLEXITY_OPTIONS.map((status) => (
-              <DropdownItem key={status.uid} className="text-zinc-600">
+              <DropdownItem key={status.key} className="text-zinc-600">
                 {status.name}
               </DropdownItem>
             ))}
           </DropdownMenu>
         </Dropdown>
-        <div className="flex justify-between items-center">
-          <label className="flex items-center text-default-400 text-small">
-            Rows per page:
-            <select
-              className="bg-transparent outline-none text-default-400 text-small"
-              onChange={onRowsPerPageChange}
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-            </select>
-          </label>
-        </div>
+        <Dropdown>
+          <DropdownTrigger className="hidden sm:flex">
+            <Button endContent={<ChevronDownIcon />} variant="flat">
+              Questions per page:
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu
+            aria-label="Question number dropdown"
+            selectionMode="single"
+            selectedKeys={[pageSize]}
+            onAction={(key) => setPageSize(key as number)}
+          >
+            {PAGE_SIZE_OPTIONS.map((pageSizeOption) => (
+              <DropdownItem key={pageSizeOption.name} className="text-zinc-600">
+                {pageSizeOption.name}
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        </Dropdown>
       </div>
     );
-  }, [
-    filterValue,
-    complexityFilter,
-    onSearchChange,
-    onRowsPerPageChange,
-    MOCK_DATA.length,
-    hasSearchFilter,
-  ]);
+  }, [filterValue, selectedComplexity, onSearchChange]);
 
   const bottomContent = React.useMemo(() => {
     return (
@@ -185,30 +130,32 @@ const QuestionsTable = () => {
           showShadow
           color="primary"
           page={page}
-          total={pages}
+          // todo: add total to api response
+          total={10}
           onChange={setPage}
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button
-            isDisabled={pages === 1}
+            isDisabled={page === 1}
             size="sm"
             variant="flat"
-            onPress={onPreviousPage}
+            onPress={() => setPage((curr) => curr - 1)}
           >
             Previous
           </Button>
           <Button
-            isDisabled={pages === 1}
+            // todo: change to page === totl
+            isDisabled={page === 10}
             size="sm"
             variant="flat"
-            onPress={onNextPage}
+            onPress={() => setPage((curr) => curr + 1)}
           >
             Next
           </Button>
         </div>
       </div>
     );
-  }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+  }, [page]);
 
   return (
     <Table
@@ -217,12 +164,10 @@ const QuestionsTable = () => {
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
       classNames={{
-        wrapper: "bg-[#D9D9D9] text-zinc-600",
+        wrapper: "text-zinc-600",
       }}
-      sortDescriptor={sortDescriptor}
       topContent={topContent}
       topContentPlacement="outside"
-      onSortChange={setSortDescriptor}
     >
       <TableHeader columns={COLUMNS.map((col) => COLUMN_CONFIGS?.[col])}>
         {(column) => (
@@ -235,7 +180,7 @@ const QuestionsTable = () => {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"No questions found"} items={sortedQuestions}>
+      <TableBody emptyContent={"No questions found"} items={questions ?? []}>
         {(question) => (
           <TableRow key={question.title}>
             {(columnKey: string | number) => (

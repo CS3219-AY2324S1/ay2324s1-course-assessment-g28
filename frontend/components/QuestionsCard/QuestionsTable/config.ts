@@ -40,11 +40,27 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
   },
 };
 
-export const COMPLEXITY_OPTIONS = [
-  { name: "Easy", uid: QuestionComplexity.EASY },
-  { name: "Medium", uid: QuestionComplexity.MEDIUM },
-  { name: "Hard", uid: QuestionComplexity.HARD },
+export const QuestionComplexityToNameMap: Record<QuestionComplexity, string> = {
+  [QuestionComplexity.EASY]: "Easy",
+  [QuestionComplexity.MEDIUM]: "Medium",
+  [QuestionComplexity.HARD]: "Hard",
+}
+
+export const COMPLEXITY_OPTIONS = Object.keys(QuestionComplexityToNameMap).map(
+  (key) => ({
+    key,
+    name: QuestionComplexityToNameMap[parseInt(key) as QuestionComplexity],
+  }));
+
+export const DEFAULT_COMPLEXITY_SELECTION = QuestionComplexity.EASY;
+
+export const PAGE_SIZE_OPTIONS = [
+  { name: 10 },
+  { name: 20 },
+  { name: 50 },
 ];
+
+export const DEFAULT_PAGE_SIZE_SELECTION = 10;
 
 export const MOCK_DATA: Array<QuestionBase> = [
   {
@@ -65,10 +81,4 @@ export const MOCK_DATA: Array<QuestionBase> = [
     category: [],
     complexity: QuestionComplexity.HARD,
   },
-];
-
-export const QuestionComplexityOptions = [
-  QuestionComplexity.EASY,
-  QuestionComplexity.MEDIUM,
-  QuestionComplexity.HARD,
 ];
