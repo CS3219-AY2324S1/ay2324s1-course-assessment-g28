@@ -10,7 +10,10 @@ const Card = (props: PropsWithChildren<CardProps>) => {
   const { children, classNames, styles } = props;
   return (
     <div
-      className={cx("p-[12px] bg-brand-white rounded-xl", classNames)}
+      className={cx(
+        "p-[12px] bg-brand-white text-zinc-700 rounded-xl",
+        classNames,
+      )}
       style={styles}
       {...props}
     >
