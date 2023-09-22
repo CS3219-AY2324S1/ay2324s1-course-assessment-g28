@@ -1,0 +1,199 @@
+import React, { useState } from "react";
+
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Input,
+  Button,
+  Pagination,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@nextui-org/react";
+import {
+  COLUMNS,
+  COLUMN_CONFIGS,
+  COMPLEXITY_OPTIONS,
+  ColumnKey,
+  DEFAULT_COMPLEXITY_SELECTION,
+  DEFAULT_PAGE_SIZE_SELECTION,
+  PAGE_SIZE_OPTIONS,
+  QuestionComplexityToNameMap,
+} from "./config";
+import { ChevronDownIcon } from "@/assets/icons/ChevronDown";
+import { QuestionBase, QuestionComplexity } from "@/api/questions/types";
+import { getQuestions } from "@/api/questions";
+import { QUESTION_API } from "@/api/routes";
+import useSWR from "swr";
+
+const QuestionsTable = () => {
+  const [filterValue, setFilterValue] = useState("");
+  const [selectedComplexity, setSelectedComplexity] = useState(
+    DEFAULT_COMPLEXITY_SELECTION,
+  );
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_SELECTION);
+  const [page, setPage] = useState(1);
+
+  const options = {
+    size: pageSize ?? DEFAULT_PAGE_SIZE_SELECTION,
+    offset: page - 1,
+    complexity: selectedComplexity,
+    keyword: filterValue,
+  };
+
+  const { data, error, isLoading } = useSWR({ QUESTION_API, options }, () =>
+    getQuestions(options),
+  );
+  const { content: questions } = data ?? {};
+
+  const onSearchChange = React.useCallback((value?: string) => {
+    if (value) {
+      setFilterValue(value);
+      setPage(1);
+    } else {
+      setFilterValue("");
+    }
+  }, []);
+
+  const onClear = React.useCallback(() => {
+    setFilterValue("");
+    setPage(1);
+  }, []);
+
+  const topContent = React.useMemo(() => {
+    return (
+      <div className="flex flex-col gap-4">
+        <div className="flex justify-between gap-3 items-end">
+          <Input
+            isClearable
+            className="w-full sm:max-w-[44%] text-zinc-600"
+            placeholder="Search by question title..."
+            // startContent={<SearchIcon />}
+            value={filterValue}
+            onClear={() => onClear()}
+            onValueChange={onSearchChange}
+          />
+        </div>
+        <Dropdown>
+          <DropdownTrigger className="hidden sm:flex">
+            <Button endContent={<ChevronDownIcon />} variant="flat">
+              {QuestionComplexityToNameMap[selectedComplexity]}
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu
+            aria-label="Complexity dropdown"
+            selectionMode="single"
+            selectedKeys={[selectedComplexity]}
+            onAction={(key) => setSelectedComplexity(key as QuestionComplexity)}
+          >
+            {COMPLEXITY_OPTIONS.map((status) => (
+              <DropdownItem key={status.key} className="text-zinc-600">
+                {status.name}
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        </Dropdown>
+        <Dropdown>
+          <DropdownTrigger className="hidden sm:flex">
+            <Button endContent={<ChevronDownIcon />} variant="flat">
+              Questions per page:
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu
+            aria-label="Question number dropdown"
+            selectionMode="single"
+            selectedKeys={[pageSize]}
+            onAction={(key) => setPageSize(key as number)}
+          >
+            {PAGE_SIZE_OPTIONS.map((pageSizeOption) => (
+              <DropdownItem key={pageSizeOption.name} className="text-zinc-600">
+                {pageSizeOption.name}
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        </Dropdown>
+      </div>
+    );
+  }, [filterValue, selectedComplexity, onSearchChange]);
+
+  const bottomContent = React.useMemo(() => {
+    return (
+      <div className="py-2 px-2 flex justify-between items-center">
+        <Pagination
+          isCompact
+          showControls
+          showShadow
+          color="primary"
+          page={page}
+          // todo: add total to api response
+          total={10}
+          onChange={setPage}
+        />
+        <div className="hidden sm:flex w-[30%] justify-end gap-2">
+          <Button
+            isDisabled={page === 1}
+            size="sm"
+            variant="flat"
+            onPress={() => setPage((curr) => curr - 1)}
+          >
+            Previous
+          </Button>
+          <Button
+            // todo: change to page === totl
+            isDisabled={page === 10}
+            size="sm"
+            variant="flat"
+            onPress={() => setPage((curr) => curr + 1)}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    );
+  }, [page]);
+
+  return (
+    <Table
+      aria-label="Questions table"
+      isHeaderSticky
+      bottomContent={bottomContent}
+      bottomContentPlacement="outside"
+      classNames={{
+        wrapper: "text-zinc-600",
+      }}
+      topContent={topContent}
+      topContentPlacement="outside"
+    >
+      <TableHeader columns={COLUMNS.map((col) => COLUMN_CONFIGS?.[col])}>
+        {(column) => (
+          <TableColumn
+            key={column.uid}
+            align={column.uid === ColumnKey.ACTION ? "center" : "start"}
+            allowsSorting={column.sortable}
+          >
+            {column.name}
+          </TableColumn>
+        )}
+      </TableHeader>
+      <TableBody emptyContent={"No questions found"} items={questions ?? []}>
+        {(question) => (
+          <TableRow key={question.title}>
+            {(columnKey: string | number) => (
+              <TableCell>
+                {COLUMN_CONFIGS?.[columnKey as ColumnKey]?.render?.(question) ??
+                  question?.[columnKey as keyof QuestionBase]}
+              </TableCell>
+            )}
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
+  );
+};
+
+export default QuestionsTable;

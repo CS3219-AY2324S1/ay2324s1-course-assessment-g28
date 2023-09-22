@@ -6,9 +6,9 @@ import { PagedResponse } from "@/api/constants";
 import { z } from "zod";
 
 export enum QuestionComplexity {
-  easy = 0,
-  medium = 1,
-  hard = 2,
+  EASY = 0,
+  MEDIUM = 1,
+  HARD = 2,
 }
 
 // For displaying in list of questions, basic identifying information
