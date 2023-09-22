@@ -121,7 +121,7 @@ const QuestionsTable = () => {
 
   const bottomContent = React.useMemo(() => {
     return (
-      <div className="py-2 px-2 flex items-center">
+      <div className="py-2 px-2 flex items-center justify-between">
         <Pagination
           isCompact
           showControls
@@ -133,7 +133,7 @@ const QuestionsTable = () => {
           onChange={setPage}
         />
         <Dropdown>
-          <DropdownTrigger className="hidden sm:flex ml-auto">
+          <DropdownTrigger className="sm:flex">
             <Button endContent={<ChevronDownIcon />} variant="flat">
               {`${pageSize.toString()} / Page`}
             </Button>
@@ -151,28 +151,9 @@ const QuestionsTable = () => {
             ))}
           </DropdownMenu>
         </Dropdown>
-        <div className="hidden sm:flex justify-end gap-2">
-          <Button
-            isDisabled={page === 1}
-            size="sm"
-            variant="flat"
-            onPress={() => setPage((curr) => curr - 1)}
-          >
-            Previous
-          </Button>
-          <Button
-            // todo: change to page === totl
-            isDisabled={page === 10}
-            size="sm"
-            variant="flat"
-            onPress={() => setPage((curr) => curr + 1)}
-          >
-            Next
-          </Button>
-        </div>
       </div>
     );
-  }, [page]);
+  }, [page, pageSize]);
 
   return (
     <Table

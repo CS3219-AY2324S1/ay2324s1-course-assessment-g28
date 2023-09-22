@@ -15,7 +15,7 @@ const Layout = ({ children }: PropsWithChildren<unknown>) => {
   const { isNotSignedIn } = useUserInfo();
   return (
     <div
-      className="w-screen h-screen overflow-hidden bg-neutral-700
+      className="w-screen h-screen overflow-scroll bg-neutral-700
         transition-all duration-300"
       style={isNotSignedIn ? backgroundWithImageStyle : {}}
     >
