@@ -3,6 +3,7 @@ import { QuestionBase, QuestionComplexity } from "@/api/questions/types";
 export enum ColumnKey {
   TITLE = "title",
   CATEGORY = "category",
+  DIFFCULTY = "complexity",
   // ATTEMPTS = "attempts",
   ACTION = "action"
 }
@@ -17,6 +18,7 @@ interface ColumnConfig {
 export const COLUMNS = [
   ColumnKey.TITLE,
   ColumnKey.CATEGORY,
+  ColumnKey.DIFFCULTY,
   // ColumnKey.ATTEMPTS,
   ColumnKey.ACTION,
 ];
@@ -34,6 +36,11 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
   //   name: "Attempts",
   //   uid: ColumnKey.ATTEMPTS,
   // },
+  [ColumnKey.DIFFCULTY]: {
+    name: "Difficulty",
+    uid: ColumnKey.DIFFCULTY,
+    render: (question: QuestionBase) => QuestionComplexityToNameMap[question.complexity]
+  },
   [ColumnKey.ACTION]: {
     name: "ACTIONS",
     uid: ColumnKey.ACTION,
