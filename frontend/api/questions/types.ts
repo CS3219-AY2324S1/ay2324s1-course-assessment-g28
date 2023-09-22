@@ -33,7 +33,7 @@ export interface GetQuestionRequest {
   size: number;
   offset: number;
   keyword?: string;
-  complexity: QuestionComplexity;
+  complexity?: QuestionComplexity;
 }
 
 export const GetQuestionResponseBodyZod = PagedResponse.extend({

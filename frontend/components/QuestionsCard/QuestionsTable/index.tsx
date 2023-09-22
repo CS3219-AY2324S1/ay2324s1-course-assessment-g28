@@ -30,12 +30,12 @@ import { QuestionBase, QuestionComplexity } from "@/api/questions/types";
 import { getQuestions } from "@/api/questions";
 import { QUESTION_API } from "@/api/routes";
 import useSWR from "swr";
+import { X } from "lucide-react";
 
 const QuestionsTable = () => {
   const [filterValue, setFilterValue] = useState("");
-  const [selectedComplexity, setSelectedComplexity] = useState(
-    DEFAULT_COMPLEXITY_SELECTION,
-  );
+  const [selectedComplexity, setSelectedComplexity] =
+    useState<QuestionComplexity>();
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_SELECTION);
   const [page, setPage] = useState(1);
 
@@ -67,41 +67,76 @@ const QuestionsTable = () => {
 
   const topContent = React.useMemo(() => {
     return (
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 items-end">
-          <Input
-            isClearable
-            className="w-full sm:max-w-[44%] text-zinc-600"
-            placeholder="Search by question title..."
-            // startContent={<SearchIcon />}
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          />
-        </div>
-        <Dropdown>
-          <DropdownTrigger className="hidden sm:flex">
-            <Button endContent={<ChevronDownIcon />} variant="flat">
-              {QuestionComplexityToNameMap[selectedComplexity]}
+      <div className="flex flex-row gap-4 w-full justify-between">
+        <Input
+          isClearable
+          className="w-full sm:max-w-[44%] text-zinc-600"
+          placeholder="Search by question title..."
+          // startContent={<SearchIcon />}
+          value={filterValue}
+          onClear={() => onClear()}
+          onValueChange={onSearchChange}
+        />
+        <div className="flex flex-row items-center">
+          <Dropdown className="p-0">
+            <DropdownTrigger className="hidden sm:flex">
+              <Button
+                endContent={<ChevronDownIcon />}
+                variant="flat"
+                title="Difficulty"
+              >
+                {selectedComplexity
+                  ? QuestionComplexityToNameMap[selectedComplexity]
+                  : "Select Difficulty"}
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu
+              aria-label="Complexity dropdown"
+              selectionMode="single"
+              selectedKeys={selectedComplexity ? [selectedComplexity] : []}
+              onAction={(key) => {
+                setSelectedComplexity(key as QuestionComplexity);
+              }}
+            >
+              {COMPLEXITY_OPTIONS.map((status) => (
+                <DropdownItem key={status.key} className="text-zinc-600">
+                  {status.name}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </Dropdown>
+          {selectedComplexity && (
+            <Button
+              isIconOnly
+              onClick={() => setSelectedComplexity(undefined)}
+              variant="flat"
+              title="Reset Difficulty"
+            >
+              <X color="red" />
             </Button>
-          </DropdownTrigger>
-          <DropdownMenu
-            aria-label="Complexity dropdown"
-            selectionMode="single"
-            selectedKeys={[selectedComplexity]}
-            onAction={(key) => setSelectedComplexity(key as QuestionComplexity)}
-          >
-            {COMPLEXITY_OPTIONS.map((status) => (
-              <DropdownItem key={status.key} className="text-zinc-600">
-                {status.name}
-              </DropdownItem>
-            ))}
-          </DropdownMenu>
-        </Dropdown>
+          )}
+        </div>
+      </div>
+    );
+  }, [filterValue, selectedComplexity, onSearchChange]);
+
+  const bottomContent = React.useMemo(() => {
+    return (
+      <div className="py-2 px-2 flex items-center">
+        <Pagination
+          isCompact
+          showControls
+          showShadow
+          color="primary"
+          page={page}
+          // todo: add total to api response
+          total={10}
+          onChange={setPage}
+        />
         <Dropdown>
-          <DropdownTrigger className="hidden sm:flex">
+          <DropdownTrigger className="hidden sm:flex ml-auto">
             <Button endContent={<ChevronDownIcon />} variant="flat">
-              Questions per page:
+              {`${pageSize.toString()} / Page`}
             </Button>
           </DropdownTrigger>
           <DropdownMenu
@@ -117,24 +152,7 @@ const QuestionsTable = () => {
             ))}
           </DropdownMenu>
         </Dropdown>
-      </div>
-    );
-  }, [filterValue, selectedComplexity, onSearchChange]);
-
-  const bottomContent = React.useMemo(() => {
-    return (
-      <div className="py-2 px-2 flex justify-between items-center">
-        <Pagination
-          isCompact
-          showControls
-          showShadow
-          color="primary"
-          page={page}
-          // todo: add total to api response
-          total={10}
-          onChange={setPage}
-        />
-        <div className="hidden sm:flex w-[30%] justify-end gap-2">
+        <div className="hidden sm:flex justify-end gap-2">
           <Button
             isDisabled={page === 1}
             size="sm"
