@@ -3,17 +3,37 @@ import { NextApiRequest, NextApiResponse } from "next";
 /**
  * Forwards the given request to the backend server, and sends that back to the client.
  */
-export async function forwardRequestAndGetResponse(req: NextApiRequest, res: NextApiResponse, apiAddr: string) {
-  const backendResponse = await fetch(getBackendUrl(apiAddr, req), {
-    method: req.method,
-    body: req.body? req.body : undefined
-  })
-  
-  if (!backendResponse.ok) {
-    throw new Error(`Error in response from backend: ${backendResponse}`);
+export async function forwardRequestAndGetResponse(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  apiAddr: string,
+) {
+  try {
+    let backendResponse;
+    if (req.method === "GET" || req.method === "DELETE") {
+      backendResponse = await fetch(getBackendUrl(apiAddr, req), {
+        method: req.method,
+      });
+    } else {
+      backendResponse = await fetch(getBackendUrl(apiAddr, req), {
+        method: req.method,
+        headers: {
+          "Content-Type": req.headers["content-type"] ?? "",
+          "Content-Length": JSON.stringify(req.body).length.toString(),
+        },
+        body: JSON.stringify(req.body),
+      });
+    }
+
+    if (!backendResponse.ok) {
+      throw new Error(`Error in response from backend: ${backendResponse}`);
+    }
+    const data = await backendResponse.json();
+    res.status(backendResponse.status).json(data);
+  } catch (e) {
+    console.log(e);
+    throw e;
   }
-  const data = await backendResponse.json();
-  res.status(backendResponse.status).json(data);
 }
 
 export function getBackendUrl(apiAddr: string, req: NextApiRequest) {

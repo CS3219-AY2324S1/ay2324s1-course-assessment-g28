@@ -1,10 +1,11 @@
-import { HttpMethod, HttpStatus } from "@/api/constants";
+import { HttpMethod, HttpStatus, jsonRequestHeaders } from "@/api/constants";
 import { RequestError } from "@/api/errors";
 import {
   GetQuestionRequest,
   GetQuestionResponseBody,
   GetQuestionResponseBodyZod,
   Question,
+  QuestionCreation,
   QuestionZod,
 } from "@/api/questions/types";
 import { QUESTION_API, getQuestionByIdPath } from "@/api/routes";
@@ -49,10 +50,11 @@ export async function getQuestion(id: number) {
   return body as Question;
 }
 
-export async function postQuestion(question: Question) {
+export async function postQuestion(question: QuestionCreation){
   const res = await fetch(QUESTION_API, {
     method: HttpMethod.POST,
     body: JSON.stringify(question),
+    headers: jsonRequestHeaders
   });
   if (res.status !== HttpStatus.RESOURCE_CREATED) {
     throw new RequestError(res);
@@ -70,6 +72,7 @@ export async function patchQuestion(
   const res = await fetch(url, {
     method: HttpMethod.PATCH,
     body: JSON.stringify(questionFieldsToUpdate),
+    headers: jsonRequestHeaders
   });
   if (res.status !== HttpStatus.OK_NO_CONTENT) {
     throw new RequestError(res);

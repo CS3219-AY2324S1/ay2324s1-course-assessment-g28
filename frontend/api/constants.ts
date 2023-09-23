@@ -21,3 +21,8 @@ export enum HttpMethod {
 export const PagedResponse = z.object({
   total: z.number().nonnegative().int()
 });
+
+// headers to use for json requests
+export const jsonRequestHeaders = {
+  "Content-Type": "application/json",
+}

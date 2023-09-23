@@ -1,0 +1,133 @@
+import { postQuestion } from "@/api/questions";
+import {
+  COMPLEXITY_OPTIONS,
+  QuestionComplexityToNameMap,
+} from "@/api/questions/constants";
+import {
+  QuestionComplexity,
+  QuestionCreation,
+  QuestionCreationZod,
+} from "@/api/questions/types";
+import { ChevronDownIcon } from "@/assets/icons/ChevronDown";
+import CategoryAdder from "@/components/QuestionCreationForm/CategoryAdder";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Input,
+  Textarea,
+} from "@nextui-org/react";
+import { useState } from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+
+export default function QuestionCreationForm() {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    control,
+    formState: { errors },
+  } = useForm<QuestionCreation>({
+    resolver: zodResolver(QuestionCreationZod),
+    defaultValues: {
+      "complexity": QuestionComplexity.EASY
+    }
+  });
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const onSubmit: SubmitHandler<QuestionCreation> = async (data) => {
+    setIsLoading(true)
+    try {
+      await postQuestion(data);
+      toast.success("Question successfully added.")
+    } catch (e){
+      toast.error("Something went wrong. Please try again.")
+      console.log(e);
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="w-full flex flex-col gap-y-2"
+    >
+      <div className="flex flex-row w-full gap-x-2">
+        <div className="flex-grow">
+          <label>Title</label>
+          <Input {...register("title")} className="text-black" errorMessage={errors.title?.message}/>
+        </div>
+        <div>
+          <label>Difficulty</label>
+          <Controller
+            name="complexity"
+            control={control}
+            defaultValue={QuestionComplexity.EASY}
+            render={({ field: { onChange, value } }) => (
+              <Dropdown className="p-0">
+                <DropdownTrigger className="flex">
+                  <Button
+                    endContent={<ChevronDownIcon />}
+                    variant="flat"
+                    title="Difficulty"
+                  >
+                    {QuestionComplexityToNameMap[value]}
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu
+                  aria-label="Complexity dropdown"
+                  selectionMode="single"
+                  selectedKeys={[value]}
+                  onAction={(key) => {
+                    onChange(key);
+                  }}
+                >
+                  {COMPLEXITY_OPTIONS.map((status) => (
+                    <DropdownItem key={status.key} className="text-zinc-600">
+                      {status.name}
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
+              </Dropdown>
+            )}
+          />
+        </div>
+      </div>
+
+      <div>
+        <label>Description</label>
+        <Textarea
+          classNames={{
+            base: "text-black ",
+            label: "hidden"
+          }}
+          {...register("description")}
+          placeholder="Enter question description"
+          errorMessage={errors.description?.message}
+        ></Textarea>
+      </div>
+
+      <div>
+        <label>Categories</label>
+        <Controller
+          name="category"
+          control={control}
+          defaultValue={[]}
+          render={({ field: { onChange, value } }) => (
+            <CategoryAdder
+              categories={value}
+              onChange={onChange}
+            ></CategoryAdder>
+          )}
+        />
+      </div>
+
+      <Button isLoading={isLoading} type="submit">Submit</Button>
+    </form>
+  );
+}

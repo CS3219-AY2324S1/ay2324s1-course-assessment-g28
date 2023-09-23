@@ -18,11 +18,9 @@ import {
 import {
   COLUMNS,
   COLUMN_CONFIGS,
-  COMPLEXITY_OPTIONS,
   ColumnKey,
   DEFAULT_PAGE_SIZE_SELECTION,
   PAGE_SIZE_OPTIONS,
-  QuestionComplexityToNameMap,
 } from "./config";
 import { ChevronDownIcon } from "@/assets/icons/ChevronDown";
 import { QuestionBase, QuestionComplexity } from "@/api/questions/types";
@@ -30,6 +28,7 @@ import { getQuestions } from "@/api/questions";
 import { QUESTION_API } from "@/api/routes";
 import useSWR from "swr";
 import { X } from "lucide-react";
+import { COMPLEXITY_OPTIONS, QuestionComplexityToNameMap } from "@/api/questions/constants";
 
 const QuestionsTable = () => {
   const [filterValue, setFilterValue] = useState("");
