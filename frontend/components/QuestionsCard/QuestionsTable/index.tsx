@@ -27,8 +27,13 @@ import { QuestionBase, QuestionComplexity } from "@/api/questions/types";
 import { getQuestions } from "@/api/questions";
 import { QUESTION_API } from "@/api/routes";
 import useSWR from "swr";
-import { X } from "lucide-react";
-import { COMPLEXITY_OPTIONS, QuestionComplexityToNameMap } from "@/api/questions/constants";
+import { PlusSquare, X } from "lucide-react";
+import {
+  COMPLEXITY_OPTIONS,
+  QuestionComplexityToNameMap,
+} from "@/api/questions/constants";
+import { useRouter } from "next/router";
+import { CREATE_QUESTION } from "@/routes";
 
 const QuestionsTable = () => {
   const [filterValue, setFilterValue] = useState("");
@@ -36,6 +41,7 @@ const QuestionsTable = () => {
     useState<QuestionComplexity>();
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_SELECTION);
   const [page, setPage] = useState(1);
+  const router = useRouter();
 
   const options = {
     size: pageSize ?? DEFAULT_PAGE_SIZE_SELECTION,
@@ -65,7 +71,7 @@ const QuestionsTable = () => {
 
   const topContent = React.useMemo(() => {
     return (
-      <div className="flex flex-row gap-4 w-full justify-between">
+      <div className="flex flex-row gap-4 w-full">
         <Input
           isClearable
           className="w-full sm:max-w-[44%] text-zinc-600"
@@ -113,10 +119,20 @@ const QuestionsTable = () => {
               <X color="red" />
             </Button>
           )}
+          
         </div>
+        <Button
+        className="ml-auto"
+          color="secondary"
+          variant="flat"
+            onPress={() => router.push(CREATE_QUESTION)}
+            title="Go to question creation page"
+          >
+            Create Question <PlusSquare />
+          </Button>
       </div>
     );
-  }, [filterValue, selectedComplexity, onSearchChange]);
+  }, [filterValue, selectedComplexity, onSearchChange, onClear, router]);
 
   const bottomContent = React.useMemo(() => {
     return (
