@@ -20,7 +20,7 @@ export async function forwardRequestAndGetResponse(
         method: req.method,
         headers: {
           "Content-Type": req.headers["content-type"] ?? "",
-          "Content-Length": JSON.stringify(req.body).length.toString(),
+          //"Content-Length": JSON.stringify(req.body).length.toString(),
         },
         body: JSON.stringify(req.body),
       });

@@ -32,7 +32,7 @@ import {
   QuestionComplexityToNameMap,
 } from "@/api/questions/constants";
 import { useRouter } from "next/router";
-import { CREATE_QUESTION } from "@/routes";
+import { CREATE_QUESTION, getQuestionPath, getUpdateQuestionPath } from "@/routes";
 import { QUESTION_API } from "@/api/routes";
 
 const QuestionsTable = () => {
@@ -194,7 +194,11 @@ const QuestionsTable = () => {
       </TableHeader>
       <TableBody emptyContent={"No questions found"} items={questions ?? []}>
         {(question) => (
-          <TableRow key={question.title}>
+          <TableRow
+            key={question.title}
+            className="cursor-pointer"
+            onClick={() => router.push(getQuestionPath(question.id))}
+          >
             {(columnKey: string | number) => (
               <TableCell>
                 {COLUMN_CONFIGS?.[columnKey as ColumnKey]?.render?.(question) ??

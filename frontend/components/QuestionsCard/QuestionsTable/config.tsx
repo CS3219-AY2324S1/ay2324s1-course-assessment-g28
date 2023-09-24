@@ -1,5 +1,8 @@
-import { QuestionComplexityToNameMap } from "@/api/questions/constants";
 import { QuestionBase, QuestionComplexity } from "@/api/questions/types";
+import { getUpdateQuestionPath } from "@/routes";
+import { Link as NextUILink } from "@nextui-org/react";
+import Link from "next/link";
+
 
 export enum ColumnKey {
   TITLE = "title",
@@ -40,12 +43,31 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
   [ColumnKey.DIFFCULTY]: {
     name: "Difficulty",
     uid: ColumnKey.DIFFCULTY,
-    render: (question: QuestionBase) =>
-      QuestionComplexityToNameMap[question.complexity],
+    render: (question: QuestionBase) => {
+      switch(question.complexity) {
+        case QuestionComplexity.EASY:
+          return <span className="text-green-500">
+            Easy
+          </span>
+        case QuestionComplexity.MEDIUM:
+          return <span className="text-amber-500">
+            Medium
+          </span>
+        case QuestionComplexity.HARD:
+          return <span className="text-red-600">
+            Hard
+          </span>
+      }
+    },
   },
   [ColumnKey.ACTION]: {
     name: "ACTIONS",
     uid: ColumnKey.ACTION,
+    render: (question: QuestionBase) => (
+      <Link href={getUpdateQuestionPath(question.id)} passHref legacyBehavior>
+        <NextUILink href={getUpdateQuestionPath(question.id)}>Edit</NextUILink>
+      </Link>
+    ),
   },
 };
 

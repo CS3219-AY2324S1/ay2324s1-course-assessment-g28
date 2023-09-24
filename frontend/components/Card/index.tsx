@@ -6,8 +6,7 @@ interface CardProps {
   styles?: CSSProperties;
 }
 
-const Card = (props: PropsWithChildren<CardProps>) => {
-  const { children, classNames, styles } = props;
+const Card = ( { children, classNames, styles, ...props }: PropsWithChildren<CardProps>) => {
   return (
     <div
       className={cx(
