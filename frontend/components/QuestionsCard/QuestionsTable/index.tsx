@@ -14,6 +14,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Spinner,
 } from "@nextui-org/react";
 import {
   COLUMNS,
@@ -32,7 +33,11 @@ import {
   QuestionComplexityToNameMap,
 } from "@/api/questions/constants";
 import { useRouter } from "next/router";
-import { CREATE_QUESTION, getQuestionPath, getUpdateQuestionPath } from "@/routes";
+import {
+  CREATE_QUESTION,
+  getQuestionPath,
+  getUpdateQuestionPath,
+} from "@/routes";
 import { QUESTION_API } from "@/api/routes";
 
 const QuestionsTable = () => {
@@ -145,6 +150,7 @@ const QuestionsTable = () => {
           // todo: add total to api response
           total={10}
           onChange={setPage}
+          disableAnimation
         />
         <Dropdown>
           <DropdownTrigger className="sm:flex">
@@ -168,6 +174,14 @@ const QuestionsTable = () => {
       </div>
     );
   }, [page, pageSize]);
+
+  if (!isLoading) {
+    return (
+      <div className="w-full grid place-content-center">
+        <Spinner></Spinner>
+      </div>
+    );
+  }
 
   return (
     <Table
