@@ -1,3 +1,4 @@
+import { HttpStatus } from "@/api/constants";
 import { NextApiRequest, NextApiResponse } from "next";
 
 /**
@@ -24,12 +25,15 @@ export async function forwardRequestAndGetResponse(
         body: JSON.stringify(req.body),
       });
     }
-
     if (!backendResponse.ok) {
       throw new Error(`Error in response from backend: ${backendResponse}`);
     }
-    const data = await backendResponse.json();
-    res.status(backendResponse.status).json(data);
+    if (backendResponse.status === HttpStatus.OK_NO_CONTENT) {
+      res.status(backendResponse.status).send("");
+    } else {
+      const data = await backendResponse.json();
+      res.status(backendResponse.status).json(data);
+    }
   } catch (e) {
     console.log(e);
     throw e;

@@ -25,7 +25,6 @@ import {
 import { ChevronDownIcon } from "@/assets/icons/ChevronDown";
 import { QuestionBase, QuestionComplexity } from "@/api/questions/types";
 import { getQuestions } from "@/api/questions";
-import { QUESTION_API } from "@/api/routes";
 import useSWR from "swr";
 import { PlusSquare, X } from "lucide-react";
 import {
@@ -34,6 +33,7 @@ import {
 } from "@/api/questions/constants";
 import { useRouter } from "next/router";
 import { CREATE_QUESTION } from "@/routes";
+import { QUESTION_API } from "@/api/routes";
 
 const QuestionsTable = () => {
   const [filterValue, setFilterValue] = useState("");
@@ -119,17 +119,16 @@ const QuestionsTable = () => {
               <X color="red" />
             </Button>
           )}
-          
         </div>
         <Button
-        className="ml-auto"
+          className="ml-auto"
           color="secondary"
           variant="flat"
-            onPress={() => router.push(CREATE_QUESTION)}
-            title="Go to question creation page"
-          >
-            Create Question <PlusSquare />
-          </Button>
+          onPress={() => router.push(CREATE_QUESTION)}
+          title="Go to question creation page"
+        >
+          Create Question <PlusSquare />
+        </Button>
       </div>
     );
   }, [filterValue, selectedComplexity, onSearchChange, onClear, router]);
@@ -141,7 +140,7 @@ const QuestionsTable = () => {
           isCompact
           showControls
           showShadow
-          color="primary"
+          color="secondary"
           page={page}
           // todo: add total to api response
           total={10}

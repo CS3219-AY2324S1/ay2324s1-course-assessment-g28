@@ -1,5 +1,5 @@
 /**
- * This is a test page to verify question apis only
+ * Page for creating questions.
  */
 
 import QuestionCreationForm from "@/components/QuestionCreationForm";

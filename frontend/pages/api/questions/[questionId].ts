@@ -2,7 +2,10 @@ import { HttpMethod, HttpStatus } from "@/api/constants";
 import { forwardRequestAndGetResponse } from "@/api/serverConstants";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   if (process.env.BACKEND_MODE === "LOCAL") {
     if (req.method === HttpMethod.GET) {
       res.status(HttpStatus.OK).json({
@@ -20,5 +23,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
 
-  await forwardRequestAndGetResponse(req, res, process.env.QUESTIONS_API as string);
+  await forwardRequestAndGetResponse(
+    req,
+    res,
+    process.env.QUESTIONS_API as string,
+  );
 }

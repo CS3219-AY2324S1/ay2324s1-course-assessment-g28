@@ -1,9 +1,10 @@
-import { postQuestion } from "@/api/questions";
+import { patchQuestion, postQuestion } from "@/api/questions";
 import {
   COMPLEXITY_OPTIONS,
   QuestionComplexityToNameMap,
 } from "@/api/questions/constants";
 import {
+  Question,
   QuestionComplexity,
   QuestionCreation,
   QuestionCreationZod,
@@ -24,7 +25,13 @@ import { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
-export default function QuestionCreationForm() {
+interface QuestionCreationFormProps {
+  originalQuestion?: Question; // data from an already existing question
+}
+
+export default function QuestionCreationForm({
+  originalQuestion,
+}: QuestionCreationFormProps) {
   const {
     register,
     handleSubmit,
@@ -34,23 +41,31 @@ export default function QuestionCreationForm() {
   } = useForm<QuestionCreation>({
     resolver: zodResolver(QuestionCreationZod),
     defaultValues: {
-      "complexity": QuestionComplexity.EASY
-    }
+      complexity: QuestionComplexity.EASY,
+    },
+    values: originalQuestion,
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const onSubmit: SubmitHandler<QuestionCreation> = async (data) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      await postQuestion(data);
-      toast.success("Question successfully added.")
-    } catch (e){
-      toast.error("Something went wrong. Please try again.")
+      if (typeof originalQuestion !== "undefined") {
+        // this is to update the original question
+        await patchQuestion(originalQuestion?.id, data);
+        toast.success("Question successfully updated.");
+      } else {
+        // this is to create a new question
+        await postQuestion(data);
+        toast.success("Question successfully added.");
+      }
+    } catch (e) {
+      toast.error("Something went wrong. Please try again.");
       console.log(e);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <form
@@ -60,7 +75,11 @@ export default function QuestionCreationForm() {
       <div className="flex flex-row w-full gap-x-2">
         <div className="flex-grow">
           <label>Title</label>
-          <Input {...register("title")} className="text-black" errorMessage={errors.title?.message}/>
+          <Input
+            {...register("title")}
+            className="text-black"
+            errorMessage={errors.title?.message}
+          />
         </div>
         <div>
           <label>Difficulty</label>
@@ -104,7 +123,7 @@ export default function QuestionCreationForm() {
         <Textarea
           classNames={{
             base: "text-black ",
-            label: "hidden"
+            label: "hidden",
           }}
           {...register("description")}
           placeholder="Enter question description"
@@ -127,7 +146,9 @@ export default function QuestionCreationForm() {
         />
       </div>
 
-      <Button isLoading={isLoading} type="submit">Submit</Button>
+      <Button isLoading={isLoading} type="submit">
+        Submit
+      </Button>
     </form>
   );
 }

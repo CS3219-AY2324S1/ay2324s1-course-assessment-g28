@@ -6,7 +6,7 @@ export enum ColumnKey {
   CATEGORY = "category",
   DIFFCULTY = "complexity",
   // ATTEMPTS = "attempts",
-  ACTION = "action"
+  ACTION = "action",
 }
 
 interface ColumnConfig {
@@ -40,7 +40,8 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
   [ColumnKey.DIFFCULTY]: {
     name: "Difficulty",
     uid: ColumnKey.DIFFCULTY,
-    render: (question: QuestionBase) => QuestionComplexityToNameMap[question.complexity]
+    render: (question: QuestionBase) =>
+      QuestionComplexityToNameMap[question.complexity],
   },
   [ColumnKey.ACTION]: {
     name: "ACTIONS",
@@ -48,16 +49,9 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
   },
 };
 
-
-
-
 export const DEFAULT_COMPLEXITY_SELECTION = QuestionComplexity.EASY;
 
-export const PAGE_SIZE_OPTIONS = [
-  { name: 10 },
-  { name: 20 },
-  { name: 50 },
-];
+export const PAGE_SIZE_OPTIONS = [{ name: 10 }, { name: 20 }, { name: 50 }];
 
 export const DEFAULT_PAGE_SIZE_SELECTION = 10;
 

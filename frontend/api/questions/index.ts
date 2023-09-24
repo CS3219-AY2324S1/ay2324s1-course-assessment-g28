@@ -1,3 +1,4 @@
+
 import { HttpMethod, HttpStatus, jsonRequestHeaders } from "@/api/constants";
 import { RequestError } from "@/api/errors";
 import {
@@ -8,7 +9,7 @@ import {
   QuestionCreation,
   QuestionZod,
 } from "@/api/questions/types";
-import { QUESTION_API, getQuestionByIdPath } from "@/api/routes";
+import { QUESTION_API, getQuestionByIdPath, getRoute } from "@/api/routes";
 
 export async function getQuestions({
   size,
@@ -18,15 +19,15 @@ export async function getQuestions({
 }: GetQuestionRequest) {
   const params = new URLSearchParams({
     size: size.toString(),
-    offset: offset.toString()
-  })
+    offset: offset.toString(),
+  });
   if (keyword) {
     params.append("keyword", keyword);
   }
   if (complexity) {
     params.append("complexity", complexity.toString());
   }
-  const res = await fetch(QUESTION_API + "?" + params.toString(), {
+  const res = await fetch(getRoute(QUESTION_API + "?" + params.toString(), false), {
     method: HttpMethod.GET,
   });
   if (res.status !== HttpStatus.OK) {
@@ -37,8 +38,8 @@ export async function getQuestions({
   return body as GetQuestionResponseBody;
 }
 
-export async function getQuestion(id: number) {
-  const url = getQuestionByIdPath(id);
+export async function getQuestion(id: number, isServerSide: boolean) {
+  const url = getRoute(getQuestionByIdPath(id), isServerSide, process.env.QUESTIONS_API);
   const res = await fetch(url, {
     method: HttpMethod.GET,
   });
@@ -50,11 +51,11 @@ export async function getQuestion(id: number) {
   return body as Question;
 }
 
-export async function postQuestion(question: QuestionCreation){
-  const res = await fetch(QUESTION_API, {
+export async function postQuestion(question: QuestionCreation) {
+  const res = await fetch(getRoute(QUESTION_API, false), {
     method: HttpMethod.POST,
     body: JSON.stringify(question),
-    headers: jsonRequestHeaders
+    headers: jsonRequestHeaders,
   });
   if (res.status !== HttpStatus.RESOURCE_CREATED) {
     throw new RequestError(res);
@@ -68,11 +69,11 @@ export async function patchQuestion(
   id: number,
   questionFieldsToUpdate: Partial<Question>,
 ) {
-  const url = getQuestionByIdPath(id);
+  const url = getRoute(getQuestionByIdPath(id), false);
   const res = await fetch(url, {
     method: HttpMethod.PATCH,
     body: JSON.stringify(questionFieldsToUpdate),
-    headers: jsonRequestHeaders
+    headers: jsonRequestHeaders,
   });
   if (res.status !== HttpStatus.OK_NO_CONTENT) {
     throw new RequestError(res);
@@ -80,7 +81,7 @@ export async function patchQuestion(
 }
 
 export async function deleteQuestion(id: number) {
-  const url = getQuestionByIdPath(id);
+  const url = getRoute(getQuestionByIdPath(id), false);
   const res = await fetch(url, {
     method: HttpMethod.DELETE,
   });
