@@ -5,13 +5,22 @@ services:
     expose:
       - 5672
   pp-pairing-front:
-    image: pp-pairing-front
+    image: peerprep/pairing-front
+    build:
+      context: ../../backend/services/pairing/pairing-front
+      dockerfile: Dockerfile
     environment:
-      - RABBITMQ_URL=${RABBITMQ_URL}
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - PORT=3000
     ports:
-      - ${PP_PAIRING_PORT}:${PP_PAIRING_PORT}
-    depends_on:
-      - rabbitmq
+      - 3000:3000
+  pp-pairing-back:
+    image: peerprep/pairing-back
+    build:
+      context: ../../backend/services/pairing/pairing-back
+      dockerfile: Dockerfile
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq:5672
 # Names our volume
 volumes:
   my-db:
