@@ -175,7 +175,7 @@ const QuestionsTable = () => {
     );
   }, [page, pageSize]);
 
-  if (!isLoading) {
+  if (isLoading) {
     return (
       <div className="w-full grid place-content-center">
         <Spinner></Spinner>
