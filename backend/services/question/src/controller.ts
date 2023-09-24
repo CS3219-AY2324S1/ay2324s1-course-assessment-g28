@@ -3,7 +3,6 @@ import { Question } from "./models/question";
 
 // Create Question Business Logic
 export const createQuestion = async (req: Request, res: Response) => {
-  console.log(req);
   try {
     const question = new Question(req.body);
     await question.save();
