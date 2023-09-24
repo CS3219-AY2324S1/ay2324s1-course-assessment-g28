@@ -29,8 +29,6 @@ services:
     image: mongo
     environment:
       MONGO_INITDB_DATABASE: questions
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
     expose:
       - 27017
     ports:
