@@ -21,6 +21,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - RABBITMQ_URL=amqp://rabbitmq:5672
+      - MATCHMAKING_MAX_WAIT_SECONDS=100
 # Names our volume
 volumes:
   my-db:
