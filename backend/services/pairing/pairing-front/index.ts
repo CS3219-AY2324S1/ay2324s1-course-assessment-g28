@@ -67,17 +67,23 @@ function getWsCallback(rmq_conn: amqp.Connection) {
   };
 }
 
-amqp
-  .connect(RABBITMQ_URL)
-  .then((rmq_conn) => {
-    console.log(`Connected to ${RABBITMQ_URL}`);
+function startServer() {
+  amqp
+    .connect(RABBITMQ_URL)
+    .then((rmq_conn) => {
+      console.log(`Connected to ${RABBITMQ_URL}`);
 
-    const wss = new WebSocketServer({ port: 8080, path: "/pairing" });
+      const wss = new WebSocketServer({ port: 8080, path: "/pairing" });
 
-    console.log("created wss");
+      console.log("created wss");
 
-    wss.on("connection", getWsCallback(rmq_conn));
-  })
-  .catch((error) => {
-    throw error;
-  });
+      wss.on("connection", getWsCallback(rmq_conn));
+    })
+    .catch((e) => {
+      console.log(e);
+      console.log("Failed to connect to RabbitMQ. Retrying in 5 seconds.");
+      setTimeout(startServer, 5000);
+    });
+}
+
+startServer();
