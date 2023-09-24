@@ -1,0 +1,95 @@
+version: "3.8"
+services:
+  # Frontend
+  # pp-frontend:
+  #   image: peerprep/frontend
+  #   build:
+  #     context: ../../frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 3000:3000
+  #   environment:
+  #     - BACKEND_MODE=amqp://rabbitmq:5672
+  #     - QUESTIONS_API=http://pp-question:1234
+
+  # Question service
+  pp-question:
+    image: peerprep/question
+    build:
+      context: ../../backend/services/question
+      dockerfile: Dockerfile
+    environment:
+      - PORT=1234
+      - MONGO_URI=mongodb://mongodb:27017
+    expose:
+      - 1234
+    ports:
+      - 1234:1234
+  mongodb:
+    image: mongo
+    environment:
+      MONGO_INITDB_DATABASE: questions
+    expose:
+      - 27017
+    ports:
+      - 27017:27017
+    volumes:
+      - dev-mongodb:/data/db
+
+  # User service
+  pp-user:
+    image: peerprep/user
+    build:
+      context: ../../backend/services/user
+      dockerfile: Dockerfile
+    environment:
+      - PORT=1235
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=dev
+      - PG_PORT=5432
+    expose:
+      - 1235
+    ports:
+      - 1235:1235
+  postgres:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: user
+    volumes:
+      - dev-postgres:/var/lib/postgresql/data
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+
+  # Pairing services
+  rabbitmq:
+    image: rabbitmq
+    expose:
+      - 5672
+  pp-pairing-front:
+    image: peerprep/pairing-front
+    build:
+      context: ../../backend/services/pairing/pairing-front
+      dockerfile: Dockerfile
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - PORT=3000
+    ports:
+      - 3000:3000
+  pp-pairing-back:
+    image: peerprep/pairing-back
+    build:
+      context: ../../backend/services/pairing/pairing-back
+      dockerfile: Dockerfile
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - MATCHMAKING_MAX_WAIT_SECONDS=100
+# Names our volume
+volumes:
+  dev-postgres:
+    driver: local
+  dev-mongodb:
+    driver: local
