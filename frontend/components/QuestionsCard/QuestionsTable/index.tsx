@@ -210,7 +210,7 @@ const QuestionsTable = () => {
         {(question) => (
           <TableRow
             key={question.title}
-            className="cursor-pointer"
+            className="cursor-pointer hover:bg-gray-200"
             onClick={() => router.push(getQuestionPath(question.id))}
           >
             {(columnKey: string | number) => (

@@ -1,8 +1,7 @@
 import { QuestionBase, QuestionComplexity } from "@/api/questions/types";
 import { getUpdateQuestionPath } from "@/routes";
-import { Link as NextUILink } from "@nextui-org/react";
+import { Chip, Link as NextUILink } from "@nextui-org/react";
 import Link from "next/link";
-
 
 export enum ColumnKey {
   TITLE = "title",
@@ -35,6 +34,8 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
   [ColumnKey.CATEGORY]: {
     name: "Categories",
     uid: ColumnKey.CATEGORY,
+    render: (question: QuestionBase) =>
+      question.category.map((cat) => <Chip variant="flat">{cat}</Chip>),
   },
   // [ColumnKey.ATTEMPTS]: {
   //   name: "Attempts",
@@ -44,19 +45,13 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
     name: "Difficulty",
     uid: ColumnKey.DIFFCULTY,
     render: (question: QuestionBase) => {
-      switch(question.complexity) {
+      switch (question.complexity) {
         case QuestionComplexity.EASY:
-          return <span className="text-green-500">
-            Easy
-          </span>
+          return <span className="text-green-500">Easy</span>;
         case QuestionComplexity.MEDIUM:
-          return <span className="text-amber-500">
-            Medium
-          </span>
+          return <span className="text-amber-500">Medium</span>;
         case QuestionComplexity.HARD:
-          return <span className="text-red-600">
-            Hard
-          </span>
+          return <span className="text-red-600">Hard</span>;
       }
     },
   },
@@ -76,24 +71,3 @@ export const DEFAULT_COMPLEXITY_SELECTION = QuestionComplexity.EASY;
 export const PAGE_SIZE_OPTIONS = [{ name: 10 }, { name: 20 }, { name: 50 }];
 
 export const DEFAULT_PAGE_SIZE_SELECTION = 10;
-
-export const MOCK_DATA: Array<QuestionBase> = [
-  {
-    id: 0,
-    title: "Two Sum",
-    category: [],
-    complexity: QuestionComplexity.EASY,
-  },
-  {
-    id: 1,
-    title: "Two Sum II",
-    category: [],
-    complexity: QuestionComplexity.MEDIUM,
-  },
-  {
-    id: 2,
-    title: "Two Sum III",
-    category: [],
-    complexity: QuestionComplexity.HARD,
-  },
-];

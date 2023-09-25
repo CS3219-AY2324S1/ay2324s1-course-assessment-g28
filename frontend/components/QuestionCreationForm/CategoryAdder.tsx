@@ -1,6 +1,6 @@
 import { Button, Chip, Input } from "@nextui-org/react";
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 interface CategoryAdderProps {
   categories: string[];
@@ -14,9 +14,14 @@ export default function CategoryAdder({
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex flex-row gap-x-2">
-        <Input label="Add new category" onValueChange={setNewCategory} classNames={{
-          input: "text-black"
-        }} size="sm"/>
+        <Input
+          label="Add new category"
+          onValueChange={setNewCategory}
+          classNames={{
+            input: "text-black",
+          }}
+          size="sm"
+        />
         <Button
           isIconOnly
           title="Add Category"
@@ -33,7 +38,15 @@ export default function CategoryAdder({
       </div>
       <div className="flex flex-row gap-x-1">
         {categories.map((cat) => (
-          <Chip key={cat}>{cat}</Chip>
+          <Chip
+            key={cat}
+            onClose={() => {
+              const cats = categories.filter((x) => x !== cat);
+              onChange(cats);
+            }}
+          >
+            {cat}
+          </Chip>
         ))}
       </div>
     </div>
