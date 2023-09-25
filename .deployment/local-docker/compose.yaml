@@ -1,16 +1,18 @@
 version: "3.8"
 services:
   # Frontend
-  # pp-frontend:
-  #   image: peerprep/frontend
-  #   build:
-  #     context: ../../frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 3000:3000
-  #   environment:
-  #     - BACKEND_MODE=amqp://rabbitmq:5672
-  #     - QUESTIONS_API=http://pp-question:1234
+  pp-frontend:
+    image: peerprep/frontend
+    build:
+      context: ../../frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - QUESTIONS_API=http://pp-question:1234
 
   # Question service
   pp-question:
@@ -77,8 +79,6 @@ services:
     environment:
       - RABBITMQ_URL=amqp://rabbitmq:5672
       - PORT=3000
-    ports:
-      - 3000:3000
   pp-pairing-back:
     image: peerprep/pairing-back
     build:
