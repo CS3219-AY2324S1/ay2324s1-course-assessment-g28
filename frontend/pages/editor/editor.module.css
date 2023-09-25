@@ -1,0 +1,12 @@
+.editor-page {
+    min-width: 100%; 
+    min-height: 100%;
+    flex-grow: 1;
+    display: flex;
+}
+
+.editor-panel {
+    max-width: 100%;
+    max-height: 100%;
+    flex-grow: 1;
+}

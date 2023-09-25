@@ -1,0 +1,17 @@
+.resize-handle-vertical {
+    width: 5px;
+    height: 100%;
+    background-color: rgb(213, 213, 213);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.triple-dots {
+    width: 2px;
+    height: 2px;
+    background-color: gray;
+    border-radius: 2px;
+    margin: 1px;
+}
