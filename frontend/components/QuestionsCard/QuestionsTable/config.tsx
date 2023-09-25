@@ -4,6 +4,7 @@ import { Chip, Link as NextUILink } from "@nextui-org/react";
 import Link from "next/link";
 
 export enum ColumnKey {
+  ID = "id",
   TITLE = "title",
   CATEGORY = "category",
   DIFFCULTY = "complexity",
@@ -19,6 +20,7 @@ interface ColumnConfig {
 }
 
 export const COLUMNS = [
+  ColumnKey.ID,
   ColumnKey.TITLE,
   ColumnKey.CATEGORY,
   ColumnKey.DIFFCULTY,
@@ -27,6 +29,10 @@ export const COLUMNS = [
 ];
 
 export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
+  [ColumnKey.ID]: {
+    name: "ID",
+    uid: ColumnKey.ID
+  },
   [ColumnKey.TITLE]: {
     name: "Title",
     uid: ColumnKey.TITLE,
