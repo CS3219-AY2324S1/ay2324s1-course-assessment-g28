@@ -15,7 +15,7 @@ export const createQuestion = async (req: Request, res: Response) => {
 
     if (count !== 0) {
       throw new QuestionError(
-        `${req.body.title} alreaday exists as a question`,
+        `question with title ${req.body.title} already exists`,
         QUESTION_TITLE_EXISTS_ERROR_CODE
       );
     }
@@ -44,7 +44,7 @@ export const getQuestionById = async (req: Request, res: Response) => {
     if (!question) {
       // if the question does not exist, throw an error
       throw new QuestionError(
-        `${req.body.id} does not exist`,
+        `question with id: ${req.params.id} does not exist`,
         QUESTION_NOT_FOUND_ERROR_CODE
       );
     }
