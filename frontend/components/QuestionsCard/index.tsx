@@ -4,7 +4,7 @@ import { QuestionTableProvider } from "./QuestionsTableContext";
 
 const QuestionsCard = () => {
   return (
-    <Card classNames="flex-shrink-0 flex-grow">
+    <Card className="flex-shrink-0 flex-grow">
       <QuestionTableProvider>
         <QuestionsTable />
       </QuestionTableProvider>

@@ -1,4 +1,5 @@
 import { QuestionBase, QuestionComplexity } from "@/api/questions/types";
+import ComplexityChip from "@/components/ComplexityChip";
 import DeleteButton from "@/components/QuestionsCard/QuestionsTable/DeleteButton";
 import { getUpdateQuestionPath } from "@/routes";
 import { Button, Chip } from "@nextui-org/react";
@@ -63,16 +64,9 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
   [ColumnKey.DIFFCULTY]: {
     name: "Difficulty",
     uid: ColumnKey.DIFFCULTY,
-    render: (question: QuestionBase) => {
-      switch (question.complexity) {
-        case QuestionComplexity.EASY:
-          return <span className="text-green-500">Easy</span>;
-        case QuestionComplexity.MEDIUM:
-          return <span className="text-amber-500">Medium</span>;
-        case QuestionComplexity.HARD:
-          return <span className="text-red-600">Hard</span>;
-      }
-    },
+    render: (question: QuestionBase) => (
+      <ComplexityChip complexity={question?.complexity} />
+    ),
     align: "start",
   },
   [ColumnKey.ACTION]: {
