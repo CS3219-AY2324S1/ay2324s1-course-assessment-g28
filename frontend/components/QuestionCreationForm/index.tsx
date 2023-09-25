@@ -1,7 +1,10 @@
+import { HttpStatus } from "@/api/constants";
+import { RequestError } from "@/api/errors";
 import { patchQuestion, postQuestion } from "@/api/questions";
 import {
   COMPLEXITY_OPTIONS,
   QuestionComplexityToNameMap,
+  getErrorMessageFromErrorCode,
 } from "@/api/questions/constants";
 import {
   Question,
@@ -47,6 +50,7 @@ export default function QuestionCreationForm({
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isEdited, setIsEdited] = useState<boolean>(false);
   const onSubmit: SubmitHandler<QuestionCreation> = async (data) => {
     setIsLoading(true);
     try {
@@ -60,8 +64,16 @@ export default function QuestionCreationForm({
         toast.success("Question successfully added.");
       }
     } catch (e) {
-      toast.error("Something went wrong. Please try again.");
-      console.log(e);
+      if (
+        !originalQuestion &&
+        e instanceof RequestError &&
+        e.response.status === HttpStatus.INTERNAL_SERVER_ERROR
+      ) {
+        const errorInfo = await e.response.json();
+        toast.error(getErrorMessageFromErrorCode(errorInfo.error));
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -79,6 +91,7 @@ export default function QuestionCreationForm({
             {...register("title")}
             className="text-black"
             errorMessage={errors.title?.message}
+            onValueChange={() => setIsEdited(true)}
           />
         </div>
         <div>
@@ -104,6 +117,7 @@ export default function QuestionCreationForm({
                   selectedKeys={[value]}
                   onAction={(key) => {
                     onChange(key);
+                    setIsEdited(true);
                   }}
                 >
                   {COMPLEXITY_OPTIONS.map((status) => (
@@ -128,6 +142,7 @@ export default function QuestionCreationForm({
           {...register("description")}
           placeholder="Enter question description"
           errorMessage={errors.description?.message}
+          onValueChange={() => setIsEdited(true)}
         ></Textarea>
       </div>
 
@@ -140,15 +155,20 @@ export default function QuestionCreationForm({
           render={({ field: { onChange, value } }) => (
             <CategoryAdder
               categories={value}
-              onChange={onChange}
+              onChange={(cats) => {
+                onChange(cats);
+                setIsEdited(true);
+              }}
             ></CategoryAdder>
           )}
         />
       </div>
 
-      <Button isLoading={isLoading} type="submit">
-        Submit
-      </Button>
+      {(!originalQuestion || isEdited) && (
+        <Button isLoading={isLoading} type="submit" color="secondary">
+          {originalQuestion ? "Save changes" : "Submit"}
+        </Button>
+      )}
     </form>
   );
 }

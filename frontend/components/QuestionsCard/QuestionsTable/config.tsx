@@ -1,10 +1,12 @@
 import { QuestionBase, QuestionComplexity } from "@/api/questions/types";
+import DeleteButton from "@/components/QuestionsCard/QuestionsTable/DeleteButton";
 import { getUpdateQuestionPath } from "@/routes";
-import { Link as NextUILink } from "@nextui-org/react";
+import { Button, Chip } from "@nextui-org/react";
+import { Pencil } from "lucide-react";
 import Link from "next/link";
 
-
 export enum ColumnKey {
+  ID = "id",
   TITLE = "title",
   CATEGORY = "category",
   DIFFCULTY = "complexity",
@@ -20,6 +22,7 @@ interface ColumnConfig {
 }
 
 export const COLUMNS = [
+  ColumnKey.ID,
   ColumnKey.TITLE,
   ColumnKey.CATEGORY,
   ColumnKey.DIFFCULTY,
@@ -28,6 +31,10 @@ export const COLUMNS = [
 ];
 
 export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
+  [ColumnKey.ID]: {
+    name: "ID",
+    uid: ColumnKey.ID,
+  },
   [ColumnKey.TITLE]: {
     name: "Title",
     uid: ColumnKey.TITLE,
@@ -35,6 +42,12 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
   [ColumnKey.CATEGORY]: {
     name: "Categories",
     uid: ColumnKey.CATEGORY,
+    render: (question: QuestionBase) =>
+      question.category.map((cat) => (
+        <Chip variant="flat" key={cat}>
+          {cat}
+        </Chip>
+      )),
   },
   // [ColumnKey.ATTEMPTS]: {
   //   name: "Attempts",
@@ -44,30 +57,36 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
     name: "Difficulty",
     uid: ColumnKey.DIFFCULTY,
     render: (question: QuestionBase) => {
-      switch(question.complexity) {
+      switch (question.complexity) {
         case QuestionComplexity.EASY:
-          return <span className="text-green-500">
-            Easy
-          </span>
+          return <span className="text-green-500">Easy</span>;
         case QuestionComplexity.MEDIUM:
-          return <span className="text-amber-500">
-            Medium
-          </span>
+          return <span className="text-amber-500">Medium</span>;
         case QuestionComplexity.HARD:
-          return <span className="text-red-600">
-            Hard
-          </span>
+          return <span className="text-red-600">Hard</span>;
       }
     },
   },
   [ColumnKey.ACTION]: {
     name: "ACTIONS",
     uid: ColumnKey.ACTION,
-    render: (question: QuestionBase) => (
-      <Link href={getUpdateQuestionPath(question.id)} passHref legacyBehavior>
-        <NextUILink href={getUpdateQuestionPath(question.id)}>Edit</NextUILink>
-      </Link>
-    ),
+    render: (question: QuestionBase) => {
+      return (
+        <div className="flex flex-row gap-x-2">
+          <Link href={getUpdateQuestionPath(question.id)} passHref>
+            <Button
+              size="sm"
+              variant="flat"
+              endContent={<Pencil size="16" />}
+              title="Edit Question"
+            >
+              Edit
+            </Button>
+          </Link>
+          <DeleteButton questionId={question.id} />
+        </div>
+      );
+    },
   },
 };
 
@@ -76,24 +95,3 @@ export const DEFAULT_COMPLEXITY_SELECTION = QuestionComplexity.EASY;
 export const PAGE_SIZE_OPTIONS = [{ name: 10 }, { name: 20 }, { name: 50 }];
 
 export const DEFAULT_PAGE_SIZE_SELECTION = 10;
-
-export const MOCK_DATA: Array<QuestionBase> = [
-  {
-    id: 0,
-    title: "Two Sum",
-    category: [],
-    complexity: QuestionComplexity.EASY,
-  },
-  {
-    id: 1,
-    title: "Two Sum II",
-    category: [],
-    complexity: QuestionComplexity.MEDIUM,
-  },
-  {
-    id: 2,
-    title: "Two Sum III",
-    category: [],
-    complexity: QuestionComplexity.HARD,
-  },
-];

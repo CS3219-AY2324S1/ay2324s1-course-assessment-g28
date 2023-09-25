@@ -26,7 +26,7 @@ export async function forwardRequestAndGetResponse(
       });
     }
     if (!backendResponse.ok) {
-      throw new Error(`Error in response from backend: ${backendResponse}`);
+      console.log((await backendResponse.json()));
     }
     if (backendResponse.status === HttpStatus.OK_NO_CONTENT) {
       res.status(backendResponse.status).send("");

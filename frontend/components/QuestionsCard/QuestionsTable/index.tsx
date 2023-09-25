@@ -33,11 +33,7 @@ import {
   QuestionComplexityToNameMap,
 } from "@/api/questions/constants";
 import { useRouter } from "next/router";
-import {
-  CREATE_QUESTION,
-  getQuestionPath,
-  getUpdateQuestionPath,
-} from "@/routes";
+import { CREATE_QUESTION, getQuestionPath } from "@/routes";
 import { QUESTION_API } from "@/api/routes";
 
 const QuestionsTable = () => {
@@ -55,8 +51,11 @@ const QuestionsTable = () => {
     keyword: filterValue,
   };
 
-  const { data, error, isLoading } = useSWR({ QUESTION_API, options }, () =>
-    getQuestions(options),
+  //TODO: check that this refresh interval is fine
+  const { data, error, isLoading } = useSWR(
+    { QUESTION_API, options },
+    () => getQuestions(options),
+    { refreshInterval: 1000 },
   );
   const { content: questions } = data ?? {};
 
@@ -147,8 +146,7 @@ const QuestionsTable = () => {
           showShadow
           color="secondary"
           page={page}
-          // todo: add total to api response
-          total={10}
+          total={data? Math.ceil(data.total / pageSize) : 0}
           onChange={setPage}
           disableAnimation
         />
@@ -173,16 +171,13 @@ const QuestionsTable = () => {
         </Dropdown>
       </div>
     );
-  }, [page, pageSize]);
+  }, [page, pageSize, data]);
 
-  if (isLoading) {
-    return (
-      <div className="w-full grid place-content-center">
-        <Spinner></Spinner>
-      </div>
-    );
+  // TODO: put in proper error display
+  if (error) {
+    console.log(error)
+    return <div>ERROR</div>
   }
-
   return (
     <Table
       aria-label="Questions table"
@@ -194,6 +189,7 @@ const QuestionsTable = () => {
       }}
       topContent={topContent}
       topContentPlacement="outside"
+      onRowAction={(key) => router.push(getQuestionPath(Number(key)))}
     >
       <TableHeader columns={COLUMNS.map((col) => COLUMN_CONFIGS?.[col])}>
         {(column) => (
@@ -206,15 +202,19 @@ const QuestionsTable = () => {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"No questions found"} items={questions ?? []}>
+      <TableBody
+        emptyContent={"No questions found"}
+        items={questions ?? []}
+        loadingContent={<Spinner />}
+        loadingState={isLoading ? "loading" : "idle"}
+      >
         {(question) => (
           <TableRow
-            key={question.title}
-            className="cursor-pointer"
-            onClick={() => router.push(getQuestionPath(question.id))}
+            key={question.id}
+            className="cursor-pointer hover:bg-gray-200"
           >
             {(columnKey: string | number) => (
-              <TableCell>
+              <TableCell key={question.id.toString() + columnKey}>
                 {COLUMN_CONFIGS?.[columnKey as ColumnKey]?.render?.(question) ??
                   question?.[columnKey as keyof QuestionBase]}
               </TableCell>
