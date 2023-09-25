@@ -1,16 +1,38 @@
 import { Request, Response } from "express";
+import {
+  QuestionError,
+  QUESTION_NOT_FOUND_ERROR_CODE,
+  QUESTION_TITLE_EXISTS_ERROR_CODE,
+  UNKNOWN_ERROR_CODE,
+} from "./errors/errors";
 import { Question } from "./models/question";
 
 // Create Question Business Logic
 export const createQuestion = async (req: Request, res: Response) => {
   try {
+    // check if the question with this title already exists, if it does, throw an error
+    const count = await Question.countDocuments({ title: req.body.title });
+
+    if (count !== 0) {
+      throw new QuestionError(
+        `${req.body.title} alreaday exists as a question`,
+        QUESTION_TITLE_EXISTS_ERROR_CODE
+      );
+    }
+
     const question = new Question(req.body);
     await question.save();
     res.status(201).json(`${question.title} successfully added!`);
   } catch (error) {
-    res.status(500).json({
-      error: `Could not create question due to ${error}, request: ${req.body.toString()}`,
-    });
+    if (error instanceof QuestionError) {
+      res
+        .status(500)
+        .json({ errorCode: error.errorCode, message: error.message });
+    } else if (error instanceof Error) {
+      res
+        .status(500)
+        .json({ errorCode: UNKNOWN_ERROR_CODE, message: error.message });
+    }
   }
 };
 
@@ -20,13 +42,23 @@ export const getQuestionById = async (req: Request, res: Response) => {
     const questionId = req.params.id;
     const question = await Question.findOne({ id: questionId });
     if (!question) {
-      res.status(404).json(`${questionId} not found!`);
+      // if the question does not exist, throw an error
+      throw new QuestionError(
+        `${req.body.id} does not exist`,
+        QUESTION_NOT_FOUND_ERROR_CODE
+      );
     }
     res.status(200).json(question);
   } catch (error) {
-    res.status(500).json({
-      error: `Could not get question by id due to ${error}, request: ${req.body.toString()}`,
-    });
+    if (error instanceof QuestionError) {
+      res
+        .status(500)
+        .json({ errorCode: error.errorCode, message: error.message });
+    } else if (error instanceof Error) {
+      res
+        .status(500)
+        .json({ errorCode: UNKNOWN_ERROR_CODE, message: error.message });
+    }
   }
 };
 
@@ -55,9 +87,15 @@ export const getQuestions = async (req: Request, res: Response) => {
 
     res.status(200).json({ content: questions, total: total });
   } catch (error) {
-    res.status(500).json({
-      error: `Could not get question due to error ${error}, request: ${req.body.toString()}`,
-    });
+    if (error instanceof QuestionError) {
+      res
+        .status(500)
+        .json({ errorCode: error.errorCode, message: error.message });
+    } else if (error instanceof Error) {
+      res
+        .status(500)
+        .json({ errorCode: UNKNOWN_ERROR_CODE, message: error.message });
+    }
   }
 };
 
@@ -69,11 +107,18 @@ export const updateQuestionById = async (req: Request, res: Response) => {
       { id: questionId },
       req.body
     );
+
     res.status(204).json(`Successfully updated question ${questionId}!`);
   } catch (error) {
-    res.status(500).json({
-      error: `Could not update question due to ${error}, request: ${req.body.toString()}`,
-    });
+    if (error instanceof QuestionError) {
+      res
+        .status(500)
+        .json({ errorCode: error.errorCode, message: error.message });
+    } else if (error instanceof Error) {
+      res
+        .status(500)
+        .json({ errorCode: UNKNOWN_ERROR_CODE, message: error.message });
+    }
   }
 };
 
@@ -84,8 +129,14 @@ export const deleteQuestionById = async (req: Request, res: Response) => {
     await Question.findOneAndDelete({ id: questionId });
     res.status(204).json(`Successfully deleted question ${questionId}!`);
   } catch (error) {
-    res.status(500).json({
-      error: `Could not delete question due to error ${error}, request: ${req.body.toString()}`,
-    });
+    if (error instanceof QuestionError) {
+      res
+        .status(500)
+        .json({ errorCode: error.errorCode, message: error.message });
+    } else if (error instanceof Error) {
+      res
+        .status(500)
+        .json({ errorCode: UNKNOWN_ERROR_CODE, message: error.message });
+    }
   }
 };
