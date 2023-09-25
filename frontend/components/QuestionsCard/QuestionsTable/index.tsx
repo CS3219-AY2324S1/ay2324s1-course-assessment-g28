@@ -146,8 +146,7 @@ const QuestionsTable = () => {
           showShadow
           color="secondary"
           page={page}
-          // todo: add total to api response
-          total={10}
+          total={data? Math.ceil(data.total / pageSize) : 0}
           onChange={setPage}
           disableAnimation
         />
@@ -172,7 +171,7 @@ const QuestionsTable = () => {
         </Dropdown>
       </div>
     );
-  }, [page, pageSize]);
+  }, [page, pageSize, data]);
 
   // TODO: put in proper error display
   if (error) {
