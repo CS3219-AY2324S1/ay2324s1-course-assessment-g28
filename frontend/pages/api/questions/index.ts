@@ -19,11 +19,10 @@ export default async function handler(
             complexity: 0,
           },
         ],
-        size: 10,
-        offset: 0,
+        total: 1
       });
     } else if (req.method === HttpMethod.POST) {
-      res.status(HttpStatus.RESOURCE_CREATED);
+      res.status(HttpStatus.RESOURCE_CREATED)
     }
     return;
   }

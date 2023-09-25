@@ -1,7 +1,10 @@
+import { HttpStatus } from "@/api/constants";
+import { RequestError } from "@/api/errors";
 import { patchQuestion, postQuestion } from "@/api/questions";
 import {
   COMPLEXITY_OPTIONS,
   QuestionComplexityToNameMap,
+  getErrorMessageFromErrorCode,
 } from "@/api/questions/constants";
 import {
   Question,
@@ -61,8 +64,16 @@ export default function QuestionCreationForm({
         toast.success("Question successfully added.");
       }
     } catch (e) {
-      toast.error("Something went wrong. Please try again.");
-      console.log(e);
+      if (
+        !originalQuestion &&
+        e instanceof RequestError &&
+        e.response.status === HttpStatus.INTERNAL_SERVER_ERROR
+      ) {
+        const errorInfo = await e.response.json();
+        toast.error(getErrorMessageFromErrorCode(errorInfo.error));
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }

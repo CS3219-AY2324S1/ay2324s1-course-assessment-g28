@@ -11,3 +11,12 @@ export const COMPLEXITY_OPTIONS = Object.keys(QuestionComplexityToNameMap).map(
     name: QuestionComplexityToNameMap[parseInt(key) as QuestionComplexity],
   }),
 );
+
+export function getErrorMessageFromErrorCode(errorCode: number) {
+  switch (errorCode) {
+    case 1:
+      return "A question with the given title already exists.";
+    default: 
+      return "Something went wrong. Please try again.";
+  }
+}

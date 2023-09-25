@@ -176,6 +176,7 @@ const QuestionsTable = () => {
 
   // TODO: put in proper error display
   if (error) {
+    console.log(error)
     return <div>ERROR</div>
   }
   return (
