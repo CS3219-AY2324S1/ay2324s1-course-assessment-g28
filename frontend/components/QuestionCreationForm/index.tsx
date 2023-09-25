@@ -14,6 +14,7 @@ import {
 } from "@/api/questions/types";
 import { ChevronDownIcon } from "@/assets/icons/ChevronDown";
 import CategoryAdder from "@/components/QuestionCreationForm/CategoryAdder";
+import { HOME } from "@/routes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
@@ -24,6 +25,7 @@ import {
   Input,
   Textarea,
 } from "@nextui-org/react";
+import router from "next/router";
 import { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -38,7 +40,6 @@ export default function QuestionCreationForm({
   const {
     register,
     handleSubmit,
-    watch,
     control,
     formState: { errors },
   } = useForm<QuestionCreation>({
@@ -169,6 +170,14 @@ export default function QuestionCreationForm({
           {originalQuestion ? "Save changes" : "Submit"}
         </Button>
       )}
+      <Button
+        color="danger"
+        variant="flat"
+        onPress={() => router.push(HOME)}
+        title="Go to question creation page"
+      >
+        Cancel
+      </Button>
     </form>
   );
 }
