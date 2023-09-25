@@ -47,6 +47,7 @@ export default function QuestionCreationForm({
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isEdited, setIsEdited] = useState<boolean>(false);
   const onSubmit: SubmitHandler<QuestionCreation> = async (data) => {
     setIsLoading(true);
     try {
@@ -79,6 +80,7 @@ export default function QuestionCreationForm({
             {...register("title")}
             className="text-black"
             errorMessage={errors.title?.message}
+            onValueChange={() => setIsEdited(true)}
           />
         </div>
         <div>
@@ -104,6 +106,7 @@ export default function QuestionCreationForm({
                   selectedKeys={[value]}
                   onAction={(key) => {
                     onChange(key);
+                    setIsEdited(true);
                   }}
                 >
                   {COMPLEXITY_OPTIONS.map((status) => (
@@ -128,6 +131,7 @@ export default function QuestionCreationForm({
           {...register("description")}
           placeholder="Enter question description"
           errorMessage={errors.description?.message}
+          onValueChange={() => setIsEdited(true)}
         ></Textarea>
       </div>
 
@@ -140,15 +144,20 @@ export default function QuestionCreationForm({
           render={({ field: { onChange, value } }) => (
             <CategoryAdder
               categories={value}
-              onChange={onChange}
+              onChange={(cats) => {
+                onChange(cats);
+                setIsEdited(true);
+              }}
             ></CategoryAdder>
           )}
         />
       </div>
 
-      <Button isLoading={isLoading} type="submit">
-        Submit
-      </Button>
+      {(!originalQuestion || isEdited) && (
+        <Button isLoading={isLoading} type="submit" color="secondary">
+          {originalQuestion ? "Save changes" : "Submit"}
+        </Button>
+      )}
     </form>
   );
 }

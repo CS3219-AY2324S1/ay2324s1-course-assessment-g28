@@ -1,6 +1,8 @@
 import { QuestionBase, QuestionComplexity } from "@/api/questions/types";
+import DeleteButton from "@/components/QuestionsCard/QuestionsTable/DeleteButton";
 import { getUpdateQuestionPath } from "@/routes";
-import { Chip, Link as NextUILink } from "@nextui-org/react";
+import { Button, Chip } from "@nextui-org/react";
+import { Pencil } from "lucide-react";
 import Link from "next/link";
 
 export enum ColumnKey {
@@ -31,7 +33,7 @@ export const COLUMNS = [
 export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
   [ColumnKey.ID]: {
     name: "ID",
-    uid: ColumnKey.ID
+    uid: ColumnKey.ID,
   },
   [ColumnKey.TITLE]: {
     name: "Title",
@@ -41,7 +43,11 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
     name: "Categories",
     uid: ColumnKey.CATEGORY,
     render: (question: QuestionBase) =>
-      question.category.map((cat) => <Chip variant="flat">{cat}</Chip>),
+      question.category.map((cat) => (
+        <Chip variant="flat" key={cat}>
+          {cat}
+        </Chip>
+      )),
   },
   // [ColumnKey.ATTEMPTS]: {
   //   name: "Attempts",
@@ -64,11 +70,23 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
   [ColumnKey.ACTION]: {
     name: "ACTIONS",
     uid: ColumnKey.ACTION,
-    render: (question: QuestionBase) => (
-      <Link href={getUpdateQuestionPath(question.id)} passHref legacyBehavior>
-        <NextUILink href={getUpdateQuestionPath(question.id)}>Edit</NextUILink>
-      </Link>
-    ),
+    render: (question: QuestionBase) => {
+      return (
+        <div className="flex flex-row gap-x-2">
+          <Link href={getUpdateQuestionPath(question.id)} passHref>
+            <Button
+              size="sm"
+              variant="flat"
+              endContent={<Pencil size="16" />}
+              title="Edit Question"
+            >
+              Edit
+            </Button>
+          </Link>
+          <DeleteButton questionId={question.id} />
+        </div>
+      );
+    },
   },
 };
 

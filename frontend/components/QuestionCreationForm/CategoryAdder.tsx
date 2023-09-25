@@ -1,6 +1,6 @@
 import { Button, Chip, Input } from "@nextui-org/react";
 import { Plus } from "lucide-react";
-import { useCallback, useState } from "react";
+import { KeyboardEvent, useCallback, useState } from "react";
 
 interface CategoryAdderProps {
   categories: string[];
@@ -11,6 +11,21 @@ export default function CategoryAdder({
   onChange,
 }: CategoryAdderProps) {
   const [newCategory, setNewCategory] = useState<string>();
+  const addCategory = useCallback(() => {
+    if (newCategory) {
+      const s = new Set([...categories, newCategory]);
+      onChange(Array.from(s));
+      setNewCategory("");
+    } 
+  }, [newCategory, categories, onChange]);
+
+  const addCategoryEnterKeyCallback = useCallback((e: KeyboardEvent) => {
+    if (e.key === "Enter") {
+      addCategory();
+      e.preventDefault()
+    }
+  }, [addCategory])
+
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex flex-row gap-x-2">
@@ -20,18 +35,13 @@ export default function CategoryAdder({
           classNames={{
             input: "text-black",
           }}
+          onKeyDown={addCategoryEnterKeyCallback}
           size="sm"
         />
         <Button
           isIconOnly
           title="Add Category"
-          onClick={() => {
-            if (newCategory) {
-              const s = new Set([...categories, newCategory]);
-              onChange(Array.from(s));
-              setNewCategory("");
-            }
-          }}
+          onPress={addCategory}
         >
           <Plus />
         </Button>
