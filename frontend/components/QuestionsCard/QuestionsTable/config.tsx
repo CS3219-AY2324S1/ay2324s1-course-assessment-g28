@@ -19,6 +19,7 @@ interface ColumnConfig {
   uid: ColumnKey;
   sortable?: boolean;
   render?: (rowData: QuestionBase) => React.ReactNode;
+  align: "start" | "center" | "end";
 }
 
 export const COLUMNS = [
@@ -34,20 +35,26 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
   [ColumnKey.ID]: {
     name: "ID",
     uid: ColumnKey.ID,
+    align: "start",
   },
   [ColumnKey.TITLE]: {
     name: "Title",
     uid: ColumnKey.TITLE,
+    align: "start",
   },
   [ColumnKey.CATEGORY]: {
     name: "Categories",
     uid: ColumnKey.CATEGORY,
-    render: (question: QuestionBase) =>
-      question.category.map((cat) => (
-        <Chip variant="flat" key={cat}>
-          {cat}
-        </Chip>
-      )),
+    render: (question: QuestionBase) => (
+      <div className="flex gap-2">
+        {question.category.map((cat) => (
+          <Chip variant="flat" key={cat}>
+            {cat}
+          </Chip>
+        ))}
+      </div>
+    ),
+    align: "start",
   },
   // [ColumnKey.ATTEMPTS]: {
   //   name: "Attempts",
@@ -66,6 +73,7 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
           return <span className="text-red-600">Hard</span>;
       }
     },
+    align: "start",
   },
   [ColumnKey.ACTION]: {
     name: "ACTIONS",
@@ -87,6 +95,7 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
         </div>
       );
     },
+    align: "center",
   },
 };
 

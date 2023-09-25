@@ -1,10 +1,13 @@
 import Card from "@/components/Card";
 import QuestionsTable from "./QuestionsTable";
+import { QuestionTableProvider } from "./QuestionsTableContext";
 
 const QuestionsCard = () => {
   return (
     <Card classNames="flex-shrink-0 flex-grow">
-      <QuestionsTable />
+      <QuestionTableProvider>
+        <QuestionsTable />
+      </QuestionTableProvider>
     </Card>
   );
 };

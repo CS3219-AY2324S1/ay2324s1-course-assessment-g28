@@ -23,7 +23,7 @@ export default function DeleteButton({ questionId }: DeleteButtonProps) {
     setIsLoading(true);
     try {
       await deleteQuestion(questionId);
-      onClose()
+      onClose();
       toast.success("Question deleted.");
     } catch {
       toast.error("Something went wrong. Please try again.");
