@@ -24,7 +24,7 @@ const ComplexityChip = (props: ComplexityChipProps) => {
   return (
     <Chip
       color={color}
-      className={cx("text-brand-white font-bold", className)}
+      className={cx("text-white font-bold", className)}
       style={style}
     >
       {text}
