@@ -3,7 +3,7 @@ import { RequestError } from "@/api/errors";
 import { patchQuestion, postQuestion } from "@/api/questions";
 import {
   COMPLEXITY_OPTIONS,
-  QuestionComplexityToNameMap,
+  QuestionComplexityConfigsMap,
   getErrorMessageFromErrorCode,
 } from "@/api/questions/constants";
 import {
@@ -109,7 +109,7 @@ export default function QuestionCreationForm({
                     variant="flat"
                     title="Difficulty"
                   >
-                    {QuestionComplexityToNameMap[value]}
+                    {QuestionComplexityConfigsMap[value]}
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu

@@ -11,7 +11,7 @@ import { QuestionComplexity } from "@/api/questions/types";
 import { PlusSquare, X } from "lucide-react";
 import {
   COMPLEXITY_OPTIONS,
-  QuestionComplexityToNameMap,
+  QuestionComplexityConfigsMap,
 } from "@/api/questions/constants";
 import { useRouter } from "next/router";
 import { CREATE_QUESTION } from "@/routes";
@@ -61,7 +61,7 @@ const TableSelectors = () => {
               title="Difficulty"
             >
               {selectedComplexity
-                ? QuestionComplexityToNameMap[selectedComplexity]
+                ? QuestionComplexityConfigsMap[selectedComplexity].name
                 : "Select Difficulty"}
             </Button>
           </DropdownTrigger>

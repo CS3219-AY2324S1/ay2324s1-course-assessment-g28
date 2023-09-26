@@ -1,16 +1,8 @@
 import { QuestionComplexity } from "@/api/questions/types";
-import { Chip, ChipProps } from "@nextui-org/react";
+import { Chip } from "@nextui-org/react";
 import { CSSProperties } from "react";
 import cx from "classnames";
-
-const complexityConfigs: Record<
-  QuestionComplexity,
-  { color: ChipProps["color"]; text: "Easy" | "Medium" | "Hard" }
-> = {
-  [QuestionComplexity.EASY]: { color: "success", text: "Easy" },
-  [QuestionComplexity.MEDIUM]: { color: "warning", text: "Medium" },
-  [QuestionComplexity.HARD]: { color: "danger", text: "Hard" },
-};
+import { QuestionComplexityConfigsMap } from "@/api/questions/constants";
 
 type ComplexityChipProps = {
   complexity: QuestionComplexity;
@@ -20,14 +12,14 @@ type ComplexityChipProps = {
 
 const ComplexityChip = (props: ComplexityChipProps) => {
   const { complexity, className, style } = props ?? {};
-  const { color, text } = complexityConfigs?.[complexity] ?? {};
+  const { color, name } = QuestionComplexityConfigsMap?.[complexity] ?? {};
   return (
     <Chip
       color={color}
       className={cx("text-white font-bold", className)}
       style={style}
     >
-      {text}
+      {name}
     </Chip>
   );
 };
