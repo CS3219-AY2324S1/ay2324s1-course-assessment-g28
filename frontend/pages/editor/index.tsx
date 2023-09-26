@@ -26,7 +26,7 @@ export default function EditorPage() {
         <Panel>
           <PanelGroup direction="vertical">
             <Panel defaultSize={60}>
-              <CodeWindow></CodeWindow>
+              <CodeWindow readOnly={false}></CodeWindow>
             </Panel>
             <PanelResizeHandle children={ResizeHandleHorizontal()} />
             <Panel>
