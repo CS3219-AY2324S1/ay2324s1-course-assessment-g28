@@ -12,3 +12,8 @@ ws.on("message", function message(data) {
   console.log(JSON.parse(data.toString()));
   // console.log('received: %s', JSON.parse(data));
 });
+
+// setTimeout(() => {
+//   ws.close();
+//   ws.close();
+// }, 1000);

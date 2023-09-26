@@ -4,6 +4,7 @@ import PairingForm from "./PairingForm";
 import { SubmitHandler, UseFormHandleSubmit } from "react-hook-form";
 import { PairingRequest } from "@/api/pairing/types";
 import toast from "react-hot-toast";
+import { Button } from "@nextui-org/react";
 
 function get_pairing_service_uri(pairingRequest: PairingRequest) {
   return `ws://localhost:4000/pairing?user=${pairingRequest.userId}`;
@@ -11,35 +12,54 @@ function get_pairing_service_uri(pairingRequest: PairingRequest) {
 
 export const PairingCard = () => {
   const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [pairingRequest, setPairingRequest] = useState<PairingRequest | null>(
-    null,
-  );
   const [pairingWebsocket, setPairingWebsocket] = useState<WebSocket | null>(
     null,
   );
+  const [editorUri, setEditorUri] = useState<string | null>(null);
 
   const onSubmit: SubmitHandler<PairingRequest> = async (data) => {
     setIsSearching(true);
-    setPairingRequest(data);
     toast.success("Matchmaking request sent.");
     searchForMatch(data);
   };
 
+  const onCancel = async () => {
+    pairingWebsocket?.close();
+    toast.success("Matchmaking cancelled.");
+    setIsSearching(false);
+  };
+
   const searchForMatch = async (pairingRequest: PairingRequest) => {
     const ws = new WebSocket(get_pairing_service_uri(pairingRequest));
-    ws.onmessage = (event) => {
-      console.log(JSON.parse(event.data));
+    ws.onmessage = (msg) => {
+      try {
+        let parsed = JSON.parse(msg.data);
+        if (parsed.data.url) {
+          setEditorUri(parsed.data.url);
+          setIsSearching(false);
+          ws.close();
+        } else {
+          console.log(parsed);
+        }
+      } catch (e) {
+        console.error(e);
+        toast.error("Internal error: Failed to parse matchmaking response.");
+      }
     };
     setPairingWebsocket(ws);
-    setTimeout(() => {
-      console.log("2 seconds elapsed");
-    }, 2000);
   };
 
   return (
     <Card classNames="flex-shrink-0 flex-grow">
-      {isSearching ? (
-        <div>Searching for match...</div>
+      {editorUri ? (
+        <div>Found a match. Editor URI: {editorUri}</div>
+      ) : isSearching ? (
+        <div>
+          <div>Searching for match...</div>
+          <Button onClick={onCancel} color="secondary">
+            Cancel
+          </Button>
+        </div>
       ) : (
         <PairingForm onSubmit={onSubmit} />
       )}

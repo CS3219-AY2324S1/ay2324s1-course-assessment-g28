@@ -39,7 +39,20 @@ function getWsCallback(rmq_conn: amqp.Connection) {
     await channel.consume(return_queue.queue, async function (msg) {
       console.log(JSON.parse(msg!.content.toString()));
       if (msg?.properties.correlationId == correlationId) {
-        ws.send(msg!.content);
+        try {
+          let content = JSON.parse(msg.content.toString());
+          ws.send(
+            JSON.stringify({
+              status: 200,
+              data: {
+                url: content.url,
+              },
+            })
+          );
+        } catch (error) {
+          console.log(`Failed to parse ${msg}. Closing websocket`);
+          ws.close();
+        }
       }
       ws.off("close", cancelPairing);
       ws.close();
