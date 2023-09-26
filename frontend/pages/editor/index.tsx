@@ -3,7 +3,6 @@ import ConsoleWindow from "@/components/Editor/ConsoleWIndow";
 import MessageWindow from "@/components/Editor/MessageWindow";
 import QuestionWindow from "@/components/Editor/QuestionWindow";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import styles from "./editor.module.css";
 import ResizeHandleHorizontal from "@/components/Editor/ResizeHandleHorizontal";
 import ResizeHandleVertical from "@/components/Editor/ResizeHandleVertical";
 import { Button, Dropdown, DropdownItem } from "@nextui-org/react";
@@ -11,7 +10,7 @@ import { Button, Dropdown, DropdownItem } from "@nextui-org/react";
 export default function EditorPage() {
   return (
     <div className="flex flex-col h-full w-full flex-grow border-8 rounded-xl border-gray-300 border-solid bg-gray-300">
-      <PanelGroup direction="horizontal" className={`${styles["editor-panel"]}`}>
+      <PanelGroup direction="horizontal" className="grow">
         <Panel defaultSize={40}>
           <PanelGroup direction="vertical">
             <Panel defaultSize={60}>
