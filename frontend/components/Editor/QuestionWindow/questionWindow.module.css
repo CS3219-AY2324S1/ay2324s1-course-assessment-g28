@@ -1,27 +1,16 @@
-.editor-page {
-    min-width: 100%; 
-    min-height: 100%;
-    flex-grow: 1;
+.question {
+    width: 100%;
+    height: 100%;
     display: flex;
-}
-
-.editor-panel {
-    max-width: 100%;
-    max-height: 100%;
-    flex-grow: 1;
+    flex-direction: column;
 }
 
 .header {
     width: 100%;
-    display: flex;
-    flex-direction: row;
+    height: 3em;
 }
 
-.question-header {
-    width: 100%;
-}
-
-.question-header-text {
+.header-text {
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 1; /* number of lines to show */
@@ -29,9 +18,13 @@
     -webkit-box-orient: vertical;
 }
 
-.code-header {
+.body {
     width: 100%;
     display: flex;
     flex-direction: row;
+}
+
+.body-text {
+
 }
 

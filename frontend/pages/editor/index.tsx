@@ -10,19 +10,11 @@ import { Button, Dropdown, DropdownItem } from "@nextui-org/react";
 
 export default function EditorPage() {
   return (
-    <div className={`flex flex-col ${styles["editor-page"]}`}>
+    <div className="flex flex-col h-full w-full flex-grow border-8 rounded-xl border-gray-300 border-solid bg-gray-300">
       <PanelGroup direction="horizontal" className={`${styles["editor-panel"]}`}>
         <Panel defaultSize={40}>
           <PanelGroup direction="vertical">
-            <Panel defaultSize={10}>
-              <div className={styles["question-header"]}>
-                <div className={styles["question-header-text"]}>
-                  A2: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                  eiusmod tempor incididunt ut
-                </div>
-              </div>
-            </Panel>
-            <Panel defaultSize={50}>
+            <Panel defaultSize={60}>
               <QuestionWindow></QuestionWindow>
             </Panel>
             <PanelResizeHandle children={ResizeHandleHorizontal()}/>
@@ -34,29 +26,7 @@ export default function EditorPage() {
         <PanelResizeHandle children={ResizeHandleVertical()} />
         <Panel>
           <PanelGroup direction="vertical">
-            <Panel defaultSize={10} maxSize={10}>
-              <div className={styles["code-header"]}>
-                <div className={styles["code-buttons"]}>
-                  <Dropdown>
-                    <DropdownItem defaultChecked>Java</DropdownItem>
-                    <DropdownItem>JavaScript</DropdownItem>
-                    <DropdownItem>Python</DropdownItem>
-                  </Dropdown>
-                  <Button color="success">
-                    Run Code
-                  </Button>
-                </div>
-                <div className={styles["navigation-buttons"]}>
-                  <Button color="warning">
-                    Next Question
-                  </Button>
-                  <Button color="default">
-                    Exit
-                  </Button>
-                </div>
-              </div>
-            </Panel>
-            <Panel defaultSize={50}>
+            <Panel defaultSize={60}>
               <CodeWindow readOnly={false}></CodeWindow>
             </Panel>
             <PanelResizeHandle children={ResizeHandleHorizontal()} />
