@@ -10,3 +10,21 @@
     max-height: 100%;
     flex-grow: 1;
 }
+
+.header {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.question-header {
+    width: 100%;
+    
+}
+
+.code-header {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
