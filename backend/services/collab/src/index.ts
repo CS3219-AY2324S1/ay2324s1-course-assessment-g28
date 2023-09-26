@@ -86,9 +86,14 @@ server.listen(port, () => {
 const clients = {};
 
 // A new client connection request received
-wsServer.on('connection', function(connection) {
+wsServer.on('connection', function(connection: WebSocket) {
   console.log(`Recieved a new connection.`);
 
   // Store the new connection and handle messages
   console.log(`${connection} connected.`);
+
+  connection.onmessage = (message: any) => {
+    const data = JSON.parse(message.data);
+    console.log(data);
+  }
 });

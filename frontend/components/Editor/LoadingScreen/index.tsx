@@ -5,7 +5,6 @@ interface LoadingScreenProps {
 }
 
 export default function LoadingScreen(props: LoadingScreenProps) {
-  console.log(props.displayText);
   return (
     <div className="absolute h-full w-full bg-white flex flex-col z-50 items-center justify-center">
       <div className="flex flex-col items-center gap-5">

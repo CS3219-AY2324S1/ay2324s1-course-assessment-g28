@@ -25,8 +25,9 @@ export default function EditorPage() {
   useEffect(() => {
     console.log("Just mounted editor");
     const wsUrl = queryParams.get("wsUrl") ?? "";
+    console.log("wsUrl is ", wsUrl)
     setWebsocketUrl(wsUrl);
-  }, []);
+  }, [queryParams]);
 
   /**
    * Called when first mounted and and the end of nextQuestion()
@@ -95,15 +96,14 @@ export default function EditorPage() {
         </Panel>
         <PanelResizeHandle children={ResizeHandleVertical()} />
         <Panel>
-          <PanelGroup direction="vertical">
-            <Panel defaultSize={60}>
-              <CodeWindow readOnly={false}></CodeWindow>
-            </Panel>
-            <PanelResizeHandle children={ResizeHandleHorizontal()} />
-            <Panel>
-              <ConsoleWindow></ConsoleWindow>
-            </Panel>
-          </PanelGroup>
+          {(() => {
+            // This is to ensure we don't send empty url
+            if (websocketUrl) {
+              return (
+                <CodeWindow websocketUrl={websocketUrl} question={questionData}></CodeWindow>
+              );
+            }
+          })()}
         </Panel>
       </PanelGroup>
     </div>
