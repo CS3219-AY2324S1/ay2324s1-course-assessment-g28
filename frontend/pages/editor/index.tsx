@@ -8,24 +8,32 @@ import ResizeHandleVertical from "@/components/Editor/ResizeHandleVertical";
 import { useSearchParams } from 'next/navigation'
 import { getQuestion } from "@/api/questions";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LoadingScreen from "@/components/Editor/LoadingScreen";
 
 export default function EditorPage() {
 
   // To pass WebSocket url
   // Question data will be fetched 
-  const data = useSearchParams();
+  const queryParams = useSearchParams();
 
+  const [websocketUrl, setWebsocketUrl] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [questionData, setQuestionData] = useState<any>(null);
+
+  // Obtain the WebSocket link from query and get the first question
+  useEffect(() => {
+    console.log("Just mounted editor");
+    const wsUrl = queryParams.get("wsUrl") ?? "";
+    setWebsocketUrl(wsUrl);
+  }, []);
 
   /**
    * Called when first mounted and and the end of nextQuestion()
    */
   async function getQuestionData() {
     setIsLoading(true);
-    const questionData = getQuestion(parseInt(data.get("id") ?? "1"), false).then(res => {
+    const questionData = getQuestion(parseInt(queryParams.get("id") ?? "1"), false).then(res => {
       setIsLoading(false);
       setQuestionData(res);
     }, err => {
@@ -38,6 +46,19 @@ export default function EditorPage() {
    */
   function nextQuestion() {
     // TODO: Get a new random qn id and call getQuestionData
+  }
+
+  /**
+   * Called to save submission when user moves to next question or exits
+   * NOT the same as running the code
+   * 
+   * Should this be here (using some other service?) or in CodeWindow (using the WebSocket)
+   * @param questionId 
+   * @param code 
+   * @param score 
+   */
+  function saveSubmission(questionId: number, code: string, score: number | null) {
+    // TODO
   }
 
   /**
@@ -76,7 +97,7 @@ export default function EditorPage() {
         <Panel>
           <PanelGroup direction="vertical">
             <Panel defaultSize={60}>
-              <CodeWindow language readOnly={false}></CodeWindow>
+              <CodeWindow readOnly={false}></CodeWindow>
             </Panel>
             <PanelResizeHandle children={ResizeHandleHorizontal()} />
             <Panel>

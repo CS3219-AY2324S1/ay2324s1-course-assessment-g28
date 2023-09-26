@@ -7,7 +7,7 @@ import { Button, Select, SelectItem } from '@nextui-org/react';
 
 interface CodeWindowProps {
   template?: string,
-  language: string,
+  language?: string,
   readOnly: boolean, // Might use this for viewing code history
 }
 
@@ -16,15 +16,19 @@ const LANGUAGE_SUPPORT = {"Java": java(), "JavaScript": javascript({ jsx: true }
 
 export default function CodeWindow(props: CodeWindowProps) {
   const [code, setCode] = useState("// Enter your code here");
-  const [language, setLanguage] = useState<string>("Java");
+  const [language, setLanguage] = useState<string>(props.language ?? "Java");
   
   const onChange = useCallback((val, viewUpdate) => {
     console.log('val:', val);
     setCode(val);
   }, []);
 
-  function getCode() {
-    return code;
+  /**
+   * Sends the code through WebSocket to CollabService which will run the compiler / interpreter
+   * WebSocket will inform both users of the result
+   */
+  function runCode() {
+
   }
 
   return (
