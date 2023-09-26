@@ -32,7 +32,7 @@ export default function PairingForm({
   } = useForm<PairingRequest>({
     resolver: zodResolver(PairingRequestZod),
     defaultValues: {
-      userId: user!.name!,
+      userId: user?.user?.email || "undefined",
       complexity: QuestionComplexity.EASY,
     },
   });

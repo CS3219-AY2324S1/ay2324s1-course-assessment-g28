@@ -1,5 +1,3 @@
-"use client";
-
 import Card from "@/components/Card";
 import { useState } from "react";
 import PairingForm from "./PairingForm";
@@ -14,15 +12,22 @@ export const PairingCard = () => {
   );
 
   const onSubmit: SubmitHandler<PairingRequest> = async (data) => {
-    // setIsSearching(true);
-    // setPairingRequest(data);
-    toast.success("Called");
+    setIsSearching(true);
+    setPairingRequest(data);
+    toast.success("Matchmaking request sent.");
+    searchForMatch();
+  };
+
+  const searchForMatch = async () => {
+    setTimeout(() => {
+      console.log("2 seconds elapsed");
+    }, 2000);
   };
 
   return (
     <Card classNames="flex-shrink-0 flex-grow">
       {isSearching ? (
-        <div>Searching...</div>
+        <div>Searching for match...</div>
       ) : (
         <PairingForm onSubmit={onSubmit} />
       )}
