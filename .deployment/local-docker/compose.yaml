@@ -78,7 +78,9 @@ services:
       dockerfile: Dockerfile
     environment:
       - RABBITMQ_URL=amqp://rabbitmq:5672
-      - PORT=3000
+      - PORT=4000
+    ports:
+      - 4000:4000
   pp-pairing-back:
     image: peerprep/pairing-back
     build:
