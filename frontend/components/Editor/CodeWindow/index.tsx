@@ -3,7 +3,6 @@ import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { java } from "@codemirror/lang-java";
 import { python } from "@codemirror/lang-python";
-import styles from "./codeWindow.module.css"
 import { Button, Select, SelectItem } from '@nextui-org/react';
 
 interface CodeWindowProps {
@@ -17,7 +16,7 @@ const LANGUAGE_SUPPORT = {"Java": java(), "JavaScript": javascript({ jsx: true }
 
 export default function CodeWindow(props: CodeWindowProps) {
   const [code, setCode] = useState("// Enter your code here");
-  const [language, setLanguage] = useState<string>("Python");
+  const [language, setLanguage] = useState<string>("Java");
   
   const onChange = useCallback((val, viewUpdate) => {
     console.log('val:', val);
@@ -33,13 +32,14 @@ export default function CodeWindow(props: CodeWindowProps) {
       <div className="w-full flex flex-row p-1">
         <div className="flex flex-row w-1/2 gap-2">
           <Select
-            placeholder="Language"
+            placeholder={language}
             classNames={{
               mainWrapper: "h-fit",
               base: "h-fit",
               trigger: "py-1 px-3 h-8 min-h-1",
               value: "text-sm"
             }}
+            defaultValue={language}
             disableSelectorIconRotation
             onChange={e => setLanguage(e.target.value)}
           >
@@ -62,8 +62,8 @@ export default function CodeWindow(props: CodeWindowProps) {
           </Button>
         </div>
       </div>
-      <CodeMirror 
-        id={styles["codemirror"]} 
+      <CodeMirror
+        className="h-full w-full"
         editable={!props.readOnly} 
         value={code} 
         height="100%" 

@@ -1,5 +1,3 @@
-import styles from "./questionWindow.module.css";
-
 export default function QuestionWindow(props) {
 
   const tags = ["Arrays", "Dynamic Programming", "Heap", "Binary Search tree"];
