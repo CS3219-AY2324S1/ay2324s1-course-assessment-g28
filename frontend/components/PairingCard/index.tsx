@@ -1,20 +1,31 @@
+"use client";
+
 import Card from "@/components/Card";
 import { useState } from "react";
 import PairingForm from "./PairingForm";
+import { SubmitHandler, UseFormHandleSubmit } from "react-hook-form";
+import { PairingRequest } from "@/api/pairing/types";
+import toast from "react-hot-toast";
 
-const PairingCard = () => {
+export const PairingCard = () => {
   const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [pairingRequest, setPairingRequest] = useState<object | null>(null);
+  const [pairingRequest, setPairingRequest] = useState<PairingRequest | null>(
+    null,
+  );
 
-  function handlePairingSubmit(form: object) {
-    setPairingRequest(form);
-    setIsSearching(true);
-  }
+  const onSubmit: SubmitHandler<PairingRequest> = async (data) => {
+    // setIsSearching(true);
+    // setPairingRequest(data);
+    toast.success("Called");
+  };
 
   return (
     <Card classNames="flex-shrink-0 flex-grow">
-      (isSearching) ?<div>Searching...</div>
-      : <PairingForm onSubmit={handlePairingSubmit} />
+      {isSearching ? (
+        <div>Searching...</div>
+      ) : (
+        <PairingForm onSubmit={onSubmit} />
+      )}
     </Card>
   );
 };

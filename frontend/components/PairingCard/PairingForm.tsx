@@ -16,15 +16,11 @@ import {
   QuestionComplexityToNameMap,
 } from "@/api/questions/constants";
 
-const PAIRING_SERVICE = "ws://localhost:4000/pairing";
-
-function create_pairing_request(username: string): string {
-  return `${PAIRING_SERVICE}?user=${username}`;
-}
-
-export default function PairingForm(
-  onSubmit: SubmitHandler<{ complexity: QuestionComplexity }>,
-) {
+export default function PairingForm({
+  onSubmit,
+}: {
+  onSubmit: SubmitHandler<PairingRequest>;
+}) {
   const user = useUserInfo();
 
   const {
@@ -36,12 +32,16 @@ export default function PairingForm(
   } = useForm<PairingRequest>({
     resolver: zodResolver(PairingRequestZod),
     defaultValues: {
+      userId: user!.name!,
       complexity: QuestionComplexity.EASY,
     },
   });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="w-full flex flex-col gap-y-2"
+    >
       <div className="flex flex-row w-full gap-x-2">
         <label>Difficulty</label>
         <Controller
@@ -77,6 +77,9 @@ export default function PairingForm(
           )}
         />
       </div>
+      <Button type="submit" color="secondary">
+        Submit
+      </Button>
     </form>
   );
 }
