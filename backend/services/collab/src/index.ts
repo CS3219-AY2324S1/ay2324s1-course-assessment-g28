@@ -143,6 +143,9 @@ wsServer.on('connection', function(connection: WebSocket, request: Request, clie
       case WS_METHODS.OP:
         handleOp(connection, partnerConnection, data);
         break;
+      case WS_METHODS.CARET_POS:
+        handleOp(connection, partnerConnection, data);
+        break;
       case WS_METHODS.SWITCH_LANG:
         handleSwitchLang(connection, partnerConnection, data);
         break;

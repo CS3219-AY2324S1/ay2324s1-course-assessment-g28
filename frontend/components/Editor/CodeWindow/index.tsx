@@ -52,6 +52,8 @@ export default function CodeWindow(props: CodeWindowProps) {
       case WS_METHODS.OP:
         handleOp(data);
         break;
+      case WS_METHODS.CARET_POS:
+
       case WS_METHODS.SWITCH_LANG:
         handleSwitchLang(data);
         break;
@@ -78,6 +80,10 @@ export default function CodeWindow(props: CodeWindowProps) {
   function handleOp(data) {
     // TODO: Real time collab
     setCode(data.op);
+  }
+
+  function handleCaretPos(data) {
+    console.log("Partner's caret at ", data.start, " to ", data.end);
   }
 
   function handleSwitchLang(data) {
@@ -113,6 +119,23 @@ export default function CodeWindow(props: CodeWindowProps) {
     sendJsonMessage({
       method: WS_METHODS.OP,
       op: val
+    });
+  }
+
+  function onMouseUp(e) {
+    console.log(e.srcElement?.selectionStart, e.srcElement?.selectionEnd);
+    console.log(e.target?.selectionStart, e.target?.selectionEnd);
+    console.log(e.currentTarget?.selectionStart, e.currentTarget?.selectionEnd);
+
+    const start = e.target.selectionStart;
+    const end = e.target.selectionEnd;
+
+    console.log(e.srcElement, e.target, e.currentTarget);
+
+    sendJsonMessage({
+      method: WS_METHODS.CARET_POS,
+      start: start,
+      end: end
     });
   }
 
@@ -185,12 +208,12 @@ export default function CodeWindow(props: CodeWindowProps) {
                   </SelectItem>
                 ))}
               </Select>
-              <Button onClick={runCode} size="sm" color="success" className='text-white h-8 font-bold px-5'>
+              <Button disabled={isCodeRunning} onClick={runCode} size="sm" color="success" className='text-white h-8 font-bold px-5'>
                 Run Code
               </Button>
             </div>
             <div className="w-1/2 grow flex flex-row justify-end gap-2">
-              <Button onClick={nextQuestion} size="sm" color="warning" className='text-white h-8 font-bold'>
+              <Button disabled={isCodeRunning} onClick={nextQuestion} size="sm" color="warning" className='text-white h-8 font-bold'>
                 Next Question
               </Button>
               <Button onClick={exitEditor} size="sm" color="default" className='h-8 font-bold'>
@@ -199,12 +222,14 @@ export default function CodeWindow(props: CodeWindowProps) {
             </div>
           </div>
           <CodeMirror
+            
             className="h-full w-full"
             value={code} 
             height="100%" 
             extensions={[LANGUAGE_DATA[language].codeMirrorExtension]} 
             onChange={onCodeChange}
             lang={language}
+            onMouseUp={onMouseUp}
           />
         </div>
       </Panel>

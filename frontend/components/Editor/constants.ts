@@ -3,7 +3,9 @@ import { java } from "@codemirror/lang-java";
 import { python } from "@codemirror/lang-python";
 
 export enum WS_METHODS {
+  READY, //
   OP, // To indicate I've handled this
+  CARET_POS,
   GET_TURN,
   GET_TURN_RESULT,
   SWITCH_LANG, //
@@ -16,7 +18,6 @@ export enum WS_METHODS {
   TESTCASE_ADD,
   TESTCASE_DELETE,
   TESTCASE_EDIT,
-  READY, //
 };
 
 export const LANGUAGE_DATA: {[key: string]: {codeMirrorExtension: any, templateCode: string}} = {

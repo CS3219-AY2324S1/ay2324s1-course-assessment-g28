@@ -34,6 +34,11 @@ export function handleOp(connection: WebSocket, partnerConnection: WebSocket, da
   partnerConnection.send(message);
 }
 
+export function handleCaretPos(connection: WebSocket, partnerConnection: WebSocket, data) {
+  const message = JSON.stringify({ method: WS_METHODS.OP, start: data.start, end: data.end });
+  partnerConnection.send(message);
+}
+
 export function handleSwitchLang(connection: WebSocket, partnerConnection: WebSocket, data) {
   const message = JSON.stringify({ method: WS_METHODS.SWITCH_LANG, language: data.language });
   partnerConnection.send(message);
