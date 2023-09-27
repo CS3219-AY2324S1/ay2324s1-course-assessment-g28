@@ -5,20 +5,26 @@ import {
   getAllUsers,
   updateUserByEmail,
   deleteUserByEmail,
+  getUserByEmail,
+  getAttemptById,
+  createAttempt,
 } from "./controller";
 
 async function createEndpoints(router: express.Router) {
   // POST endpoints
   router.post("/users", createUser);
+  router.post("/users/:email/question-attempt", createAttempt);
 
   // GET endpoints
   router.get("/users", getAllUsers);
+  router.get("/users/:email", getUserByEmail);
+  router.get("/users/:email/question-attempt/:attemptId", getAttemptById);
 
   // PUT endpoints
   router.put("/users", updateUserByEmail);
 
   // DELETE endpoints
-  router.delete("/users", deleteUserByEmail);
+  router.delete("/users/:email", deleteUserByEmail);
 }
 
 async function main() {
