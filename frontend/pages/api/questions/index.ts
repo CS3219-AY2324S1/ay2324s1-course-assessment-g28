@@ -7,7 +7,7 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   //TODO: remove this block when not needed for local dev anymore
-  if (process.env.BACKEND_MODE === "LOCAL") {
+  if (process.env.QUESTIONS_BACKEND_MODE === "LOCAL") {
     // TODO: add actual fetch to backend service here, for now just returning dummy data
     if (req.method === HttpMethod.GET) {
       res.status(HttpStatus.OK).json({

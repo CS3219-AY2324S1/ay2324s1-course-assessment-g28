@@ -15,7 +15,7 @@ export default async function handler(
     return;
   }
   // TODO: add actual fetch to backend service here, for now just returning dummy data
-  if (process.env.BACKEND_MODE === "LOCAL") {
+  if (process.env.USER_BACKEND_MODE === "LOCAL") {
     if (req.method === HttpMethod.GET) {
     } else if (req.method === HttpMethod.POST) {
     } else if (req.method === HttpMethod.DELETE) {
