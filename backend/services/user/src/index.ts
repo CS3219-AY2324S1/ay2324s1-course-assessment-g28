@@ -8,6 +8,7 @@ import {
   getUserByEmail,
   getAttemptById,
   createAttempt,
+  deleteAttemptById,
 } from "./controller";
 
 async function createEndpoints(router: express.Router) {
@@ -25,6 +26,7 @@ async function createEndpoints(router: express.Router) {
 
   // DELETE endpoints
   router.delete("/users/:email", deleteUserByEmail);
+  router.delete("/users/:email/question-attempt/:attemptId", deleteAttemptById);
 }
 
 async function main() {
