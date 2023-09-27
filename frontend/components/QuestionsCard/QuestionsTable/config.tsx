@@ -11,13 +11,17 @@ export enum ColumnKey {
   TITLE = "title",
   CATEGORY = "category",
   DIFFCULTY = "complexity",
-  // ATTEMPTS = "attempts",
+}
+
+export enum ColumnKeyAdminOnly {
   ACTION = "action",
 }
 
+export type ColumnKeyAdmin = ColumnKey | ColumnKeyAdminOnly
+
 interface ColumnConfig {
   name: string;
-  uid: ColumnKey;
+  uid: ColumnKeyAdmin;
   sortable?: boolean;
   render?: (rowData: QuestionBase) => React.ReactNode;
   align: "start" | "center" | "end";
@@ -28,9 +32,12 @@ export const COLUMNS = [
   ColumnKey.TITLE,
   ColumnKey.CATEGORY,
   ColumnKey.DIFFCULTY,
-  // ColumnKey.ATTEMPTS,
-  ColumnKey.ACTION,
 ];
+
+export const COLUMNS_ADMIN = [
+  ...COLUMNS,
+  ColumnKeyAdminOnly.ACTION
+]
 
 export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
   [ColumnKey.ID]: {
@@ -69,9 +76,16 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
     ),
     align: "start",
   },
-  [ColumnKey.ACTION]: {
+};
+
+/**
+ * Columns to display for an admin user. This includes an ACTION column to edit and delete questions.
+ */
+export const COLUMN_CONFIGS_ADMIN: Record<ColumnKeyAdmin, ColumnConfig> = {
+  ...COLUMN_CONFIGS,
+  [ColumnKeyAdminOnly.ACTION]: {
     name: "ACTIONS",
-    uid: ColumnKey.ACTION,
+    uid: ColumnKeyAdminOnly.ACTION,
     render: (question: QuestionBase) => {
       return (
         <div className="flex flex-row gap-x-2">
@@ -91,7 +105,7 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
     },
     align: "center",
   },
-};
+}
 
 export const DEFAULT_COMPLEXITY_SELECTION = QuestionComplexity.EASY;
 
