@@ -11,8 +11,11 @@ import {
 } from "@nextui-org/react";
 import {
   COLUMNS,
+  COLUMNS_ADMIN,
   COLUMN_CONFIGS,
+  COLUMN_CONFIGS_ADMIN,
   ColumnKey,
+  ColumnKeyAdminOnly,
   DEFAULT_PAGE_SIZE_SELECTION,
 } from "./config";
 import { QuestionBase } from "@/api/questions/types";
@@ -26,7 +29,11 @@ import TableSelectors from "./TableSelectors";
 import TablePagination from "./TablePagination";
 import ErrorCard from "@/components/ErrorCard";
 
-const QuestionsTable = () => {
+interface QuestionTableProps {
+  userIsAdmin: boolean;
+}
+
+export default function QuestionTable({ userIsAdmin }: QuestionTableProps) {
   const {
     filterValue,
     selectedComplexity,
@@ -74,11 +81,19 @@ const QuestionsTable = () => {
       }}
       onRowAction={(key) => router.push(getQuestionPath(Number(key)))}
     >
-      <TableHeader columns={COLUMNS.map((col) => COLUMN_CONFIGS?.[col])}>
+      <TableHeader
+        columns={
+          userIsAdmin
+            ? COLUMNS_ADMIN.map((col) => COLUMN_CONFIGS_ADMIN?.[col])
+            : COLUMNS.map((col) => COLUMN_CONFIGS?.[col])
+        }
+      >
         {(column) => (
           <TableColumn
             key={column.uid}
-            align={column.uid === ColumnKey.ACTION ? "center" : "start"}
+            align={
+              column.uid === ColumnKeyAdminOnly.ACTION ? "center" : "start"
+            }
             allowsSorting={column.sortable}
           >
             {column.name}
@@ -96,17 +111,24 @@ const QuestionsTable = () => {
             key={question.id}
             className="cursor-pointer hover:bg-gray-200"
           >
-            {(columnKey: string | number) => (
-              <TableCell key={question.id.toString() + columnKey}>
-                {COLUMN_CONFIGS?.[columnKey as ColumnKey]?.render?.(question) ??
-                  question?.[columnKey as keyof QuestionBase]}
-              </TableCell>
-            )}
+            {userIsAdmin
+              ? (columnKey: string | number) => (
+                  <TableCell key={question.id.toString() + columnKey}>
+                    {COLUMN_CONFIGS_ADMIN[columnKey as ColumnKey]?.render?.(
+                      question,
+                    ) ?? question?.[columnKey as keyof QuestionBase]}
+                  </TableCell>
+                )
+              : (columnKey: string | number) => (
+                  <TableCell key={question.id.toString() + columnKey}>
+                    {COLUMN_CONFIGS[columnKey as ColumnKey]?.render?.(
+                      question,
+                    ) ?? question?.[columnKey as keyof QuestionBase]}
+                  </TableCell>
+                )}
           </TableRow>
         )}
       </TableBody>
     </Table>
   );
-};
-
-export default QuestionsTable;
+}

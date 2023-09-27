@@ -1,8 +1,6 @@
 import { HttpMethod, HttpStatus } from "@/api/constants";
 import { USER_API } from "@/api/routes";
-import {
-  forwardRequestAndGetResponse,
-} from "@/api/serverConstants";
+import { forwardRequestAndGetResponse } from "@/api/server/serverConstants";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 
@@ -29,14 +27,16 @@ export default async function handler(
       req,
       res,
       process.env.USER_API as string,
-      `${USER_API}/${session.user.email}/question-attempt`
+      `${USER_API}/${session.user.email}/question-attempt`,
     );
   } else {
     forwardRequestAndGetResponse(
       req,
       res,
       process.env.USER_API as string,
-      `${USER_API}/${session.user.email}/question-attempt/${req.url!.substring(req.url!.lastIndexOf("/") + 1)}`
+      `${USER_API}/${session.user.email}/question-attempt/${req.url!.substring(
+        req.url!.lastIndexOf("/") + 1,
+      )}`,
     );
   }
 }

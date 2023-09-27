@@ -1,6 +1,6 @@
 import { HttpMethod, HttpStatus } from "@/api/constants";
 import { USER_API } from "@/api/routes";
-import { forwardRequestAndGetResponse } from "@/api/serverConstants";
+import { forwardRequestAndGetResponse } from "@/api/server/serverConstants";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 
@@ -23,11 +23,7 @@ export default async function handler(
   }
 
   if (req.method === HttpMethod.POST) {
-    forwardRequestAndGetResponse(
-      req,
-      res,
-      process.env.USER_API as string
-    );
+    forwardRequestAndGetResponse(req, res, process.env.USER_API as string);
   } else {
     forwardRequestAndGetResponse(
       req,

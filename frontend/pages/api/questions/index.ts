@@ -1,5 +1,5 @@
 import { HttpMethod, HttpStatus } from "@/api/constants";
-import { forwardRequestAndGetResponse } from "@/api/serverConstants";
+import { forwardRequestAndGetResponse } from "@/api/server/serverConstants";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -19,10 +19,10 @@ export default async function handler(
             complexity: 0,
           },
         ],
-        total: 1
+        total: 1,
       });
     } else if (req.method === HttpMethod.POST) {
-      res.status(HttpStatus.RESOURCE_CREATED)
+      res.status(HttpStatus.RESOURCE_CREATED);
     }
     return;
   }
