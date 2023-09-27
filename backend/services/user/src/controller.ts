@@ -20,8 +20,8 @@ export const createUser = async (req: Request, res: Response) => {
     const { email, username } = req.body;
     const query =
       "INSERT INTO Users (email, username) VALUES ($1, $2) RETURNING *";
-    const result = await pool.query(query, [email, username]);
-    res.status(204).json(result.rows[0]);
+    await pool.query(query, [email, username]);
+    res.status(204).json();
   } catch (error) {
     res.status(500).json({ error: `createUser failed ${error}` });
   }
@@ -48,8 +48,8 @@ export const createAttempt = async (req: Request, res: Response) => {
       queryArgs = [email, questionId, questionTitle, attemptDetails];
     }
 
-    const result = await pool.query(query, queryArgs);
-    res.status(204).json(result.rows[0]);
+    await pool.query(query, queryArgs);
+    res.status(204).json();
   } catch (error) {
     res.status(500).json({ error: `createAttempt failed ${error}` });
   }
@@ -111,7 +111,7 @@ export const updateUserByEmail = async (req: Request, res: Response) => {
       res.status(404).json({ message: `User with ${email} does not exist.` });
       return;
     } else {
-      res.status(204).json(result.rows[0]);
+      res.status(204).json();
     }
   } catch (error) {
     res.status(500).json({ error: `updateUserByEmail failed ${error}` });
