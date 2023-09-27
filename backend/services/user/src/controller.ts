@@ -72,6 +72,11 @@ export const getUserByEmail = async (req: Request, res: Response) => {
     const userQuery = "SELECT username, is_admin FROM Users WHERE email = $1";
     const userResult = await pool.query(userQuery, [email]);
 
+    if (userResult.rows.length === 0) {
+      res.status(404).json({ message: `User with ${email} does not exist.` });
+      return;
+    }
+
     const attemptQuery =
       "SELECT id AS attempt_id, question_id, question_title, attempt_date FROM Attempts WHERE email = $1";
     const attemptResult = await pool.query(attemptQuery, [email]);
@@ -80,7 +85,7 @@ export const getUserByEmail = async (req: Request, res: Response) => {
       attemptedQuestions: attemptResult.rows,
     });
   } catch (error) {
-    res.status(500).json({ error: `getAllUsers failed ${error}` });
+    res.status(500).json({ error: `getUserByEmail failed ${error}` });
   }
 };
 
@@ -92,7 +97,7 @@ export const getAttemptById = async (req: Request, res: Response) => {
     const result = await pool.query(query, [email, attemptId]);
     res.status(200).json(result.rows[0]);
   } catch (error) {
-    res.status(500).json({ error: `getAllUsers failed ${error}` });
+    res.status(500).json({ error: `getAttemptById failed ${error}` });
   }
 };
 
@@ -103,9 +108,10 @@ export const updateUserByEmail = async (req: Request, res: Response) => {
     const query = "UPDATE Users SET username = $1 WHERE email = $2 RETURNING *";
     const result = await pool.query(query, [username, email]);
     if (result.rows.length === 0) {
-      res.status(404).json({ message: `${email} does not exist.` });
+      res.status(404).json({ message: `User with ${email} does not exist.` });
+      return;
     } else {
-      res.status(200).json(result.rows[0]);
+      res.status(204).json(result.rows[0]);
     }
   } catch (error) {
     res.status(500).json({ error: `updateUserByEmail failed ${error}` });
@@ -116,14 +122,29 @@ export const updateUserByEmail = async (req: Request, res: Response) => {
 export const deleteUserByEmail = async (req: Request, res: Response) => {
   try {
     const { email } = req.params;
-    const query = "DELETE FROM Users WHERE email = $1 RETURNING *";
-    const result = await pool.query(query, [email]);
-    if (result.rows.length === 0) {
-      res.status(404).json({ message: `${email} does not exist.` });
-    } else {
-      res.status(200).json({ message: `${email} deleted successfully!` });
-    }
+    await pool.query("BEGIN");
+    await pool.query("DELETE FROM Attempts WHERE email = $1 RETURNING *", [
+      email,
+    ]);
+    await pool.query("DELETE FROM Users WHERE email = $1 RETURNING *", [email]);
+    await pool.query("COMMIT");
+
+    res.status(204).json({ message: `${email} deleted successfully!` });
   } catch (error) {
-    res.status(500).json({ error: `deleteUsers failed ${error}` });
+    await pool.query("ROLLBACK");
+    res.status(500).json({ error: `deleteUserByEmail failed ${error}` });
+  }
+};
+
+export const deleteAttemptById = async (req: Request, res: Response) => {
+  try {
+    const { email, attemptId } = req.params;
+    await pool.query("DELETE FROM Attempts WHERE email=$1 AND id=$2", [
+      email,
+      attemptId,
+    ]);
+    res.status(204).json();
+  } catch (error) {
+    res.status(500).json({ error: `deleteAttemptById failed ${error}` });
   }
 };
