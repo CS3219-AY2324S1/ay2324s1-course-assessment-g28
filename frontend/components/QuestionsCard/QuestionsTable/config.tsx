@@ -98,3 +98,5 @@ export const DEFAULT_COMPLEXITY_SELECTION = QuestionComplexity.EASY;
 export const PAGE_SIZE_OPTIONS = [{ name: 10 }, { name: 20 }, { name: 50 }];
 
 export const DEFAULT_PAGE_SIZE_SELECTION = 10;
+
+export const questionFilterRegex = /[^0-9a-z\-_]+/i;

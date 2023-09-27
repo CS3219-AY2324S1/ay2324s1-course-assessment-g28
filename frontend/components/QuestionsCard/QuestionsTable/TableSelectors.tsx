@@ -16,6 +16,7 @@ import {
 import { useRouter } from "next/router";
 import { CREATE_QUESTION } from "@/routes";
 import { useQuestionTableContext } from "../QuestionsTableContext";
+import { questionFilterRegex } from "@/components/QuestionsCard/QuestionsTable/config";
 
 const TableSelectors = () => {
   const {
@@ -50,7 +51,9 @@ const TableSelectors = () => {
         // startContent={<SearchIcon />}
         value={filterValue}
         onClear={() => onClear()}
-        onValueChange={onSearchChange}
+        onValueChange={(value) => {
+          const regexedVal = value.replace(questionFilterRegex, "");
+          onSearchChange(regexedVal)}}
       />
       <div className="flex flex-row items-center">
         <Dropdown className="p-0">
