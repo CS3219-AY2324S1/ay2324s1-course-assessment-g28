@@ -4,14 +4,14 @@ export const AttemptedQuestionRecordZod = z.object({
   attemptId: z.number().int().nonnegative(),
   questionId: z.number().int().nonnegative(),
   questionTitle: z.string(),
-  attemptDate: z.number().int().nonnegative(),
+  attemptDate: z.string().datetime()
 });
 
 export const AttemptedQuestionDetailsZod = z.object({
   attemptId: z.number().int().nonnegative(),
   questionId: z.number().int().nonnegative(),
   questionTitle: z.string(),
-  attemptDate: z.number().int().nonnegative(),
+  attemptDate: z.string().datetime(),
   attemptDetails: z.string(),
 });
 
