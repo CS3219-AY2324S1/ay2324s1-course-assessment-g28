@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import LoadingScreen from "@/components/Editor/LoadingScreen";
 
 export default function EditorPage() {
-
+  
   // To pass WebSocket url
   // Question data will be fetched 
   const queryParams = useSearchParams();
@@ -25,7 +25,10 @@ export default function EditorPage() {
   useEffect(() => {
     console.log("Just mounted editor");
     const wsUrl = queryParams.get("wsUrl") ?? "";
-    console.log("wsUrl is ", wsUrl)
+    console.log("wsUrl is ", wsUrl);
+    // The pairId and userId are appended into the encoded wsUrl
+    // Test using this url (replace pairId with generated one):
+    // http://localhost:3000/editor?wsUrl=ws://localhost:8888?pairId=2d902ca5-cba7-4050-a40e-c216d7115002&user=jhghf874
     setWebsocketUrl(wsUrl);
   }, [queryParams]);
 

@@ -1,5 +1,8 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
+import { checkValidPairAndUser, getPairIdFromUrl, getPartnerId } from './services/pairService';
+import { getQueryParams, handleOperation, handleReady } from './services/wsService';
+import { WS_METHODS } from './constants';
 dotenv.config();
 
 const app: Express = express();
@@ -77,23 +80,68 @@ const http = require('http');
 
 // Spinning the http server and the WebSocket server.
 const server = http.createServer();
-const wsServer = new WebSocketServer({ server, path: "/editor" });
+const wsServer = new WebSocketServer({ server });
 const port = process.env.WEBSOCKET_PORT;
 server.listen(port, () => {
   console.log(`WebSocket server is running on port ${port}`);
 });
 
-const clients = {};
+// List of user: partner pairs
+const partners: { [userId: string]: string } = {};
+// List of clients' WebSocket connection
+const clients: { [userId: string]: WebSocket } = {};
+// Keeps track of the present pairs
+// Not sure if the value is needed for anything
+// For now keeps track of whether 1 or 2 users are connected
+const pairs: { [pairId: string]: number } = {};
 
 // A new client connection request received
-wsServer.on('connection', function(connection: WebSocket) {
+wsServer.on('connection', function(connection: WebSocket, request: Request, client) {
   console.log(`Recieved a new connection.`);
 
   // Store the new connection and handle messages
   console.log(`${connection} connected.`);
+  console.log("Client ", client)
+
+  const params = getQueryParams(request.url);
+  console.log("Query params ", params);
+  const pairId = params["pairId"];
+  const userId = params["userId"];
+
+  console.log("Pair: ", pairId, "User: ", userId);
+
+  // Check partner exists, else close connection
+  getPartnerId(pairId, userId).then(partnerId => {
+    if (partnerId !== undefined) {
+      if (pairId in pairs) {
+        pairs[pairId] = 1;
+      } else {
+        pairs[pairId] += 1;
+      }
+
+      partners[userId] = partnerId;
+      clients[userId] = connection;
+
+      // Check if partner has already connected
+      // If so, send READY to the pair
+      if (partnerId in clients) {
+        handleReady(connection, clients[partnerId]);
+      } 
+    } else {
+      console.log("Closing connection for user ", userId);
+      connection.close();
+    } 
+  });
 
   connection.onmessage = (message: any) => {
     const data = JSON.parse(message.data);
     console.log(data);
+
+    const partnerConnection = clients[partners[userId]];
+
+    switch (data.method) {
+      case WS_METHODS.OP:
+        handleOperation(connection, partnerConnection, data);
+    }
   }
 });

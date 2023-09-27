@@ -43,8 +43,24 @@ export default function CodeWindow(props: CodeWindowProps) {
       setIsWebsocketLoaded(true);
       initEditor();
     },
-    retryOnError: true
+    onMessage: onMessage,
+    onClose: onClose,
+    onError: onError
   });
+
+  function onMessage(e: Event) {
+    const data = JSON.parse(e.data);
+    console.log(data);
+  }
+
+  function onClose(e: Event) {
+    console.log("Closing ws", e);
+    // TODO
+  }
+
+  function onError(e: Event) {
+    // TODO: Handle error
+  }
 
   /**
    * Called at the start of each question
@@ -57,7 +73,7 @@ export default function CodeWindow(props: CodeWindowProps) {
   function getIsMyTurn() {
     console.log("Checking if its your turn...");
     sendJsonMessage({
-      type: WS_METHODS.GET_TURN,
+      method: WS_METHODS.GET_TURN,
     });
     setIsInitialized(true);
   }

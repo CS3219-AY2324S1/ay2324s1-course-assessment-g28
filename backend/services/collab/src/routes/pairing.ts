@@ -9,7 +9,6 @@ const router = express.Router();
  * Query String: ?user1=<user1id>&user2=<user2id>
  */
 router.get('/getWebsocketUrl', (req: Request, res: Response) => {
-  console.log(req.query.user1, req.query.user2);
 
   const user1 = req.query.user1;
   const user2 = req.query.user2;
@@ -28,9 +27,18 @@ router.get('/getWebsocketUrl', (req: Request, res: Response) => {
     user2: user2
   });
 
-  const websocketUrl = process.env.WEBSOCKET_URL + ":" + process.env.WEBSOCKET_PORT + "/editor?" + pairId;
+  // Will be appended with userId as query param in paring service
+  // const websocketUrl = process.env.WEBSOCKET_URL + ":" + process.env.WEBSOCKET_PORT + "?pairId=" + pairId;
 
-  res.status(200).json({ websocketUrl: websocketUrl }); 
+  // res.status(200).json({ websocketUrl: websocketUrl }); 
+
+  const websocketUrl1 = process.env.WEBSOCKET_URL + ":" + process.env.WEBSOCKET_PORT + "?pairId=" + pairId + "&userId=" + user1;
+  const websocketUrl2 = process.env.WEBSOCKET_URL + ":" + process.env.WEBSOCKET_PORT + "?pairId=" + pairId + "&userId=" + user2;
+
+  res.status(200).json({ 
+    user1: encodeURIComponent(websocketUrl1), 
+    user2: encodeURIComponent(websocketUrl2) 
+  });
 });
 
 module.exports = router;

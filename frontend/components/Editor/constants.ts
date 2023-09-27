@@ -14,7 +14,8 @@ export enum WS_METHODS {
   MESSAGE,
   ADD_TESTCASE,
   DELETE_TESTCASE,
-  EDIT_TESTCASE
+  EDIT_TESTCASE,
+  READY,
 };
 
 export const LANGUAGE_DATA: {[key: string]: {codeMirrorExtension: any, templateCode: string}} = {
