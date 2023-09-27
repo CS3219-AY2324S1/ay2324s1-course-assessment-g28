@@ -10,13 +10,12 @@ export const getServerSideProps = (async ({ params }) => {
   question: Question;
 }>;
 
-/**
- * Displays all question information, and a section for starting matching to start collaborative editing.
- */
-export default function QuestionPage({question}: InferGetStaticPropsType<typeof getServerSideProps>) {
+export default function QuestionPage({
+  question,
+}: InferGetStaticPropsType<typeof getServerSideProps>) {
   return (
     <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-      <QuestionDetailsCard question={question} className="row-span-1"></QuestionDetailsCard>
+      <QuestionDetailsCard question={question} className="row-span-1" />
     </div>
-  )
+  );
 }
