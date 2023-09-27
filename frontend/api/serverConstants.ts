@@ -8,15 +8,20 @@ export async function forwardRequestAndGetResponse(
   req: NextApiRequest,
   res: NextApiResponse,
   apiAddr: string,
+  customPath?: string // custom path to use. do not use path from client inside req
 ) {
   try {
+    let url = getBackendUrl(apiAddr, req);
+    if(customPath) {
+      url = apiAddr + customPath
+    }
     let backendResponse;
     if (req.method === "GET" || req.method === "DELETE") {
-      backendResponse = await fetch(getBackendUrl(apiAddr, req), {
+      backendResponse = await fetch(url, {
         method: req.method,
       });
     } else {
-      backendResponse = await fetch(getBackendUrl(apiAddr, req), {
+      backendResponse = await fetch(url, {
         method: req.method,
         headers: {
           "Content-Type": req.headers["content-type"] ?? "",

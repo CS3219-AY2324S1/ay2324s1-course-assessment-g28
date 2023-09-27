@@ -1,7 +1,7 @@
 import { HttpMethod, HttpStatus } from "@/api/constants";
 import { RequestError } from "@/api/errors";
 import { USER_API, getQuestionAttemptPath } from "@/api/routes";
-import { AttemptedQuestionDetails, AttemptedQuestionDetailsZod, User, UserZod } from "@/api/user/types";
+import { AttemptedQuestionDetails, AttemptedQuestionDetailsZod, CreateUserRequestBody, User, UserZod } from "@/api/user/types";
 
 /**
  * Returns info for the logged in user.
@@ -48,9 +48,10 @@ export async function deleteQuestionAttempt(attemptId: number) {
   }
 }
 
-export async function addUser() {
+export async function addUser(userInfo: CreateUserRequestBody) {
   const res = await fetch(USER_API, {
     method: HttpMethod.POST,
+    body: JSON.stringify(userInfo),
   });
   if (res.status !== HttpStatus.OK) {
     throw new RequestError(res);

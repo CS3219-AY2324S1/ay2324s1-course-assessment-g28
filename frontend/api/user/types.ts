@@ -17,8 +17,13 @@ export const AttemptedQuestionDetailsZod = z.object({
 
 export const UserZod = z.object({
   isAdmin: z.boolean(),
+  username: z.string(),
   attemptedQuestions: AttemptedQuestionRecordZod.array(),
 });
+
+export const CreateUserRequestBodyZod = z.object({
+  username: z.string()
+})
 
 export type AttemptedQuestionRecord = z.infer<
   typeof AttemptedQuestionRecordZod
@@ -29,3 +34,5 @@ export type AttemptedQuestionDetails = z.infer<
 >;
 
 export type User = z.infer<typeof UserZod>;
+
+export type CreateUserRequestBody = z.infer<typeof CreateUserRequestBodyZod>
