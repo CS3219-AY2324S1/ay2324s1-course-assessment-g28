@@ -27,8 +27,13 @@ import TablePagination from "./TablePagination";
 import ErrorCard from "@/components/ErrorCard";
 
 const QuestionsTable = () => {
-  const { filterValue, selectedComplexity, pageSize, page } =
-    useQuestionTableContext();
+  const {
+    filterValue,
+    selectedComplexity,
+    pageSize,
+    page,
+    resetQuestionTableOptions,
+  } = useQuestionTableContext();
   const router = useRouter();
 
   const options = {
@@ -41,6 +46,7 @@ const QuestionsTable = () => {
   const { data, error, isLoading, mutate } = useSWR(
     { QUESTION_API, options },
     () => getQuestions(options),
+    { refreshInterval: 1000 },
   );
   const { content: questions } = data ?? {};
 
@@ -48,7 +54,10 @@ const QuestionsTable = () => {
     return (
       <ErrorCard
         isLoading={isLoading}
-        onRetry={() => mutate({ QUESTION_API, options })}
+        onRetry={() => {
+          resetQuestionTableOptions();
+          mutate({ QUESTION_API, options });
+        }}
       />
     );
   }

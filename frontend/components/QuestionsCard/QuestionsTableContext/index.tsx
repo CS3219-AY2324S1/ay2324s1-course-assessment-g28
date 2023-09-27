@@ -4,6 +4,7 @@ import {
   PropsWithChildren,
   SetStateAction,
   createContext,
+  useCallback,
   useContext,
   useState,
 } from "react";
@@ -20,6 +21,7 @@ type QuestionTableContextType = {
   setPageSize: Dispatch<SetStateAction<number>>;
   page: number;
   setPage: Dispatch<SetStateAction<number>>;
+  resetQuestionTableOptions: () => void;
 };
 
 const defaultContext: QuestionTableContextType = {
@@ -39,6 +41,7 @@ const defaultContext: QuestionTableContextType = {
   setPage: () => {
     throw new Error("Not in provider!");
   },
+  resetQuestionTableOptions: () => {throw new Error("Not in provider!");} 
 };
 
 const QuestionTableContext =
@@ -56,6 +59,13 @@ export const QuestionTableProvider = ({
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_SELECTION);
   const [page, setPage] = useState(1);
 
+  const resetQuestionTableOptions = useCallback(() => {
+    setFilterValue("");
+    setSelectedComplexity(undefined);
+    setPageSize(DEFAULT_PAGE_SIZE_SELECTION);
+    setPage(1);
+  }, [])
+
   return (
     <QuestionTableContext.Provider
       value={{
@@ -67,6 +77,7 @@ export const QuestionTableProvider = ({
         setPageSize,
         page,
         setPage,
+        resetQuestionTableOptions
       }}
     >
       {children}

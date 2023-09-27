@@ -109,7 +109,7 @@ export default function QuestionCreationForm({
                     variant="flat"
                     title="Difficulty"
                   >
-                    {QuestionComplexityConfigsMap[value]}
+                    {QuestionComplexityConfigsMap[value].name}
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu

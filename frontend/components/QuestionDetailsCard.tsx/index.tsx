@@ -15,7 +15,7 @@ export default function QuestionDetailsCard({
   return (
     <Card className={className}>
       <div className="flex gap-3 items-center justify-between mb-2">
-        <h1 className="font-medium text-[24px] truncate">
+        <h1 className="font-medium text-[24px]">
           {`${id.toString()}. ${title}`}
         </h1>
         <ComplexityChip complexity={complexity} />
