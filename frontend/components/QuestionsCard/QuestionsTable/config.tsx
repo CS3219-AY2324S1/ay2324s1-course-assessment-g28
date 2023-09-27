@@ -1,4 +1,5 @@
 import { QuestionBase, QuestionComplexity } from "@/api/questions/types";
+import ComplexityChip from "@/components/ComplexityChip";
 import DeleteButton from "@/components/QuestionsCard/QuestionsTable/DeleteButton";
 import { getUpdateQuestionPath } from "@/routes";
 import { Button, Chip } from "@nextui-org/react";
@@ -19,6 +20,7 @@ interface ColumnConfig {
   uid: ColumnKey;
   sortable?: boolean;
   render?: (rowData: QuestionBase) => React.ReactNode;
+  align: "start" | "center" | "end";
 }
 
 export const COLUMNS = [
@@ -34,20 +36,26 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
   [ColumnKey.ID]: {
     name: "ID",
     uid: ColumnKey.ID,
+    align: "start",
   },
   [ColumnKey.TITLE]: {
     name: "Title",
     uid: ColumnKey.TITLE,
+    align: "start",
   },
   [ColumnKey.CATEGORY]: {
     name: "Categories",
     uid: ColumnKey.CATEGORY,
-    render: (question: QuestionBase) =>
-      question.category.map((cat) => (
-        <Chip variant="flat" key={cat}>
-          {cat}
-        </Chip>
-      )),
+    render: (question: QuestionBase) => (
+      <div className="flex gap-2">
+        {question.category.map((cat) => (
+          <Chip variant="flat" key={cat}>
+            {cat}
+          </Chip>
+        ))}
+      </div>
+    ),
+    align: "start",
   },
   // [ColumnKey.ATTEMPTS]: {
   //   name: "Attempts",
@@ -56,16 +64,10 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
   [ColumnKey.DIFFCULTY]: {
     name: "Difficulty",
     uid: ColumnKey.DIFFCULTY,
-    render: (question: QuestionBase) => {
-      switch (question.complexity) {
-        case QuestionComplexity.EASY:
-          return <span className="text-green-500">Easy</span>;
-        case QuestionComplexity.MEDIUM:
-          return <span className="text-amber-500">Medium</span>;
-        case QuestionComplexity.HARD:
-          return <span className="text-red-600">Hard</span>;
-      }
-    },
+    render: (question: QuestionBase) => (
+      <ComplexityChip complexity={question?.complexity} />
+    ),
+    align: "start",
   },
   [ColumnKey.ACTION]: {
     name: "ACTIONS",
@@ -87,6 +89,7 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
         </div>
       );
     },
+    align: "center",
   },
 };
 
@@ -95,3 +98,5 @@ export const DEFAULT_COMPLEXITY_SELECTION = QuestionComplexity.EASY;
 export const PAGE_SIZE_OPTIONS = [{ name: 10 }, { name: 20 }, { name: 50 }];
 
 export const DEFAULT_PAGE_SIZE_SELECTION = 10;
+
+export const questionFilterRegex = /[^0-9a-z\-_]+/i;

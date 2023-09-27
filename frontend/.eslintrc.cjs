@@ -17,8 +17,10 @@ module.exports = {
   plugins: ["@typescript-eslint", "react"],
   root: true,
   rules: {
-    "max-len": 1,
-    indent: [1, 2],
+    "max-len": [1, {
+      "ignorePattern": "^import\\s.+\\sfrom\\s.+;$",
+      "ignoreUrls": true,
+    }],
     "no-tabs": 0,
     quotes: [1, "double"],
     semi: [1, "always"],
