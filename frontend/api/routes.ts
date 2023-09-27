@@ -7,7 +7,6 @@ export const getRoute = (route: string, isServerSide: boolean, serverUrl?: strin
 
 export const QUESTION_API = "/questions";
 export const USER_API = "/user";
-export const getUserByEmailPath = (email: string) => USER_API + "/" + email;
 export const getQuestionByIdPath = (id: number) =>
   QUESTION_API + "/" + id.toString();
 export const getQuestionAttemptPath = (attemptId: number) => 
