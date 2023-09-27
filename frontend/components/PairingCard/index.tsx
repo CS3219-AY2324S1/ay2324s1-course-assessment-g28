@@ -50,7 +50,7 @@ export const PairingCard = () => {
   };
 
   return (
-    <Card classNames="flex-shrink-0 flex-grow">
+    <Card className="flex-shrink-0 flex-grow">
       {editorUri ? (
         <div>Found a match. Editor URI: {editorUri}</div>
       ) : isSearching ? (

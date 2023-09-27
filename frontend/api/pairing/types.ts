@@ -7,9 +7,3 @@ export const PairingRequestZod = z.object({
 });
 
 export type PairingRequest = z.infer<typeof PairingRequestZod>;
-
-const PAIRING_SERVICE = "ws://localhost:4000/pairing";
-
-function get_request_endpoint(pairingRequest: PairingRequest): string {
-  return `${PAIRING_SERVICE}?user=${pairingRequest}`;
-}

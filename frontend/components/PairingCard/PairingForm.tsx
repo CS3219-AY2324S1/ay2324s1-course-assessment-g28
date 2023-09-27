@@ -13,7 +13,7 @@ import {
 import { ChevronDownIcon } from "@/assets/icons/ChevronDown";
 import {
   COMPLEXITY_OPTIONS,
-  QuestionComplexityToNameMap,
+  QuestionComplexityConfigsMap,
 } from "@/api/questions/constants";
 
 export default function PairingForm({
@@ -56,7 +56,7 @@ export default function PairingForm({
                   variant="flat"
                   title="Difficulty"
                 >
-                  {QuestionComplexityToNameMap[value]}
+                  {QuestionComplexityConfigsMap[value].name}
                 </Button>
               </DropdownTrigger>
               <DropdownMenu
