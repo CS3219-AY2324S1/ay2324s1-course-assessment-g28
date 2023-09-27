@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
-import { checkValidPairAndUser, getPairIdFromUrl, getPartnerId } from './services/pairService';
-import { getQueryParams, handleOperation, handleReady } from './services/wsService';
+import { checkValidPairAndUser, getPairIdFromUrl, getPair } from './services/pairService';
+import { getQueryParams, handleOp, handleReady, handleRunCode, handleSwitchLang } from './services/wsService';
 import { WS_METHODS } from './constants';
 dotenv.config();
 
@@ -90,34 +90,34 @@ server.listen(port, () => {
 const partners: { [userId: string]: string } = {};
 // List of clients' WebSocket connection
 const clients: { [userId: string]: WebSocket } = {};
-// Keeps track of the present pairs
-// Not sure if the value is needed for anything
-// For now keeps track of whether 1 or 2 users are connected
-const pairs: { [pairId: string]: number } = {};
+// Keeps track of whose turn it is in each pair
+const pairs: { [pairId: string]: string } = {};
 
 // A new client connection request received
 wsServer.on('connection', function(connection: WebSocket, request: Request, client) {
   console.log(`Recieved a new connection.`);
 
   // Store the new connection and handle messages
-  console.log(`${connection} connected.`);
-  console.log("Client ", client)
+  //console.log(`${connection} connected.`);
+  //console.log("Client ", client)
 
   const params = getQueryParams(request.url);
-  console.log("Query params ", params);
+  //console.log("Query params ", params);
   const pairId = params["pairId"];
   const userId = params["userId"];
 
-  console.log("Pair: ", pairId, "User: ", userId);
+  //console.log("Pair: ", pairId, "User: ", userId);
 
-  // Check partner exists, else close connection
-  getPartnerId(pairId, userId).then(partnerId => {
-    if (partnerId !== undefined) {
-      if (pairId in pairs) {
-        pairs[pairId] = 1;
+  // Check pair exists, else close connection
+  getPair(pairId, userId).then(pairDoc => {
+    if (pairDoc !== null) {
+      if (pairDoc.isUser1Turn) {
+        pairs[pairId] = pairDoc.user1;
       } else {
-        pairs[pairId] += 1;
+        pairs[pairId] = pairDoc.user2;
       }
+
+      const partnerId = userId === pairDoc.user1 ? pairDoc.user2 : pairDoc.user1;
 
       partners[userId] = partnerId;
       clients[userId] = connection;
@@ -130,7 +130,7 @@ wsServer.on('connection', function(connection: WebSocket, request: Request, clie
     } else {
       console.log("Closing connection for user ", userId);
       connection.close();
-    } 
+    }
   });
 
   connection.onmessage = (message: any) => {
@@ -141,7 +141,15 @@ wsServer.on('connection', function(connection: WebSocket, request: Request, clie
 
     switch (data.method) {
       case WS_METHODS.OP:
-        handleOperation(connection, partnerConnection, data);
+        handleOp(connection, partnerConnection, data);
+        break;
+      case WS_METHODS.SWITCH_LANG:
+        handleSwitchLang(connection, partnerConnection, data);
+        break;
+      case WS_METHODS.RUN_CODE:
+        handleRunCode(connection, partnerConnection, data);
+        break;
+
     }
   }
 });

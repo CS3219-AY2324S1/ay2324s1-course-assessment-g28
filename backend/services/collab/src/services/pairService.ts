@@ -1,17 +1,16 @@
 import { Pair } from "../schemas/pair";
 
 /**
- * Returns the partnerId or undefined if the pairId / userId is invalid
+ * Returns the Pair document corresponding to the pairId and userId
  * @param pairId 
  * @param userId 
  */
-export async function getPartnerId(pairId: string, userId: string): Promise<string|undefined> {
+export async function getPair(pairId: string, userId: string): Promise<any> {
   const pair = await Pair.findOne({ id: pairId }).exec();
 
-  if (pair?.user1 === userId) {
-    return pair?.user2;
-  } else if (pair?.user2 === userId) {
-    return pair?.user1;
+  if (pair?.user1 === userId || pair?.user2 === userId) {
+    return pair;
   }
-  return undefined;
+
+  return null;
 }

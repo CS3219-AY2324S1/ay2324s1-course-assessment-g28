@@ -3,19 +3,20 @@ import { java } from "@codemirror/lang-java";
 import { python } from "@codemirror/lang-python";
 
 export enum WS_METHODS {
-  OP,
+  OP, // To indicate I've handled this
   GET_TURN,
   GET_TURN_RESULT,
-  SWITCH_LANG,
-  RUN_CODE,
-  RUN_RESULT,
+  SWITCH_LANG, //
+  RUN_CODE, //
+  RUN_CODE_RESULT,
   NEXT_QUESTION,
+  NEXT_QUESTION_CONFIRM,
   EXIT,
   MESSAGE,
-  ADD_TESTCASE,
-  DELETE_TESTCASE,
-  EDIT_TESTCASE,
-  READY,
+  TESTCASE_ADD,
+  TESTCASE_DELETE,
+  TESTCASE_EDIT,
+  READY, //
 };
 
 export const LANGUAGE_DATA: {[key: string]: {codeMirrorExtension: any, templateCode: string}} = {

@@ -20,20 +20,14 @@ interface CodeWindowProps {
 export default function CodeWindow(props: CodeWindowProps) {
   const [language, setLanguage] = useState<string>(props.language ?? "Java");
   const [code, setCode] = useState(LANGUAGE_DATA[language].templateCode);
+  const [isMyTurn, setIsMyTurn] = useState(false);
   const [isWebsocketLoaded, setIsWebsocketLoaded] = useState(false);
   const [isCodeRunning, setIsCodeRunning] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
-  
-  const onChange = useCallback((val, viewUpdate) => {
-    console.log('val:', val);
-    setCode(val);
-  }, []);
 
   useEffect(() => {
-    initEditor();
-  }, props.question);
 
-  console.log("Establishing connection to ", props.websocketUrl)
+  }, props.question);
 
   const { sendJsonMessage, readyState } = useWebSocket(props.websocketUrl, {
     share: true,
@@ -41,7 +35,6 @@ export default function CodeWindow(props: CodeWindowProps) {
     onOpen: () => {
       console.log("Websocket connection established");
       setIsWebsocketLoaded(true);
-      initEditor();
     },
     onMessage: onMessage,
     onClose: onClose,
@@ -51,6 +44,21 @@ export default function CodeWindow(props: CodeWindowProps) {
   function onMessage(e: Event) {
     const data = JSON.parse(e.data);
     console.log(data);
+
+    switch (data.method) {
+      case WS_METHODS.READY:
+        handleReady(data);
+        break;
+      case WS_METHODS.OP:
+        handleOp(data);
+        break;
+      case WS_METHODS.SWITCH_LANG:
+        handleSwitchLang(data);
+        break;
+      case WS_METHODS.RUN_CODE:
+        handleRunCode(data);
+        break;
+    }
   }
 
   function onClose(e: Event) {
@@ -60,6 +68,25 @@ export default function CodeWindow(props: CodeWindowProps) {
 
   function onError(e: Event) {
     // TODO: Handle error
+  }
+
+  function handleReady(data) {
+    setIsMyTurn(data.isMyTurn);
+    setIsInitialized(true);
+  }
+
+  function handleOp(data) {
+    // TODO: Real time collab
+    setCode(data.op);
+  }
+
+  function handleSwitchLang(data) {
+    setLanguage(data.language);
+    setCode(LANGUAGE_DATA[data.language].templateCode);
+  }
+
+  function handleRunCode(data) {
+    setIsCodeRunning(true);
   }
 
   /**
@@ -75,14 +102,53 @@ export default function CodeWindow(props: CodeWindowProps) {
     sendJsonMessage({
       method: WS_METHODS.GET_TURN,
     });
-    setIsInitialized(true);
+  }
+
+  function onCodeChange(val: string) {
+    setCode(val);
+
+    console.log(val);
+
+    // TODO: Handle ops
+    sendJsonMessage({
+      method: WS_METHODS.OP,
+      op: val
+    });
+  }
+
+  function onLanguageChange(val: string) {
+    setLanguage(val);
+    setCode(LANGUAGE_DATA[val].templateCode);
+    sendJsonMessage({
+      method: WS_METHODS.SWITCH_LANG,
+      language: val
+    });
   }
 
   /**
    * Sends the code through WebSocket to CollabService which will run the compiler / interpreter
    * WebSocket will inform both users of the result
    */
-  function runCode() {
+  function runCode(e) {
+    sendJsonMessage({
+      method: WS_METHODS.RUN_CODE,
+      language: language,
+      code: code,
+      // Testcases[]
+    });
+    setIsCodeRunning(true);
+  }
+
+  function nextQuestion() {
+    
+  }
+
+  // Called by the partner
+  function confirmNextQuestion() {
+
+  }
+
+  function exitEditor() {
 
   }
 
@@ -108,8 +174,10 @@ export default function CodeWindow(props: CodeWindowProps) {
                   value: "text-sm"
                 }}
                 defaultValue={language}
+                key={language}
+                value={language}
                 disableSelectorIconRotation
-                onChange={e => setLanguage(e.target.value)}
+                onChange={e => onLanguageChange(e.target.value)}
               >
                 {LANGUAGES.map((lang) => (
                   <SelectItem key={lang} value={lang}>
@@ -117,26 +185,25 @@ export default function CodeWindow(props: CodeWindowProps) {
                   </SelectItem>
                 ))}
               </Select>
-              <Button size="sm" color="success" className='text-white h-8 font-bold px-5'>
+              <Button onClick={runCode} size="sm" color="success" className='text-white h-8 font-bold px-5'>
                 Run Code
               </Button>
             </div>
             <div className="w-1/2 grow flex flex-row justify-end gap-2">
-              <Button size="sm" color="warning" className='text-white h-8 font-bold'>
+              <Button onClick={nextQuestion} size="sm" color="warning" className='text-white h-8 font-bold'>
                 Next Question
               </Button>
-              <Button size="sm" color="default" className='h-8 font-bold'>
+              <Button onClick={exitEditor} size="sm" color="default" className='h-8 font-bold'>
                 Exit
               </Button>
             </div>
           </div>
           <CodeMirror
             className="h-full w-full"
-            editable={!props.readOnly} 
             value={code} 
             height="100%" 
             extensions={[LANGUAGE_DATA[language].codeMirrorExtension]} 
-            onChange={onChange}
+            onChange={onCodeChange}
             lang={language}
           />
         </div>
@@ -145,7 +212,7 @@ export default function CodeWindow(props: CodeWindowProps) {
       <Panel>
         <div className="h-full w-full flex flex-col bg-white overflow-auto rounded-xl relative box-border">
           {(() => {
-            if (isCodeRunning && !isInitialized) {
+            if (isCodeRunning && isInitialized) {
               return (
                 <LoadingScreen displayText="Waiting for result ..."></LoadingScreen>
               );
