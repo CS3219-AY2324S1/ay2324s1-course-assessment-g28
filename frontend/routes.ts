@@ -4,6 +4,7 @@
 
 export const HOME = "/";
 export const LOGIN = "/login";
+export const REGISTER = "/register";
 export const LOGOUT = "/api/auth/signout";
 const QUESTION_DIRECTORY = "/questions";
 export const CREATE_QUESTION = QUESTION_DIRECTORY + "/create";

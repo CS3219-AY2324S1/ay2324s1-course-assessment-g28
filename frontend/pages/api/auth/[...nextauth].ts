@@ -1,8 +1,9 @@
+import { getUserInfoServerSide } from "@/api/server/user";
 import { LOGIN } from "@/routes";
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
-export const authOptions = {
+export const authOptions: AuthOptions = {
   // Configure one or more authentication providers
   providers: [
     GoogleProvider({
@@ -12,6 +13,26 @@ export const authOptions = {
   ],
   pages: {
     signIn: LOGIN,
+  },
+  callbacks: {
+    jwt: async ({token, profile}) => {
+      if (profile) {
+        try {
+          const userInfo = await getUserInfoServerSide(profile.email!);
+          token.userExists = true;
+          token.isAdmin = userInfo!.isAdmin;
+        } catch (e) {
+          // the given user is not in our own database
+          token.userExists = false;
+        }
+      }
+      return token
+    },
+    session: async ({session, token}) => {
+      //@ts-ignore
+      session.user.isAdmin = token.isAdmin;
+      return session
+    }
   },
 };
 

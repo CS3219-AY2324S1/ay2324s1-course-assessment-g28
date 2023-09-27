@@ -1,4 +1,3 @@
-import { getUserInfoServerSide } from "@/api/server/user";
 import MatchingUI from "@/components/MatchingUI";
 import QuestionsCard from "@/components/QuestionsCard";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
@@ -8,8 +7,8 @@ import { getServerSession } from "next-auth";
 export const getServerSideProps = (async (context) => {
   // middlware should ensure that session is always present when this is run
   const session = await getServerSession(context.req, context.res, authOptions);
-  const userInfo = await getUserInfoServerSide(session!.user!.email!);
-  return { props: { userIsAdmin: userInfo.isAdmin } };
+  //@ts-ignore
+  return { props: { userIsAdmin: session.user.isAdmin } };
 }) satisfies GetServerSideProps<{
   userIsAdmin: boolean;
 }>;
