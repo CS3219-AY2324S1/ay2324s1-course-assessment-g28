@@ -30,7 +30,7 @@ export const COMPLEXITY_OPTIONS = Object.keys(QuestionComplexityConfigsMap).map(
   }),
 );
 
-export function getErrorMessageFromErrorCode(errorCode: number) {
+export function getQuestionErrorMessageFromErrorCode(errorCode: number) {
   switch (errorCode) {
     case 1:
       return "A question with the given title already exists.";

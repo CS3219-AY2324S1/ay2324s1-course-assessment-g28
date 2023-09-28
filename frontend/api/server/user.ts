@@ -10,7 +10,7 @@ class UserDoesNotExist extends Error {}
 
 export async function getUserInfoServerSide(userEmail: string) {
   //TODO: Remove when finished dev
-  if (process.env.USER_BACKEND_MODE == "LOCAL") {
+  if (process.env.USER_BACKEND_MODE === "LOCAL") {
     return { isAdmin: true };
   }
   try {

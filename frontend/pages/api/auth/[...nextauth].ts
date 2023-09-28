@@ -15,24 +15,22 @@ export const authOptions: AuthOptions = {
     signIn: LOGIN,
   },
   callbacks: {
-    jwt: async ({token, profile}) => {
-      if (profile) {
-        try {
-          const userInfo = await getUserInfoServerSide(profile.email!);
-          token.userExists = true;
-          token.isAdmin = userInfo!.isAdmin;
-        } catch (e) {
-          // the given user is not in our own database
-          token.userExists = false;
-        }
+    jwt: async ({ token }) => {
+      try {
+        const userInfo = await getUserInfoServerSide(token.email!);
+        token.userExists = true;
+        token.isAdmin = userInfo!.isAdmin;
+      } catch (e) {
+        // the given user is not in our own database
+        token.userExists = false;
       }
-      return token
+      return token;
     },
-    session: async ({session, token}) => {
+    session: async ({ session, token }) => {
       //@ts-ignore
       session.user.isAdmin = token.isAdmin;
-      return session
-    }
+      return session;
+    },
   },
 };
 
