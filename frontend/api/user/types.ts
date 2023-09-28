@@ -18,11 +18,17 @@ export const AttemptedQuestionDetailsZod = z.object({
 export const UserZod = z.object({
   isAdmin: z.boolean(),
   username: z.string(),
+  favouriteProgrammingLanguage: z.string().optional(),
+  numEasyQuestionsAttempted: z.number().nonnegative(),
+  numMediumQuestionsAttempted: z.number().nonnegative(),
+  numHardQuestionsAttempted: z.number().nonnegative(), 
   attemptedQuestions: AttemptedQuestionRecordZod.array(),
 });
 
+
 export const CreateUserRequestBodyZod = z.object({
-  username: z.string()
+  username: z.string(),
+  favouriteProgrammingLanguage: z.string().optional(),
 })
 
 export type AttemptedQuestionRecord = z.infer<

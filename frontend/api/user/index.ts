@@ -34,7 +34,7 @@ export async function deleteUser() {
   const res = await fetch(USER_API, {
     method: HttpMethod.DELETE,
   });
-  if (res.status !== HttpStatus.OK) {
+  if (res.status !== HttpStatus.OK_NO_CONTENT) {
     throw new RequestError(res);
   }
 }
@@ -43,7 +43,7 @@ export async function deleteQuestionAttempt(attemptId: number) {
   const res = await fetch(getQuestionAttemptPath(attemptId), {
     method: HttpMethod.DELETE
   })
-  if (res.status !== HttpStatus.OK) {
+  if (res.status !== HttpStatus.OK_NO_CONTENT) {
     throw new RequestError(res);
   }
 }
@@ -53,7 +53,17 @@ export async function addUser(userInfo: CreateUserRequestBody) {
     method: HttpMethod.POST,
     body: JSON.stringify(userInfo),
   });
-  if (res.status !== HttpStatus.OK) {
+  if (res.status !== HttpStatus.OK_NO_CONTENT) {
     throw new RequestError(res);
   }
+}
+
+export async function updateUser(userInfo: CreateUserRequestBody) {
+  const res = await fetch(USER_API, {
+    method: HttpMethod.PATCH,
+    body: JSON.stringify(userInfo),
+  });
+  if (res.status !== HttpStatus.OK_NO_CONTENT) {
+    throw new RequestError(res);
+  } 
 }
