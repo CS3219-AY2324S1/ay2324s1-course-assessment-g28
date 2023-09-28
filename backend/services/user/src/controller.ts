@@ -88,8 +88,7 @@ export const getUserByEmail = async (req: Request, res: Response) => {
     const { email } = req.params;
 
     // query to obtain details from user table
-    const userQuery =
-      "SELECT username, is_admin, favourite_programming_language FROM Users WHERE email = $1";
+    const userQuery = `SELECT username, is_admin AS "isAdmin", favourite_programming_language AS "favouriteProgrammingLanguage" FROM Users WHERE email = $1`;
     const userResult = await pool.query(userQuery, [email]);
 
     if (userResult.rows.length === 0) {
@@ -98,13 +97,11 @@ export const getUserByEmail = async (req: Request, res: Response) => {
     }
 
     // query to obtain details from attempts table
-    const attemptQuery =
-      "SELECT id AS attempt_id, question_id, question_title, question_difficulty, attempt_date FROM Attempts WHERE email = $1";
+    const attemptQuery = `SELECT id AS "attemptId", question_id AS "questionId", question_title AS "questionTitle", question_difficulty AS "questionDifficulty", attempt_date AS "attemptDate" FROM Attempts WHERE email = $1`;
     const attemptResult = await pool.query(attemptQuery, [email]);
 
     // query to obtain details on unique questionids attempted, to get difficulty counts below
-    const numAttemptedQuery =
-      "SELECT question_difficulty, count(*) FROM (SELECT DISTINCT question_id, question_difficulty FROM Attempts WHERE email = $1) GROUP BY question_difficulty";
+    const numAttemptedQuery = `SELECT question_difficulty, count(*) FROM (SELECT DISTINCT question_id, question_difficulty FROM Attempts WHERE email = $1) AS uniqueAttempts GROUP BY question_difficulty`;
     const numAttemptedResult = await pool.query(numAttemptedQuery, [email]);
 
     let numEasyQuestionsAttempted = 0;
@@ -138,8 +135,7 @@ export const getUserByEmail = async (req: Request, res: Response) => {
 export const getAttemptById = async (req: Request, res: Response) => {
   try {
     const { email, attemptId } = req.params;
-    const query =
-      "SELECT id AS attempt_id, question_id, question_title, question_difficulty, attempt_date, attempt_details FROM Attempts WHERE email = $1 and id = $2";
+    const query = `SELECT id AS "attemptId", question_id AS "questionId", question_title AS "questionTitle", question_difficulty AS "questionDifficulty", attempt_date AS "attemptDate", attempt_details AS "attemptDetails" FROM Attempts WHERE email = $1 and id = $2`;
     const result = await pool.query(query, [email, attemptId]);
     res.status(200).json(result.rows[0]);
   } catch (error) {
