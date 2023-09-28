@@ -14,6 +14,8 @@ export default function useUserInfo() {
   const isLoading = status === UserStatus.LOADING;
   const isSignedIn = status === UserStatus.AUTHENTICATED;
   const isNotSignedIn = status === UserStatus.UNAUTHENTICATED;
+  //@ts-ignore
+  const username = user?.username;
 
-  return { user, isLoading, isSignedIn, isNotSignedIn, image, name };
+  return { user, isLoading, isSignedIn, isNotSignedIn, image, name, username };
 }

@@ -6,6 +6,7 @@ export const HOME = "/";
 export const LOGIN = "/login";
 export const REGISTER = "/register";
 export const LOGOUT = "/api/auth/signout";
+export const PROFILE = "/profile";
 const QUESTION_DIRECTORY = "/questions";
 export const CREATE_QUESTION = QUESTION_DIRECTORY + "/create";
 export const getQuestionPath = (questionId: number) => QUESTION_DIRECTORY + "/" + questionId.toString();
