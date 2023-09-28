@@ -8,13 +8,26 @@ export async function forwardRequestAndGetResponse(
   req: NextApiRequest,
   res: NextApiResponse,
   apiAddr: string,
-  customPath?: string // custom path to use. do not use path from client inside req
+  options?: {
+    customPath?: string,
+    appendBody?: Record<string, string>
+  }
 ) {
   try {
     let url = getBackendUrl(apiAddr, req);
-    if(customPath) {
-      url = apiAddr + customPath
+    if (options?.customPath) {
+      url = apiAddr + options.customPath;
     }
+    let newBody;
+    if (req.headers["content-type"] == "application/json") {
+      newBody = req.body;
+      if (options?.appendBody) {
+        for (const field in options.appendBody) {
+          newBody[field] = options.appendBody[field];
+        }
+      }
+    }
+    newBody = req.body;
     let backendResponse;
     if (req.method === "GET" || req.method === "DELETE") {
       backendResponse = await fetch(url, {
@@ -25,13 +38,17 @@ export async function forwardRequestAndGetResponse(
         method: req.method,
         headers: {
           "Content-Type": req.headers["content-type"] ?? "",
-          //"Content-Length": JSON.stringify(req.body).length.toString(),
+          //"Content-Length": JSON.stringify(newBody).length.toString(),
         },
-        body: JSON.stringify(req.body),
+        body: JSON.stringify(newBody),
       });
     }
+
     if (!backendResponse.ok) {
-      console.log((await backendResponse.json()));
+      const error = await backendResponse.json();
+      console.log(error)
+      res.status(backendResponse.status).json(error);
+      return;
     }
     if (backendResponse.status === HttpStatus.OK_NO_CONTENT) {
       res.status(backendResponse.status).send("");
@@ -41,7 +58,7 @@ export async function forwardRequestAndGetResponse(
     }
   } catch (e) {
     console.log(e);
-    throw e;
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 0 });
   }
 }
 

@@ -4,7 +4,7 @@ import { patchQuestion, postQuestion } from "@/api/questions";
 import {
   COMPLEXITY_OPTIONS,
   QuestionComplexityConfigsMap,
-  getErrorMessageFromErrorCode,
+  getQuestionErrorMessageFromErrorCode,
 } from "@/api/questions/constants";
 import {
   Question,
@@ -71,7 +71,7 @@ export default function QuestionCreationForm({
         e.response.status === HttpStatus.INTERNAL_SERVER_ERROR
       ) {
         const errorInfo = await e.response.json();
-        toast.error(getErrorMessageFromErrorCode(errorInfo.error));
+        toast.error(getQuestionErrorMessageFromErrorCode(errorInfo.error));
       } else {
         toast.error("Something went wrong. Please try again.");
       }

@@ -6,7 +6,7 @@ export const getRoute = (route: string, isServerSide: boolean, serverUrl?: strin
   (isServerSide ? serverUrl : API_PREFIX) + route;
 
 export const QUESTION_API = "/questions";
-export const USER_API = "/user";
+export const USER_API = "/users";
 export const getQuestionByIdPath = (id: number) =>
   QUESTION_API + "/" + id.toString();
 export const getQuestionAttemptPath = (attemptId: number) => 

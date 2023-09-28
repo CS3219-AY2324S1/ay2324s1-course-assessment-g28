@@ -27,7 +27,7 @@ export const UserZod = z.object({
 
 
 export const CreateUserRequestBodyZod = z.object({
-  username: z.string(),
+  username: z.string().min(1, "Username must be provided"),
   favouriteProgrammingLanguage: z.string().optional(),
 })
 
