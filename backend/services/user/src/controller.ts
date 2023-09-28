@@ -146,9 +146,15 @@ export const getAttemptById = async (req: Request, res: Response) => {
 //PUT/PATCH handlers
 export const updateUserByEmail = async (req: Request, res: Response) => {
   try {
-    const { email, username } = req.body;
-    const query = "UPDATE Users SET username = $1 WHERE email = $2 RETURNING *";
-    const result = await pool.query(query, [username, email]);
+    const { email } = req.params;
+    const { username, favouriteProgrammingLanguage } = req.body;
+    const query =
+      "UPDATE Users SET username = COALESCE($1, username), favourite_programming_language = COALESCE($2, favourite_programming_language) WHERE email = $3 RETURNING *";
+    const result = await pool.query(query, [
+      username,
+      favouriteProgrammingLanguage,
+      email,
+    ]);
     if (result.rows.length === 0) {
       res.status(404).json({ message: `User with ${email} does not exist.` });
       return;
