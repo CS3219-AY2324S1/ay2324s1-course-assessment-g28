@@ -10,9 +10,13 @@ import {
 import Image from "next/image";
 import DefaultProfileImage from "@/assets/images/default-profile-image.png";
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/router";
+import { PROFILE } from "@/routes";
+import { LogOut, UserCircle } from "lucide-react";
 
-const Logout = () => {
-  const { user } = useUserInfo();
+const UserDropdown = () => {
+  const { user, username } = useUserInfo();
+  const router = useRouter();
   const { image, name } = user ?? {};
 
   return (
@@ -27,15 +31,26 @@ const Logout = () => {
               alt="User Thumbnail"
               className="rounded-full"
             />
-            <div className="text-white">{name}</div>
+            <div className="text-white">{username ? username : name}</div>
           </Button>
         </DropdownTrigger>
         <DropdownMenu aria-label="User actions" className="text-black">
-          <DropdownItem onClick={() => signOut()}>Logout</DropdownItem>
+          <DropdownItem
+            onClick={() => router.push(PROFILE)}
+            endContent={<UserCircle size={20} color="purple" />}
+          >
+            User Profile
+          </DropdownItem>
+          <DropdownItem
+            onClick={() => signOut()}
+            endContent={<LogOut size={20} />}
+          >
+            Logout
+          </DropdownItem>
         </DropdownMenu>
       </Dropdown>
     </NavbarContent>
   );
 };
 
-export default Logout;
+export default UserDropdown;

@@ -1,6 +1,6 @@
 import { Navbar as NextNavBar } from "@nextui-org/react";
 import Brand from "./brand";
-import Logout from "./logout";
+import UserDropdown from "./UserDropdown";
 import useUserInfo from "@/hooks/useUserInfo";
 
 export default function Navbar() {
@@ -12,7 +12,7 @@ export default function Navbar() {
       className="bg-white bg-opacity-10"
     >
       <Brand />
-      {isSignedIn ? <Logout /> : null}
+      {isSignedIn ? <UserDropdown /> : null}
     </NextNavBar>
   );
 }

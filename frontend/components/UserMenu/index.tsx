@@ -22,7 +22,7 @@ export default function UserMenu() {
             alt="Profile Picture"
             className="rounded-full"
           />
-          <p className="text-md">{user?.name}</p>
+          <p className="text-md">{user?.username? user.username : user.name}</p>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
