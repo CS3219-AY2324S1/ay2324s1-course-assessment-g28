@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { config } from "dotenv";
 import { Pool } from "pg";
+import { UNKNOWN_ERROR_CODE, USERNAME_ALREADY_EXISTS_CODE } from "./errors";
 
 // set up PG connection
 config();
@@ -27,7 +28,11 @@ export const createUser = async (req: Request, res: Response) => {
     ]);
     res.status(204).json();
   } catch (error) {
-    res.status(500).json({ error: `createUser failed ${error}` });
+    const errorCode = UNKNOWN_ERROR_CODE;
+    res.status(500).json({
+      errorCode: errorCode,
+      message: `createUser failed ${error}`,
+    });
   }
 };
 
@@ -68,7 +73,11 @@ export const createAttempt = async (req: Request, res: Response) => {
     await pool.query(query, queryArgs);
     res.status(204).json();
   } catch (error) {
-    res.status(500).json({ error: `createAttempt failed ${error}` });
+    const errorCode = UNKNOWN_ERROR_CODE;
+    res.status(500).json({
+      errorCode: errorCode,
+      message: `createAttempt failed ${error}`,
+    });
   }
 };
 
@@ -79,7 +88,11 @@ export const getAllUsers = async (req: Request, res: Response) => {
     const result = await pool.query(query);
     res.status(200).json(result.rows);
   } catch (error) {
-    res.status(500).json({ error: `getAllUsers failed ${error}` });
+    const errorCode = UNKNOWN_ERROR_CODE;
+    res.status(500).json({
+      errorCode: errorCode,
+      message: `getAllUsers failed ${error}`,
+    });
   }
 };
 
@@ -128,7 +141,11 @@ export const getUserByEmail = async (req: Request, res: Response) => {
       attemptedQuestions: attemptResult.rows,
     });
   } catch (error) {
-    res.status(500).json({ error: `getUserByEmail failed ${error}` });
+    const errorCode = UNKNOWN_ERROR_CODE;
+    res.status(500).json({
+      errorCode: errorCode,
+      message: `getUserByEmail failed ${error}`,
+    });
   }
 };
 
@@ -139,7 +156,11 @@ export const getAttemptById = async (req: Request, res: Response) => {
     const result = await pool.query(query, [email, attemptId]);
     res.status(200).json(result.rows[0]);
   } catch (error) {
-    res.status(500).json({ error: `getAttemptById failed ${error}` });
+    const errorCode = UNKNOWN_ERROR_CODE;
+    res.status(500).json({
+      errorCode: errorCode,
+      message: `getAttemptById failed ${error}`,
+    });
   }
 };
 
@@ -162,7 +183,11 @@ export const updateUserByEmail = async (req: Request, res: Response) => {
       res.status(204).json();
     }
   } catch (error) {
-    res.status(500).json({ error: `updateUserByEmail failed ${error}` });
+    const errorCode = UNKNOWN_ERROR_CODE;
+    res.status(500).json({
+      errorCode: errorCode,
+      message: `updateUserByEmail failed ${error}`,
+    });
   }
 };
 
@@ -180,7 +205,11 @@ export const deleteUserByEmail = async (req: Request, res: Response) => {
     res.status(204).json({ message: `${email} deleted successfully!` });
   } catch (error) {
     await pool.query("ROLLBACK");
-    res.status(500).json({ error: `deleteUserByEmail failed ${error}` });
+    const errorCode = UNKNOWN_ERROR_CODE;
+    res.status(500).json({
+      errorCode: errorCode,
+      message: `deleteUserByEmail failed ${error}`,
+    });
   }
 };
 
@@ -192,7 +221,15 @@ export const deleteAttemptById = async (req: Request, res: Response) => {
       attemptId,
     ]);
     res.status(204).json();
-  } catch (error) {
-    res.status(500).json({ error: `deleteAttemptById failed ${error}` });
+  } catch (error: any) {
+    const errorCode =
+      error.code === "23505" && error.constraint === "users_username_key"
+        ? USERNAME_ALREADY_EXISTS_CODE
+        : UNKNOWN_ERROR_CODE;
+
+    res.status(500).json({
+      errorCode: errorCode,
+      message: `deleteAttemptById failed ${error}`,
+    });
   }
 };
