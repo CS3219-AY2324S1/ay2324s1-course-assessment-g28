@@ -9,6 +9,7 @@ import {
   useContext,
   useState,
 } from "react";
+import toast from "react-hot-toast";
 
 export enum MatchStatus {
   SELECT_DIFFICULTY,
@@ -92,10 +93,12 @@ export const MatchContextProvider = ({
     );
     ws.onmessage = (msg) => {
       try {
-        let parsed = JSON.parse(msg.data);
+        const parsed = JSON.parse(msg.data);
         if (parsed.data.url) {
           setEditorUri(parsed.data.url);
           setMatchStatus(MatchStatus.MATCH_SUCCESS);
+          // TODO: replace toast with actual usage of returned details
+          toast.success(`Matched with ${JSON.stringify(parsed.data)}`);
           ws.close();
         } else if (parsed.status == 200) {
           console.log(parsed);
