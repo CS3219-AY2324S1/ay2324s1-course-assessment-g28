@@ -9,6 +9,9 @@ const SECOND = 1000;
 
 function matchOnQuestion(user1: User, user2: User): Question | null {
   // not implemented yet
+  if (user1.match_options.user == user2.match_options.user) {
+    return null;
+  }
   if (user1.match_options.complexity !== user2.match_options.complexity) {
     return null;
   }
