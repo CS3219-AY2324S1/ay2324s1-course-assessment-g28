@@ -38,24 +38,31 @@ export default function getPairingRequestCallback(
         match[1].match_options.user
       );
 
-      let reply = {
+      // Reply to user 1
+      let reply1 = {
         url,
+        otherUser: match[1].match_options.user,
       };
-      match.forEach((m) => {
-        channel.sendToQueue(
-          m.reply_params.replyTo,
-          Buffer.from(JSON.stringify(reply)),
-          {
-            correlationId: m.reply_params.correlationId,
-          }
-        );
+      channel.sendToQueue(
+        match[0].reply_params.replyTo,
+        Buffer.from(JSON.stringify(reply1)),
+        {
+          correlationId: match[0].reply_params.correlationId,
+        }
+      );
 
-        logger.debug(
-          `Sending to correlationId: {${
-            m.reply_params.correlationId
-          }}, with message {${JSON.stringify(reply)}}`
-        );
-      });
+      // Reply to user 2
+      let reply2 = {
+        url,
+        otherUser: match[0].match_options.user,
+      };
+      channel.sendToQueue(
+        match[1].reply_params.replyTo,
+        Buffer.from(JSON.stringify(reply2)),
+        {
+          correlationId: match[1].reply_params.correlationId,
+        }
+      );
     }
   };
 }
