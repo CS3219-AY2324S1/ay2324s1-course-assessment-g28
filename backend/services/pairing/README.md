@@ -6,6 +6,11 @@ To start a pairing request, the client should connect to the service via a webso
 
 `ws://<pairing-front url>:<port>/pairing/?user=<user id>&complexity=<complexity`
 
+Required query params:
+
+- `user: string`: unique identifier for the user
+- `complexity: number[0-2]`: Must be a number from 0 to 2 where EASY=0, MEDIUM=1, HARD=2
+
 An example query would be:
 
 `ws://pairing-front:4000/pairing?user=lee215@gmail.com&complexity=2`
