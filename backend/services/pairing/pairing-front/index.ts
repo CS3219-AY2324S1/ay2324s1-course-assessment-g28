@@ -11,8 +11,15 @@ const RABBITMQ_URL = process.env.RABBITMQ_URL!;
 function getWsCallback(rmq_conn: amqp.Connection) {
   return async (ws: WebSocket, req: IncomingMessage) => {
     let params = url.parse(req.url!, true).query;
-    if (!params.user) {
-      ws.send("Invalid request");
+
+    if (!params.user || Number(params.complexity == null)) {
+      const msg = JSON.stringify({
+        status: 400,
+        data: {
+          message: "Bad request",
+        },
+      });
+      ws.send(msg);
       ws.close();
       return;
     }
@@ -47,7 +54,10 @@ function getWsCallback(rmq_conn: amqp.Connection) {
     console.log(return_queue.queue);
 
     var msg = {
-      match_options: { user: params.user },
+      match_options: {
+        user: params.user,
+        complexity: Number(params.complexity),
+      },
     };
     channel.sendToQueue(request_queue.queue, Buffer.from(JSON.stringify(msg)), {
       correlationId,

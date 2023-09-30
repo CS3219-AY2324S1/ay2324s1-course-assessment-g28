@@ -35,7 +35,7 @@ function startServer() {
 
       channel.consume(
         request_queue.queue,
-        getPairingRequestCallback(channel, request_queue)
+        getPairingRequestCallback(channel, request_queue, userList)
       );
     })
     .catch((error) => {
