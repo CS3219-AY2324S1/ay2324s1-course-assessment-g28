@@ -27,8 +27,8 @@ type MatchContextType = {
   onChangeComplexity: (complexity: QuestionComplexity) => void;
   onRetry: () => void;
   onClose: () => void;
-  pairingWebsocket: WebSocket | null
-  editorUri: string | null,
+  pairingWebsocket: WebSocket | null;
+  editorUri: string | null;
 };
 
 const defaultContext: MatchContextType = {
@@ -68,7 +68,7 @@ export const MatchContextProvider = ({
     null,
   );
   const [editorUri, setEditorUri] = useState<string | null>(null);
-  const user  = useUserInfo()
+  const user = useUserInfo();
   const [selectedComplexity, setSelectComplexity] = useState<
     QuestionComplexity | undefined
   >();
@@ -84,7 +84,12 @@ export const MatchContextProvider = ({
     setSelectComplexity(complexity);
     setMatchStatus(MatchStatus.MATCHING);
     //TODO: adjust this
-    const ws = new WebSocket(getPairingServiceUri({userId: user.user!.email!, complexity: selectedComplexity!}));
+    const ws = new WebSocket(
+      getPairingServiceUri({
+        userId: user.user!.email!,
+        complexity: selectedComplexity!,
+      }),
+    );
     ws.onmessage = (msg) => {
       try {
         let parsed = JSON.parse(msg.data);
@@ -92,6 +97,8 @@ export const MatchContextProvider = ({
           setEditorUri(parsed.data.url);
           setMatchStatus(MatchStatus.MATCH_SUCCESS);
           ws.close();
+        } else if (parsed.status == 200) {
+          console.log(parsed);
         } else {
           setMatchStatus(MatchStatus.MATCH_ERROR);
           console.log(msg);
@@ -111,6 +118,7 @@ export const MatchContextProvider = ({
 
   const onClose = () => {
     setIsModalOpen(false);
+    pairingWebsocket?.close();
     setMatchStatus(MatchStatus.SELECT_DIFFICULTY);
     // todo: stop connecting
   };
@@ -129,7 +137,7 @@ export const MatchContextProvider = ({
         onRetry,
         onClose,
         editorUri,
-        pairingWebsocket
+        pairingWebsocket,
       }}
     >
       {children}
