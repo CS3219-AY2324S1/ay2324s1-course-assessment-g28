@@ -1,4 +1,4 @@
-import { getPairingServiceUri } from "@/api/pairing";
+import { MAX_PAIRING_DURATION, getPairingServiceUri } from "@/api/pairing";
 import { QuestionComplexity } from "@/api/questions/types";
 import useUserInfo from "@/hooks/useUserInfo";
 import {
@@ -76,6 +76,7 @@ export const MatchContextProvider = ({
   const [matchStatus, setMatchStatus] = useState<MatchStatus>(
     MatchStatus.SELECT_DIFFICULTY,
   );
+  const [pairingTimer, setPairingTimer] = useState<NodeJS.Timeout>();
 
   const redirectToRoom = () => {
     // todo redirect to room
@@ -91,6 +92,14 @@ export const MatchContextProvider = ({
         complexity: selectedComplexity!,
       }),
     );
+
+    setPairingTimer(
+      setTimeout(() => {
+        ws.close();
+        setMatchStatus(MatchStatus.MATCH_TIMEOUT);
+        setPairingWebsocket(null);
+      }, MAX_PAIRING_DURATION),
+    );
     ws.onmessage = (msg) => {
       try {
         const parsed = JSON.parse(msg.data);
@@ -104,29 +113,34 @@ export const MatchContextProvider = ({
           console.log(parsed);
         } else {
           setMatchStatus(MatchStatus.MATCH_ERROR);
+          ws.close();
           console.log(msg);
+          clearTimeout(pairingTimer);
         }
       } catch (e) {
         setMatchStatus(MatchStatus.MATCH_ERROR);
+        ws.close();
         console.error(e);
+        clearTimeout(pairingTimer);
       }
     };
     setPairingWebsocket(ws);
   };
 
   const onRetry = () => {
-    setMatchStatus(MatchStatus.MATCHING);
-    // todo call api
+    if (selectedComplexity === undefined) {
+      setMatchStatus(MatchStatus.SELECT_DIFFICULTY);
+    } else {
+      onChangeComplexity(selectedComplexity);
+    }
   };
 
   const onClose = () => {
     setIsModalOpen(false);
     pairingWebsocket?.close();
+    clearTimeout(pairingTimer);
     setMatchStatus(MatchStatus.SELECT_DIFFICULTY);
-    // todo: stop connecting
   };
-
-  // do api call here and update matchStatus
 
   return (
     <MatchContext.Provider
