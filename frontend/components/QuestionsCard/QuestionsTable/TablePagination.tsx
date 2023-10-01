@@ -38,8 +38,11 @@ const TablePagination = ({ total }: { total: number }) => {
           onAction={(key) => setPageSize(key as number)}
         >
           {PAGE_SIZE_OPTIONS.map((pageSizeOption) => (
-            <DropdownItem key={pageSizeOption.name} className="text-zinc-600">
-              {pageSizeOption.name}
+            <DropdownItem
+              key={pageSizeOption.name}
+              className="text-zinc-600 text-center"
+            >
+              {`${pageSizeOption.name.toString()} questions / Page`}
             </DropdownItem>
           ))}
         </DropdownMenu>

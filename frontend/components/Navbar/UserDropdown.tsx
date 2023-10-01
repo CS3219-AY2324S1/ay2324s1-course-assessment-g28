@@ -15,9 +15,8 @@ import { PROFILE } from "@/routes";
 import { LogOut, UserCircle } from "lucide-react";
 
 const UserDropdown = () => {
-  const { user, username } = useUserInfo();
+  const { image, name, username } = useUserInfo();
   const router = useRouter();
-  const { image, name } = user ?? {};
 
   return (
     <NavbarContent justify="end">
