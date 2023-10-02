@@ -16,7 +16,7 @@ const Layout = ({ children }: PropsWithChildren<unknown>) => {
   const isLoginPage = pathname === "/login";
   return (
     <div
-      className="w-screen h-screen overflow-hidden bg-neutral-700
+      className="w-screen h-screen overflow-y-scroll bg-neutral-700
         transition-all duration-300"
       style={isLoginPage ? backgroundWithImageStyle : {}}
     >
