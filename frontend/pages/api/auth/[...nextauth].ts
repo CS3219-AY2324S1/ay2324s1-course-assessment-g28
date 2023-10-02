@@ -18,7 +18,7 @@ export const authOptions: AuthOptions = {
     jwt: async ({ token }) => {
       try {
         const userInfo = await getUserInfoServerSide(token?.email ?? "");
-        token.userExists = true;
+        token.userExists = Boolean(userInfo?.username);
         token.username = userInfo?.username;
         token.isAdmin = userInfo?.isAdmin ?? false;
       } catch (e) {
