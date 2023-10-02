@@ -45,7 +45,7 @@ const getTip = (usernameStatus: UsernameStatus) => {
       return (
         <div
           className="font-extralight text-[11px] w-full
-            flex justify-center gap-2 items-baseline "
+            flex justify-center gap-2 items-center "
         >
           <span>Checking...</span>
           <Spinner size="sm" color="secondary" className="scale-50 pb-1" />
