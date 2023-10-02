@@ -3,7 +3,7 @@ import cx from "classnames";
 import { POPPINS_CLASS } from "@/assets/fonts/poppins";
 import Navbar from "@/components/Navbar";
 import BackgroundImage from "@/assets/images/background-image.png";
-import useUserInfo from "@/hooks/useUserInfo";
+import { usePathname } from "next/navigation";
 
 const { src: backgroundImageSrc } = BackgroundImage;
 const backgroundWithImageStyle: CSSProperties = {
@@ -12,12 +12,13 @@ const backgroundWithImageStyle: CSSProperties = {
 };
 
 const Layout = ({ children }: PropsWithChildren<unknown>) => {
-  const { isNotSignedIn } = useUserInfo();
+  const pathname = usePathname();
+  const isLoginPage = pathname === "/login";
   return (
     <div
-      className="w-screen h-screen overflow-scroll bg-neutral-700
+      className="w-screen h-screen overflow-hidden bg-neutral-700
         transition-all duration-300"
-      style={isNotSignedIn ? backgroundWithImageStyle : {}}
+      style={isLoginPage ? backgroundWithImageStyle : {}}
     >
       <Navbar />
       <main

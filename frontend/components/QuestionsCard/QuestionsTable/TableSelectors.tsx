@@ -48,12 +48,12 @@ const TableSelectors = () => {
         isClearable
         className="w-full sm:max-w-[44%] text-zinc-600"
         placeholder="Search by question title..."
-        // startContent={<SearchIcon />}
         value={filterValue}
         onClear={() => onClear()}
         onValueChange={(value) => {
           const regexedVal = value.replace(questionFilterRegex, "");
-          onSearchChange(regexedVal)}}
+          onSearchChange(regexedVal);
+        }}
       />
       <div className="flex flex-row items-center">
         <Dropdown className="p-0">

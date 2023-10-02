@@ -1,10 +1,5 @@
-import UserCreationForm from "@/components/UserCreationForm";
+import UserCreationCard from "@/components/UserCreationCard";
 
 export default function RegisterPage() {
-  return (
-    <div>
-      <h1>Create User Profile</h1>
-      <UserCreationForm />
-    </div>
-  ) 
+  return <UserCreationCard />;
 }
