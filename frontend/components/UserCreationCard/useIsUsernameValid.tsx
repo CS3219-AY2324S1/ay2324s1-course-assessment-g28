@@ -17,7 +17,7 @@ const getTip = (usernameStatus: UsernameStatus) => {
     case UsernameStatus.AVAILABLE:
       return (
         <div
-          className="text-green-600	font-extralight
+          className="text-green-600 font-extralight
                 text-[11px] h-[24px] flex items-center justify-center"
         >
           Username is available.
@@ -26,7 +26,7 @@ const getTip = (usernameStatus: UsernameStatus) => {
     case UsernameStatus.TAKEN:
       return (
         <div
-          className="text-rose-600	font-extralight
+          className="text-rose-600 font-extralight
                 text-[11px] h-[24px] flex items-center justify-center"
         >
           Username is already taken! Please try a different username.
@@ -35,7 +35,7 @@ const getTip = (usernameStatus: UsernameStatus) => {
     case UsernameStatus.TOO_SHORT:
       return (
         <div
-          className="text-rose-600	font-extralight
+          className="text-rose-600 font-extralight
                 text-[11px] h-[24px] flex items-center justify-center"
         >
           Username is too short!
