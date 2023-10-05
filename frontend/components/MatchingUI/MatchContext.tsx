@@ -88,7 +88,7 @@ export const MatchContextProvider = ({
     //TODO: adjust this
     const ws = new WebSocket(
       getPairingServiceUri({
-        userId: user.user!.email!,
+        userId: user.email!,
         complexity: selectedComplexity!,
       }),
     );
