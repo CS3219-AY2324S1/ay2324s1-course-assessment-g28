@@ -15,8 +15,8 @@ const UserProfileCard = () => {
 
   if (isLoading) {
     return (
-      <div>
-        <Spinner />
+      <div className="h-[500px] w-full flex items-center justify-center">
+        <Spinner color="secondary" />
       </div>
     );
   }
