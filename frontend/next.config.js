@@ -11,6 +11,8 @@ const nextConfig = {
       },
     ],
   },
+  transpilePackages: ["@nivo"],
+  experimental: { esmExternals: "loose" },
 };
 
 module.exports = nextConfig;

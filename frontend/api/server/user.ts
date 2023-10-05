@@ -25,5 +25,6 @@ export async function getUserInfoServerSide(userEmail: string) {
     return userData as User;
   } catch (e) {
     console.log(e);
+    throw e;
   }
 }

@@ -69,7 +69,7 @@ export default function UserCreationForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="w-[400px] flex flex-col text-zinc-600 mb-[12px]"
+      className="flex flex-col text-zinc-600 mb-[12px]"
       onChange={(e) => e.preventDefault()}
     >
       <div className="flex-grow flex flex-col items-start">
@@ -87,7 +87,7 @@ export default function UserCreationForm() {
           }
           placeholder="Username"
         />
-        <p className="pl-2">{Tip}</p>
+        <div className="pl-2">{Tip}</div>
       </div>
       <div className="flex-grow mb-[24px]">
         <Input

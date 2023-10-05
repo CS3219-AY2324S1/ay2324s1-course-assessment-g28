@@ -16,16 +16,13 @@ const Layout = ({ children }: PropsWithChildren<unknown>) => {
   const isLoginPage = pathname === "/login";
   return (
     <div
-      className="w-screen h-screen overflow-y-scroll bg-neutral-700
-        transition-all duration-300"
+      className="w-screen h-screen overflow-x-hidden overflow-y-hidden
+        bg-neutral-700 transition-all duration-300"
       style={isLoginPage ? backgroundWithImageStyle : {}}
     >
       <Navbar />
       <main
-        className={cx(
-          "flex min-h-screen flex-col items-center p-8",
-          POPPINS_CLASS,
-        )}
+        className={cx("h-full pb-[110px] p-8 overflow-y-scroll", POPPINS_CLASS)}
       >
         {children}
       </main>
