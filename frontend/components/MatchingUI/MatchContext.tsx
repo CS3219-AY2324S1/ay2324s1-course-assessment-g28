@@ -1,4 +1,6 @@
+import { getPairingServiceUri } from "@/api/pairing";
 import { QuestionComplexity } from "@/api/questions/types";
+import useUserInfo from "@/hooks/useUserInfo";
 import {
   Dispatch,
   PropsWithChildren,
@@ -7,6 +9,7 @@ import {
   useContext,
   useState,
 } from "react";
+import toast from "react-hot-toast";
 
 export enum MatchStatus {
   SELECT_DIFFICULTY,
@@ -25,6 +28,8 @@ type MatchContextType = {
   onChangeComplexity: (complexity: QuestionComplexity) => void;
   onRetry: () => void;
   onClose: () => void;
+  pairingWebsocket: WebSocket | null;
+  editorUri: string | null;
 };
 
 const defaultContext: MatchContextType = {
@@ -48,6 +53,8 @@ const defaultContext: MatchContextType = {
   onClose: () => {
     throw new Error("Not in provider!");
   },
+  pairingWebsocket: null,
+  editorUri: null,
 };
 
 const MatchContext = createContext<MatchContextType>(defaultContext);
@@ -58,6 +65,11 @@ export const MatchContextProvider = ({
   children,
 }: PropsWithChildren<unknown>) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [pairingWebsocket, setPairingWebsocket] = useState<WebSocket | null>(
+    null,
+  );
+  const [editorUri, setEditorUri] = useState<string | null>(null);
+  const user = useUserInfo();
   const [selectedComplexity, setSelectComplexity] = useState<
     QuestionComplexity | undefined
   >();
@@ -69,9 +81,37 @@ export const MatchContextProvider = ({
     // todo redirect to room
   };
 
-  const onChangeComplexity = (complexity: QuestionComplexity) => {
+  const onChangeComplexity = async (complexity: QuestionComplexity) => {
     setSelectComplexity(complexity);
     setMatchStatus(MatchStatus.MATCHING);
+    //TODO: adjust this
+    const ws = new WebSocket(
+      getPairingServiceUri({
+        userId: user.user!.email!,
+        complexity: selectedComplexity!,
+      }),
+    );
+    ws.onmessage = (msg) => {
+      try {
+        const parsed = JSON.parse(msg.data);
+        if (parsed.data.url) {
+          setEditorUri(parsed.data.url);
+          setMatchStatus(MatchStatus.MATCH_SUCCESS);
+          // TODO: replace toast with actual usage of returned details
+          toast.success(`Matched with ${JSON.stringify(parsed.data)}`);
+          ws.close();
+        } else if (parsed.status == 200) {
+          console.log(parsed);
+        } else {
+          setMatchStatus(MatchStatus.MATCH_ERROR);
+          console.log(msg);
+        }
+      } catch (e) {
+        setMatchStatus(MatchStatus.MATCH_ERROR);
+        console.error(e);
+      }
+    };
+    setPairingWebsocket(ws);
   };
 
   const onRetry = () => {
@@ -81,6 +121,7 @@ export const MatchContextProvider = ({
 
   const onClose = () => {
     setIsModalOpen(false);
+    pairingWebsocket?.close();
     setMatchStatus(MatchStatus.SELECT_DIFFICULTY);
     // todo: stop connecting
   };
@@ -98,6 +139,8 @@ export const MatchContextProvider = ({
         onChangeComplexity,
         onRetry,
         onClose,
+        editorUri,
+        pairingWebsocket,
       }}
     >
       {children}
