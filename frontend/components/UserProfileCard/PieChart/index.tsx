@@ -19,7 +19,7 @@ const PieChart = ({ data }: { data?: User }) => {
       className="md:min-w-[310px] shrink-0 flex flex-col items-center
         max-h-[486px]"
     >
-      <div className="cursor-default w-full text-left">
+      <div className="cursor-default w-full text-left font-semibold">
         Question complexity breakdown
       </div>
       {attemptCount > 0 ? (

@@ -32,7 +32,7 @@ const RecentAttempts = ({ data }: { data?: User }) => {
 
   return (
     <Card className="w-full">
-      <div className="cursor-default mb-1">Recent attempts</div>
+      <div className="cursor-default mb-1 font-semibold">Recent attempts</div>
       {attemptCount > 0 ? (
         processedData?.map((qn, index) => {
           const { questionId, questionTitle, attemptDate, attemptDateString } =
