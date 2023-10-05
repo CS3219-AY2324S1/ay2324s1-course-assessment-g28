@@ -13,6 +13,8 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - QUESTIONS_API=http://pp-question:1234
+      - USER_API=http://pp-user:1235
+      - NEXT_PUBLIC_PAIRING_API=ws://pp-pairing-front:4000
 
   # Question service
   pp-question:
