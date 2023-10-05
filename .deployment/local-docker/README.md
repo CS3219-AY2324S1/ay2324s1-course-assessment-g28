@@ -5,8 +5,10 @@
 Use the following command from the project root directory to build and run all images
 
 ```bash
-docker compose -f ".deployment/local-docker/compose.yaml" up -d --build
+docker compose -f ".deployment/local-docker/compose.yaml" --profile frontend up -d --build
 ```
+
+_The "--profile frontend" argument is to run the frontend with the other containers. If not provided, the frontend container will not be started. This is to allow frontend to be worked on during development separately with regular hot reloading (non containerized)_
 
 Options explanation
 
