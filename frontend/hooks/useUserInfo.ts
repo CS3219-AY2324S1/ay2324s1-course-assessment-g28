@@ -8,11 +8,11 @@ export enum UserStatus {
 
 export default function useUserInfo() {
   const { data, status } = useSession() ?? {};
-  const { name, image, username } = data?.user ?? {};
+  const { name, image, username, email } = data?.user ?? {};
 
   const isLoading = status === UserStatus.LOADING;
   const isSignedIn = status === UserStatus.AUTHENTICATED;
   const isNotSignedIn = status === UserStatus.UNAUTHENTICATED;
 
-  return { isLoading, isSignedIn, isNotSignedIn, image, name, username };
+  return { isLoading, isSignedIn, isNotSignedIn, image, name, username, email };
 }
