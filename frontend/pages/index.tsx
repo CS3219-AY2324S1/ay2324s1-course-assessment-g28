@@ -7,8 +7,7 @@ import { getServerSession } from "next-auth";
 export const getServerSideProps = (async (context) => {
   // middlware should ensure that session is always present when this is run
   const session = await getServerSession(context.req, context.res, authOptions);
-  //@ts-ignore
-  return { props: { userIsAdmin: session.user.isAdmin } };
+  return { props: { userIsAdmin: session?.user?.isAdmin ?? false } };
 }) satisfies GetServerSideProps<{
   userIsAdmin: boolean;
 }>;

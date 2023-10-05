@@ -9,6 +9,7 @@ import {
   getAttemptById,
   createAttempt,
   deleteAttemptById,
+  getIsUsernameExists,
 } from "./controller";
 
 async function createEndpoints(router: express.Router) {
@@ -18,6 +19,7 @@ async function createEndpoints(router: express.Router) {
 
   // GET endpoints
   router.get("/users", getAllUsers);
+  router.get("/users/exists/:username", getIsUsernameExists);
   router.get("/users/:email", getUserByEmail);
   router.get("/users/:email/question-attempt/:attemptId", getAttemptById);
 

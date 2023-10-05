@@ -11,12 +11,11 @@ export default withAuth(async function middleware(req) {
     // ignore api handler routes
     return;
   }
-    //@ts-ignore
-  if (req.nextUrl.pathname !== REGISTER && !req.nextauth.token.userExists) {
+  const isUserExists = req?.nextauth?.token?.userExists ?? false;
+  if (req.nextUrl.pathname !== REGISTER && !isUserExists) {
     // if user does not exist, then redirect to register page
-    return NextResponse.redirect(new URL(REGISTER, req.url))
-    //@ts-ignore
-  } else if (req.nextUrl.pathname === REGISTER && req.nextauth.token.userExists) {
+    return NextResponse.redirect(new URL(REGISTER, req.url));
+  } else if (req.nextUrl.pathname === REGISTER && isUserExists) {
     // redirect to home page if already registered user
     return NextResponse.redirect(new URL(HOME, req.url));
   }
