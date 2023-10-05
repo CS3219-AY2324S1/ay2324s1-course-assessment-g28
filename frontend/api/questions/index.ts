@@ -27,9 +27,10 @@ export async function getQuestions({
   if (complexity) {
     params.append("complexity", complexity.toString());
   }
-  const res = await fetch(getRoute(QUESTION_API + "?" + params.toString(), false), {
-    method: HttpMethod.GET,
-  });
+  const res = await fetch(
+    getRoute(`${QUESTION_API}?${params.toString()}`, false),
+    { method: HttpMethod.GET },
+  );
   if (res.status !== HttpStatus.OK) {
     throw new RequestError(res);
   }
@@ -39,7 +40,11 @@ export async function getQuestions({
 }
 
 export async function getQuestion(id: number, isServerSide: boolean) {
-  const url = getRoute(getQuestionByIdPath(id), isServerSide, process.env.QUESTIONS_API);
+  const url = getRoute(
+    getQuestionByIdPath(id),
+    isServerSide,
+    process.env.QUESTIONS_API,
+  );
   const res = await fetch(url, {
     method: HttpMethod.GET,
   });

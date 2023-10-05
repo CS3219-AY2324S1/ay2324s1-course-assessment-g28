@@ -17,11 +17,10 @@ export const authOptions: AuthOptions = {
   callbacks: {
     jwt: async ({ token }) => {
       try {
-        const userInfo = await getUserInfoServerSide(token.email!);
-        token.userExists = true;
-        //@ts-ignore
-        token.username = userInfo!.username;
-        token.isAdmin = userInfo!.isAdmin;
+        const userInfo = await getUserInfoServerSide(token?.email ?? "");
+        token.userExists = Boolean(userInfo?.username);
+        token.username = userInfo?.username;
+        token.isAdmin = userInfo?.isAdmin ?? false;
       } catch (e) {
         // the given user is not in our own database
         token.userExists = false;
@@ -29,10 +28,8 @@ export const authOptions: AuthOptions = {
       return token;
     },
     session: async ({ session, token }) => {
-      //@ts-ignore
-      session.user.isAdmin = token.isAdmin;
-      //@ts-ignore
-      session.user.username = token.username;
+      session.user.isAdmin = (token.isAdmin ?? false) as boolean;
+      session.user.username = (token?.username) as string | undefined;
       return session;
     },
   },

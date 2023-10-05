@@ -33,7 +33,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(217, 217, 227, 0.8);
+  background-color: rgba(200, 200, 200, 0.8);
   border-color: rgba(255, 255, 255);
   border-radius: 9999px;
   border-width: 1px;
