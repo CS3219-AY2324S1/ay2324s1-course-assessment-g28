@@ -16,7 +16,7 @@ const PieChart = ({ data }: { data?: User }) => {
   const attemptCount = data?.attemptedQuestions?.length ?? 0;
   return (
     <Card
-      className="min-w-[310px] shrink-0 flex flex-col items-center
+      className="md:min-w-[310px] shrink-0 flex flex-col items-center
         max-h-[486px]"
     >
       <div className="cursor-default w-full text-left">

@@ -13,19 +13,42 @@ dayjs.extend(customParseFormat);
 
 const AttemptsHeatMap = ({ data }: { data?: User }) => {
   const { attemptedQuestions } = data ?? {};
-  const attemptCount = attemptedQuestions?.length ?? 0;
 
-  const processedData = useMemo(() => {
+  const oneYearAgo = useMemo(
+    () => new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
+    [],
+  );
+
+  const { attemptCount, processedDataArray } = useMemo(() => {
+    const dataWithDayjs = attemptedQuestions
+      // change date into suitable format
+      ?.map((qn) => {
+        return {
+          ...qn,
+          date: dayjs(qn.attemptDate, BE_DATE_FORMAT).format(CHART_DATE_FORMAT),
+          day: dayjs(qn.attemptDate, BE_DATE_FORMAT),
+        };
+      })
+      // filter out dates > 1 year ago
+      .filter((qn) => qn.day.isAfter(oneYearAgo.toDateString()));
+
+    // group by attempt date
     const dayMap: Record<string, number> = {};
-    for (const attempt of attemptedQuestions ?? []) {
+    for (const attempt of dataWithDayjs ?? []) {
       const { attemptDate } = attempt;
       dayMap[attemptDate] = (dayMap?.[attemptDate] ?? 0) + 1;
     }
-    return Object.entries(dayMap).map(([key, value]) => ({
-      date: dayjs(key, BE_DATE_FORMAT).format(CHART_DATE_FORMAT),
+
+    // change data into suitable format for heatmap
+    const processedDataArray = Object.entries(dayMap).map(([key, value]) => ({
+      date: key,
       count: value,
     }));
-  }, [attemptedQuestions]);
+    return {
+      attemptCount: dataWithDayjs?.length,
+      processedDataArray,
+    };
+  }, [attemptedQuestions, oneYearAgo]);
 
   return (
     <Card className="w-full">
@@ -37,41 +60,48 @@ const AttemptsHeatMap = ({ data }: { data?: User }) => {
       </>
       <div
         className="w-full flex justify-center
-          md:scale-80 scale-70 md:min-w-[730px]"
+          md:scale-80 lg:scale-100 md:min-w-[730px]"
       >
-        <HeatMap
-          key={useForceRerender()}
-          value={processedData}
-          startDate={
-            new Date(new Date().setFullYear(new Date().getFullYear() - 1))
-          }
-          endDate={new Date()}
-          width={730}
-          viewBox="0 0 730 150"
-          rectProps={{
-            rx: 2.5,
-          }}
-          rectRender={(props, data) => {
-            const { count, date } = data;
-            return (
-              <Tooltip
-                className="rounded-[2px]"
-                placement="top"
-                content={
-                  <div className="text-[18px] text-zinc-600 cursor-default">
-                    <span className="font-semibold">{count ?? 0}</span>
-                    <span>{` attempt${
-                      count !== 1 ? "s" : ""
-                    } on ${date}`}</span>
-                  </div>
-                }
-              >
-                <rect {...props} />
-              </Tooltip>
-            );
-          }}
-          legendRender={(props) => <rect {...props} rx={2.5} />}
-        />
+        {/* wrap heatmap in scrolling box for small widths */}
+        <div
+          className="w-[730px] m-auto
+          overflow-x-scroll md:w-full grid place-items-center"
+        >
+          <HeatMap
+            key={useForceRerender()}
+            value={processedDataArray}
+            startDate={oneYearAgo}
+            endDate={new Date()}
+            width={730}
+            viewBox="0 0 730 130"
+            rectProps={{
+              rx: 2.5,
+            }}
+            rectRender={(props, data) => {
+              const { count, date } = data;
+              return (
+                <Tooltip
+                  className="rounded-[2px]"
+                  placement="top"
+                  content={
+                    <div className="text-[18px] text-zinc-600 cursor-default">
+                      <span className="font-semibold">{count ?? 0}</span>
+                      <span>{` attempt${
+                        count !== 1 ? "s" : ""
+                      } on ${date}`}</span>
+                    </div>
+                  }
+                >
+                  <rect {...props} />
+                </Tooltip>
+              );
+            }}
+            legendRender={(props) => <rect {...props} rx={2.5} />}
+          />
+        </div>
+      </div>
+      <div className="md:hidden text-xs text-right text-purple-700">
+        {"Scroll to see more >"}
       </div>
     </Card>
   );
