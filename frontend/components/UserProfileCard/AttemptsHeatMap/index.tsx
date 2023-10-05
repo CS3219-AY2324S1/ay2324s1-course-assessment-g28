@@ -35,8 +35,8 @@ const AttemptsHeatMap = ({ data }: { data?: User }) => {
     // group by attempt date
     const dayMap: Record<string, number> = {};
     for (const attempt of dataWithDayjs ?? []) {
-      const { attemptDate } = attempt;
-      dayMap[attemptDate] = (dayMap?.[attemptDate] ?? 0) + 1;
+      const { date } = attempt;
+      dayMap[date] = (dayMap?.[date] ?? 0) + 1;
     }
 
     // change data into suitable format for heatmap
