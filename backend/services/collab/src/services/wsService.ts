@@ -48,6 +48,7 @@ export function handleRunCode(connection: WebSocket, partnerConnection: WebSocke
   // TODO: Compile/run code and broadcast result with RUN_CODE_RESULT
 
   runCode(data.code, data.language).then(result => {
+    console.log("Finished running. Result: ", result);
     const messageResult = JSON.stringify({ method: WS_METHODS.RUN_CODE_RESULT, result: result });
     connection.send(messageResult);
     partnerConnection.send(messageResult);

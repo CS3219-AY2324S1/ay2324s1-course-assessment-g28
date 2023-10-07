@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 import CodeMirror from '@uiw/react-codemirror';
+import { EditorSelection } from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { java } from "@codemirror/lang-java";
 import { python } from "@codemirror/lang-python";
