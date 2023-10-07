@@ -47,11 +47,17 @@ export async function runPythonCode(code: string): Promise<string> {
     }
     // file written successfully
   });
-  const { stdout, stderr } = await exec("python sandbox/test.py");
-  if (stderr) {
-    console.log(`stderr: ${stderr}`);
-    return stderr;
+
+  try {
+    const { stdout, stderr } = await exec("python sandbox/test.py");
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+      return stderr;
+    }
+    console.log(`stdout: ${stdout}`);
+    return stdout;
+  } catch (error) {
+    console.log("ERROR", error.toString());
+    return error.toString();
   }
-  console.log(`stdout: ${stdout}`);
-  return stdout;
 }
