@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { checkValidPairAndUser, getPairIdFromUrl, getPair } from './services/pairService';
-import { getQueryParams, handleOp, handleReady, handleRunCode, handleSwitchLang } from './services/wsService';
+import { getQueryParams, handleCaretPos, handleOp, handleReady, handleRunCode, handleSwitchLang } from './services/wsService';
 import { WS_METHODS } from './constants';
 dotenv.config();
 
@@ -118,6 +118,7 @@ wsServer.on('connection', function(connection: WebSocket, request: Request, clie
       }
 
       const partnerId = userId === pairDoc.user1 ? pairDoc.user2 : pairDoc.user1;
+      const currTurnId = pairDoc.currTurn;
 
       partners[userId] = partnerId;
       clients[userId] = connection;
@@ -125,7 +126,7 @@ wsServer.on('connection', function(connection: WebSocket, request: Request, clie
       // Check if partner has already connected
       // If so, send READY to the pair
       if (partnerId in clients) {
-        handleReady(connection, clients[partnerId]);
+        handleReady(connection, clients[partnerId], userId, partnerId, currTurnId);
       } 
     } else {
       console.log("Closing connection for user ", userId);
@@ -144,7 +145,7 @@ wsServer.on('connection', function(connection: WebSocket, request: Request, clie
         handleOp(connection, partnerConnection, data);
         break;
       case WS_METHODS.CARET_POS:
-        handleOp(connection, partnerConnection, data);
+        handleCaretPos(connection, partnerConnection, data);
         break;
       case WS_METHODS.SWITCH_LANG:
         handleSwitchLang(connection, partnerConnection, data);

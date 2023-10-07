@@ -24,7 +24,8 @@ router.get('/getWebsocketUrl', (req: Request, res: Response) => {
   Pair.create({ 
     id: pairId,
     user1: user1,
-    user2: user2
+    user2: user2,
+    currTurn: user1
   });
 
   // Will be appended with userId as query param in paring service

@@ -20,6 +20,7 @@ interface CodeWindowProps {
 export default function CodeWindow(props: CodeWindowProps) {
   const [language, setLanguage] = useState<string>(props.language ?? "Java");
   const [code, setCode] = useState(LANGUAGE_DATA[language].templateCode);
+  const [result, setResult] = useState("Click \"Run Code\" to execute your code!");
   const [isMyTurn, setIsMyTurn] = useState(false);
   const [isWebsocketLoaded, setIsWebsocketLoaded] = useState(false);
   const [isCodeRunning, setIsCodeRunning] = useState(false);
@@ -53,12 +54,15 @@ export default function CodeWindow(props: CodeWindowProps) {
         handleOp(data);
         break;
       case WS_METHODS.CARET_POS:
-
+        break;
       case WS_METHODS.SWITCH_LANG:
         handleSwitchLang(data);
         break;
       case WS_METHODS.RUN_CODE:
         handleRunCode(data);
+        break;
+      case WS_METHODS.RUN_CODE_RESULT:
+        handleRunCodeResult(data);
         break;
     }
   }
@@ -95,6 +99,13 @@ export default function CodeWindow(props: CodeWindowProps) {
     setIsCodeRunning(true);
   }
 
+  function handleRunCodeResult(data) {
+    console.log("*****RUN CODE RESULT*****");
+    console.log(data);
+    setResult(data.result);
+    setIsCodeRunning(false);
+  }
+
   /**
    * Called at the start of each question
    */
@@ -111,6 +122,8 @@ export default function CodeWindow(props: CodeWindowProps) {
   }
 
   function onCodeChange(val: string) {
+    console.log("=====CODE CHANGE=======");
+
     setCode(val);
 
     console.log(val);
@@ -123,6 +136,7 @@ export default function CodeWindow(props: CodeWindowProps) {
   }
 
   function onMouseUp(e) {
+    console.log("=====MOUSE UP=======");
     console.log(e.srcElement?.selectionStart, e.srcElement?.selectionEnd);
     console.log(e.target?.selectionStart, e.target?.selectionEnd);
     console.log(e.currentTarget?.selectionStart, e.currentTarget?.selectionEnd);
@@ -222,7 +236,6 @@ export default function CodeWindow(props: CodeWindowProps) {
             </div>
           </div>
           <CodeMirror
-            
             className="h-full w-full"
             value={code} 
             height="100%" 
@@ -243,6 +256,9 @@ export default function CodeWindow(props: CodeWindowProps) {
               );
             }
           })()}
+          <div className="h-full w-full p-3">
+            {result}
+          </div>
         </div>
       </Panel>
     </PanelGroup>

@@ -1,4 +1,5 @@
 import { WS_METHODS } from "../constants";
+import { runCode } from "./executionService";
 
 export function getQueryParams(url: string): { [key: string]: string } {
   const queryIdx = url.indexOf("?");
@@ -17,16 +18,12 @@ export function getQueryParams(url: string): { [key: string]: string } {
 }
 
 export function handleReady(connection: WebSocket, partnerConnection: WebSocket, userId: string, partnerId: string, currTurnId: string) {
-  const message = JSON.stringify({ method: WS_METHODS.READY, isMyTurn: false });
-  const messageIsTurn = JSON.stringify({ method: WS_METHODS.READY, isMyTurn: true });
+  const isMyTurn = userId == currTurnId;
+  const messageUser = JSON.stringify({ method: WS_METHODS.READY, isMyTurn: isMyTurn });
+  const messagePartner = JSON.stringify({ method: WS_METHODS.READY, isMyTurn: !isMyTurn });
   
-  if (userId === currTurnId) {
-    connection.send(messageIsTurn);
-    partnerConnection.send(message);
-  } else {
-    connection.send(message);
-    partnerConnection.send(messageIsTurn);
-  }
+  connection.send(messageUser);
+  partnerConnection.send(messagePartner);
 }
 
 export function handleOp(connection: WebSocket, partnerConnection: WebSocket, data) {
@@ -35,7 +32,7 @@ export function handleOp(connection: WebSocket, partnerConnection: WebSocket, da
 }
 
 export function handleCaretPos(connection: WebSocket, partnerConnection: WebSocket, data) {
-  const message = JSON.stringify({ method: WS_METHODS.OP, start: data.start, end: data.end });
+  const message = JSON.stringify({ method: WS_METHODS.CARET_POS, start: data.start, end: data.end });
   partnerConnection.send(message);
 }
 
@@ -49,4 +46,10 @@ export function handleRunCode(connection: WebSocket, partnerConnection: WebSocke
   partnerConnection.send(message);
 
   // TODO: Compile/run code and broadcast result with RUN_CODE_RESULT
+
+  runCode(data.code, data.language).then(result => {
+    const messageResult = JSON.stringify({ method: WS_METHODS.RUN_CODE_RESULT, result: result });
+    connection.send(messageResult);
+    partnerConnection.send(messageResult);
+  });
 }
