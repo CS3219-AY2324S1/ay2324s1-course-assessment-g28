@@ -72,7 +72,7 @@ export default function QuestionTable({ userIsAdmin }: QuestionTableProps) {
   return (
     <Table
       aria-label="Questions table"
-      topContent={<TableSelectors />}
+      topContent={<TableSelectors userIsAdmin={userIsAdmin}/>}
       topContentPlacement="outside"
       bottomContent={<TablePagination total={data?.total ?? 0} />}
       bottomContentPlacement="outside"

@@ -18,7 +18,11 @@ import { CREATE_QUESTION } from "@/routes";
 import { useQuestionTableContext } from "../QuestionsTableContext";
 import { questionFilterRegex } from "@/components/QuestionsCard/QuestionsTable/config";
 
-const TableSelectors = () => {
+interface TableSelectorsProps {
+  userIsAdmin: boolean;
+}
+
+const TableSelectors = ({userIsAdmin}: TableSelectorsProps ) => {
   const {
     filterValue,
     setFilterValue,
@@ -94,7 +98,7 @@ const TableSelectors = () => {
           </Button>
         )}
       </div>
-      <Button
+      {userIsAdmin && <Button
         className="ml-auto"
         color="secondary"
         variant="flat"
@@ -102,7 +106,7 @@ const TableSelectors = () => {
         title="Go to question creation page"
       >
         Create Question <PlusSquare />
-      </Button>
+      </Button>}
     </div>
   );
 };
