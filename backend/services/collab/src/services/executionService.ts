@@ -1,6 +1,8 @@
-const fs = require('fs');
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
+import { v4 as uuidv4 } from "uuid";
+import fs from "fs";
+import util from "util";
+import { exec } from "child_process";
+const execPromise = util.promisify(exec);
 
 export async function runCode(code: string, language: string): Promise<string> {
   let result = "";
@@ -21,12 +23,14 @@ export async function runCode(code: string, language: string): Promise<string> {
 }
 
 export async function runJavaScriptCode(code: string): Promise<string> {
+  // TODO
   let result = eval(code);
   return result;
 }
 
 export async function runJavaCode(code: string): Promise<string> {
-  exec("javac test.java", (error, stdout, stderr) => {
+  // TODO
+  execPromise("javac test.java", (error, stdout, stderr) => {
     if (error) {
       console.log(`error: ${error.message}`);
       return;
@@ -41,23 +45,33 @@ export async function runJavaCode(code: string): Promise<string> {
 }
 
 export async function runPythonCode(code: string): Promise<string> {
-  fs.writeFileSync('sandbox/test.py', code, err => {
+  const fileName = uuidv4();
+  const filePath = `sandbox/${fileName}.py`;
+  
+  fs.writeFileSync(filePath, code, err => {
     if (err) {
       console.error(err);
     }
     // file written successfully
   });
 
+  let result = "";
+
   try {
-    const { stdout, stderr } = await exec("python sandbox/test.py");
+    const { stdout, stderr } = await execPromise(`python ${filePath}`);
     if (stderr) {
       console.log(`stderr: ${stderr}`);
-      return stderr;
+      result = stderr;
+    } else {
+      console.log(`stdout: ${stdout}`);
+      result =  stdout;
     }
-    console.log(`stdout: ${stdout}`);
-    return stdout;
   } catch (error) {
     console.log("ERROR", error.toString());
-    return error.toString();
+    result = error.toString();
   }
+
+  fs.unlinkSync(filePath);
+
+  return result;
 }
