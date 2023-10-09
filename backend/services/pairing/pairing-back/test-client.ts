@@ -13,7 +13,3 @@ enum Complexity {
   Medium = 1,
   Hard = 2,
 }
-
-let c: Complexity = Complexity[0];
-
-console.log(c)
