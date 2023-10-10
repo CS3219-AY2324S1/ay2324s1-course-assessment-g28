@@ -2,12 +2,12 @@ import { Item } from "./linked-list";
 
 class User extends Item {
   reply_params: { replyTo: string; correlationId: string };
-  match_options: { user: string };
+  match_options: { user: string; complexity: number };
   create_timestamp: number;
 
   constructor(
     reply_params: { replyTo: string; correlationId: string },
-    match_options: { user: string }
+    match_options: { user: string; complexity: number }
   ) {
     super();
     this.reply_params = reply_params;

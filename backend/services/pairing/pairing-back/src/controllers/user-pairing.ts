@@ -1,15 +1,25 @@
 import { List } from "../models/linked-list";
+import Match from "../models/match";
+import { Question } from "../models/question";
 import { User } from "../models/user";
+import { getRandomQuestion } from "../services/question/pp-question-service";
 import config from "../utils/config";
 
 const SECOND = 1000;
 
-function isMatch(user1: User, user2: User): boolean {
+function matchOnQuestion(user1: User, user2: User): Question | null {
   // not implemented yet
-  return true;
+  if (user1.match_options.user == user2.match_options.user) {
+    return null;
+  }
+  if (user1.match_options.complexity !== user2.match_options.complexity) {
+    return null;
+  }
+
+  return getRandomQuestion(user1.match_options.complexity);
 }
 
-function matchUser(userList: List<User>, user: User): null | [User, User] {
+function matchUser(userList: List<User>, user: User): Match | null {
   let curr = userList.head;
   let now_timestamp = Date.now();
 
@@ -21,9 +31,12 @@ function matchUser(userList: List<User>, user: User): null | [User, User] {
       now_timestamp
     ) {
       curr.detach();
-    } else if (isMatch(curr, user)) {
-      curr.detach();
-      return [curr, user];
+    } else {
+      let question = matchOnQuestion(curr, user);
+      if (question) {
+        curr.detach();
+        return new Match(curr, user, question);
+      }
     }
 
     curr = next;
