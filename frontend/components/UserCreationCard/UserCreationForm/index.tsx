@@ -116,7 +116,9 @@ export default function UserCreationForm() {
           color="secondary"
           radius="full"
         >
-          Submit
+          {isLoading || usernameStatus === UsernameStatus.LOADING
+            ? ""
+            : "Submit"}
         </Button>
       </div>
     </form>
