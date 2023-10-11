@@ -56,7 +56,7 @@ export function handleRunCode(connection: WebSocket, partnerConnection: WebSocke
 }
 
 export function handleMessage(connection: WebSocket, partnerConnection: WebSocket, data) {
-  const message = JSON.stringify({ method: WS_METHODS.MESSAGE, message: data.language });
+  const message = JSON.stringify({ method: WS_METHODS.MESSAGE, message: data.message });
   partnerConnection.send(message);
 }
 

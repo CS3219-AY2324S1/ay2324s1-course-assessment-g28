@@ -38,3 +38,7 @@ export const LANGUAGE_DATA: {[key: string]: {codeMirrorExtension: any, templateC
 export const LANGUAGES = Object.keys(LANGUAGE_DATA);
 
 export type LANGUAGE_TYPE = typeof LANGUAGES[number];
+
+export const CLASSNAME_MY_MESSAGE = "max-w-[90%] self-end bg-blue-400 text-white rounded-l-md rounded-br-md py-1 px-3";
+
+export const CLASSNAME_PARTNER_MESSAGE = "max-w-[90%] self-start bg-gray-200 rounded-r-md rounded-bl-md py-1 px-3";

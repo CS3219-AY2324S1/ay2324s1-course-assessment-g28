@@ -45,7 +45,7 @@ export default function CodeWindow(props: CodeWindowProps) {
 
   function onMessage(e: Event) {
     const data = JSON.parse(e.data);
-    console.log(data);
+    console.log("CodeWindow received: ", data);
 
     switch (data.method) {
       case WS_METHODS.READY:
