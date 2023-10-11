@@ -54,3 +54,14 @@ export function handleRunCode(connection: WebSocket, partnerConnection: WebSocke
     partnerConnection.send(messageResult);
   });
 }
+
+export function handleMessage(connection: WebSocket, partnerConnection: WebSocket, data) {
+  const message = JSON.stringify({ method: WS_METHODS.MESSAGE, message: data.language });
+  partnerConnection.send(message);
+}
+
+export function handleExit(connection: WebSocket, partnerConnection: WebSocket, data) {
+  const message = JSON.stringify({ method: WS_METHODS.EXIT });
+  connection.close();
+  partnerConnection.send(message);
+}

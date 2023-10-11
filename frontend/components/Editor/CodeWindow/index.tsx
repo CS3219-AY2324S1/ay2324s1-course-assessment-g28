@@ -65,6 +65,9 @@ export default function CodeWindow(props: CodeWindowProps) {
       case WS_METHODS.RUN_CODE_RESULT:
         handleRunCodeResult(data);
         break;
+      case WS_METHODS.EXIT:
+        handleExit(data);
+        break;
     }
   }
 
@@ -105,6 +108,10 @@ export default function CodeWindow(props: CodeWindowProps) {
     console.log(data);
     setResult(data.result);
     setIsCodeRunning(false);
+  }
+
+  function handleExit(data) {
+    console.log("EXITING EDITOR ...");
   }
 
   /**
@@ -187,7 +194,9 @@ export default function CodeWindow(props: CodeWindowProps) {
   }
 
   function exitEditor() {
-
+    sendJsonMessage({
+      method: WS_METHODS.EXIT
+    });
   }
 
   return (

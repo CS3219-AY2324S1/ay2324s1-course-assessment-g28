@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { checkValidPairAndUser, getPairIdFromUrl, getPair } from './services/pairService';
-import { getQueryParams, handleCaretPos, handleOp, handleReady, handleRunCode, handleSwitchLang } from './services/wsService';
+import { getQueryParams, handleCaretPos, handleExit, handleMessage, handleOp, handleReady, handleRunCode, handleSwitchLang } from './services/wsService';
 import { WS_METHODS } from './constants';
 dotenv.config();
 
@@ -153,7 +153,34 @@ wsServer.on('connection', function(connection: WebSocket, request: Request, clie
       case WS_METHODS.RUN_CODE:
         handleRunCode(connection, partnerConnection, data);
         break;
-
+      case WS_METHODS.MESSAGE:
+        handleMessage(connection, partnerConnection, data);
+        break;
+      case WS_METHODS.EXIT:
+        console.log("EXIT WS .......");
+        handleExit(connection, partnerConnection, data);
+        break;
     }
+  }
+
+  connection.onclose = (message: any) => {
+    console.log("Connection closed: ", connection);
+
+    // Order of deletion: partners[userId, partnerId], pairs[pairId], clients[userId]
+    // Then partnerConnection is also closed which will only delete clients[userId]
+
+    // Close partner connection if it exists
+    if (userId in partners) {
+      const partnerId = partners[userId];
+      if (partnerId in clients) {
+        const partnerConnection = clients[partnerId];
+        partnerConnection.close();
+      }
+      delete partners[userId];
+      delete partners[partnerId];
+      delete pairs[pairId];
+    }
+
+    delete clients[userId];
   }
 });

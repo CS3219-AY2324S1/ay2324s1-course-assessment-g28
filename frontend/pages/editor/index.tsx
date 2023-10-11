@@ -93,7 +93,14 @@ export default function EditorPage() {
             </Panel>
             <PanelResizeHandle children={ResizeHandleHorizontal()}/>
             <Panel>
-              <MessageWindow></MessageWindow>
+              {(() => {
+                // This is to ensure we don't send empty url
+                if (websocketUrl) {
+                  return (
+                    <MessageWindow websocketUrl={websocketUrl}></MessageWindow>
+                  );
+                }
+              })()}
             </Panel>
           </PanelGroup>
         </Panel>
