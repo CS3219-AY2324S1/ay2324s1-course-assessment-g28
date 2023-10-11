@@ -33,8 +33,8 @@ const UserProfileCard = () => {
 
   return (
     <div className="flex flex-col lg:flex-row gap-4 w-full">
-      <div className="min-w-[200px] w-full lg:max-w-[250px] flex-grow">
-        <UserInfo />
+      <div className="w-full min-w-[300px] lg:w-[300px] flex-grow">
+        <UserInfo data={data} />
       </div>
       <div className="w-full flex flex-col gap-4">
         <AttemptsHeatMap data={data} />
