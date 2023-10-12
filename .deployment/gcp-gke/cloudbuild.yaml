@@ -91,8 +91,7 @@ steps:
         "-t",
         "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-back",
         "--cache-from",
-        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-back:latest",F
-        
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-back:latest",
         "./backend/services/pairing/pairing-back",
       ]
 
