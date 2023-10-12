@@ -13,8 +13,8 @@ spec:
     spec:
       containers:
         - name: peerprep-question
-          image: peerprep/question
-          imagePullPolicy: Never
+          image: asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-question
+          imagePullPolicy: Always
           resources:
             requests:
               memory: "32Mi"
@@ -49,4 +49,3 @@ spec:
       targetPort: 3000
   selector:
     app: peerprep-question
-

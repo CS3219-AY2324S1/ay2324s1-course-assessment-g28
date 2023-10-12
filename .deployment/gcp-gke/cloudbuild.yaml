@@ -1,16 +1,53 @@
 steps:
-  - id: 'docker build peerprep-web'
+  # Build and push peerprep-frontend image
+  - id: 'docker build peerprep-frontend'
     name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-web', './frontend/']
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-frontend', './frontend/']
 
-  - id: 'docker push peerprep-web'
+  - id: 'docker push peerprep-frontend'
     name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-web']
+    args: ['push', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-frontend']
 
+  # Build and push peerprep-question image
+  - id: 'docker build peerprep-question'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-question', './backend/services/question']
+
+  - id: 'docker push peerprep-question'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-question']
+
+  # Build and push peerprep-user image
+  - id: 'docker build peerprep-user'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-user', './backend/services/user']
+
+  - id: 'docker push peerprep-user'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-user']
+
+  # Build and push peerprep-pairing images
+  - id: 'docker build peerprep-pairing-front'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-front', './backend/services/pairing/pairing-front']
+
+  - id: 'docker push peerprep-pairing-front'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-front']
+
+  - id: 'docker build peerprep-pairing-back'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-back', './backend/services/pairing/pairing-back']
+
+  - id: 'docker push peerprep-pairing-back'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-back']
+
+  # Deploy to GKE
   - id: 'gke apply config'
     name: "gcr.io/cloud-builders/gke-deploy"
     args:
     - apply
-    - --filename=./.deployment/gcp-gke/k8-templates/
+    - --filename=./.deployment/gcp-gke/k8s-templates/
     - --location=asia-southeast1
     - --cluster=autopilot-cluster-1
