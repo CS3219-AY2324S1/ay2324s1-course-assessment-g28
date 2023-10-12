@@ -2,11 +2,14 @@ import useUserInfo from "@/hooks/useUserInfo";
 import Image from "next/image";
 import DefaultProfileImage from "@/assets/images/default-profile-image.png";
 import Card from "@/components/Card";
-import DeleteUserButton from "@/components/DeleteUserButton";
+import DeleteUserButton from "@/components/UserProfileCard/UserInfo/DeleteUserButton";
+import { User } from "@/api/user/types";
+import { UNDEFINED_VALUE } from "../config";
+import EditUserButton from "./EditUserButton";
 
-const UserInfo = () => {
+const UserInfo = ({ data }: { data?: User }) => {
   const { image, name, username } = useUserInfo();
-
+  const { favouriteProgrammingLanguage } = data ?? {};
   return (
     <Card>
       <div className="flex flex-col items-stretch gap-4">
@@ -28,6 +31,15 @@ const UserInfo = () => {
             <div className="font-extralight  text-xs">@{username}</div>
           </div>
         </div>
+        <div className="text-xs">
+          {"Favourite programming language: "}
+          <span className="font-semibold text-purple-800">
+            {favouriteProgrammingLanguage || UNDEFINED_VALUE}
+          </span>
+        </div>
+        <EditUserButton
+          favouriteProgrammingLanguage={favouriteProgrammingLanguage}
+        />
         <DeleteUserButton />
       </div>
     </Card>

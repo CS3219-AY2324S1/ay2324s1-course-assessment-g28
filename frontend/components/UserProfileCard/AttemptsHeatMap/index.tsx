@@ -60,7 +60,7 @@ const AttemptsHeatMap = ({ data }: { data?: User }) => {
       </>
       <div
         className="w-full flex justify-center
-          md:scale-80 lg:scale-100 md:min-w-[730px]"
+          scale-80 lg:scale-100 md:min-w-[730px]"
       >
         {/* wrap heatmap in scrolling box for small widths */}
         <div
