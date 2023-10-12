@@ -14,7 +14,11 @@ spec:
       containers:
         - name: peerprep-question
           image: peerprep/question
+          imagePullPolicy: Never
           resources:
+            requests:
+              memory: "32Mi"
+              cpu: "100m"
             limits:
               memory: "512Mi"
               cpu: "500m"
@@ -35,6 +39,7 @@ metadata:
   name: peerprep-question
   namespace: default
 spec:
+  externalTrafficPolicy: Cluster
   internalTrafficPolicy: Cluster
   ipFamilies:
     - IPv4
