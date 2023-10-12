@@ -15,8 +15,11 @@ To define these environment variables, create a `.env` file in the same folder a
 NEXTAUTH_SECRET=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
-MONGODB_URI=
+MONGO_URI=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
 POSTGRES_URI=
+RABBITMQ_URL=
 ```
 
 ## Running the K8s cluster
