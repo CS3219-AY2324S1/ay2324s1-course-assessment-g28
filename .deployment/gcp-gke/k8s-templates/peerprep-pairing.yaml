@@ -45,8 +45,8 @@ spec:
     spec:
       containers:
         - name: peerprep-pairing-front
-          image: peerprep/pairing-front
-          imagePullPolicy: Never
+          image: asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-front
+          imagePullPolicy: Always
           resources:
             limits:
               memory: "128Mi"
