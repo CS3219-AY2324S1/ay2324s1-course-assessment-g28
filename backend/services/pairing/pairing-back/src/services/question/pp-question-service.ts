@@ -9,7 +9,7 @@ keepUpdating();
 function keepUpdating() {
   updateCache()
     .catch((error) => {
-      logger.error("Error while updating cache:", error);
+      logger.error(`Error while updating cache: ${error}`);
     })
     .finally(() => {
       setTimeout(() => {
@@ -19,7 +19,7 @@ function keepUpdating() {
 }
 
 async function updateCache() {
-  let res = await fetch(`${config.QUESTION_URL}/questions?complexity=0`, {
+  let res = await fetch(`${config.QUESTION_URL}/questions`, {
     method: "GET",
   });
   if (!res.ok) {
