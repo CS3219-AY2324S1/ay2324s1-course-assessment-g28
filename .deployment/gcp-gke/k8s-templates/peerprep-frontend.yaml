@@ -14,7 +14,7 @@ spec:
       containers:
         - name: peerprep-frontend
           image: asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-frontend
-          imagePullPolicy: Always
+          # imagePullPolicy: Always
           resources:
             limits:
               memory: "2048Mi"

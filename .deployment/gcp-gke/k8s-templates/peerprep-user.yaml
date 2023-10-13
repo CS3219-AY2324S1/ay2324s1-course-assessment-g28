@@ -14,7 +14,7 @@ spec:
       containers:
         - name: peerprep-user
           image: asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-user
-          imagePullPolicy: Always
+          # imagePullPolicy: Always
           resources:
             requests:
               memory: "32Mi"
