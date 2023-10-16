@@ -64,7 +64,7 @@ export const createImage = async (req: Request, res: Response) => {
       "INSERT INTO Images (question_id, image_data) VALUES ($1, $2) RETURNING id";
 
     const queryResult = await pool.query(query, [id, imageData]);
-    res.status(201).json(queryResult.rows[0].id);
+    res.status(201).json({ imageId: queryResult.rows[0].id });
   } catch (error) {
     if (error instanceof QuestionError) {
       res
