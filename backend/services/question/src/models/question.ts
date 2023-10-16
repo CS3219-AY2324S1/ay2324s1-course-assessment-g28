@@ -12,7 +12,10 @@ interface IQuestion extends Document {
 const questionSchema = new mongoose.Schema<IQuestion>({
   id: { type: Number, unique: true, index: true },
   title: { type: String, required: true, unique: true },
-  description: { type: mongoose.Schema.Types.Mixed, required: true },
+  description: {
+    type: mongoose.Schema.Types.Mixed,
+    required: true,
+  },
   category: { type: [String], required: true },
   complexity: { type: Number, enum: [0, 1, 2], required: true },
 });

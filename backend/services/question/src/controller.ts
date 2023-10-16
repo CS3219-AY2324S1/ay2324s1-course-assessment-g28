@@ -35,6 +35,10 @@ export const createQuestion = async (req: Request, res: Response) => {
       );
     }
 
+    if (!req.body.description) {
+      req.body.description = {};
+    }
+
     const question = new Question(req.body);
     await question.save();
     res.status(201).json(`${question.title} successfully added!`);
