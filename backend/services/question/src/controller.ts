@@ -1,4 +1,6 @@
+import { config } from "dotenv";
 import { Request, Response } from "express";
+import { Pool } from "pg";
 import {
   QuestionError,
   QUESTION_NOT_FOUND_ERROR_CODE,
@@ -7,6 +9,18 @@ import {
 } from "./errors";
 
 import { Question } from "./models/question";
+
+// set up PG connection
+config();
+const { PG_PORT, POSTGRES_USER, POSTGRES_PASSWORD } = process.env;
+// initialise connection to images database
+const pool = new Pool({
+  user: POSTGRES_USER,
+  host: "postgres",
+  database: "images",
+  password: POSTGRES_PASSWORD,
+  port: Number(PG_PORT) || 5432,
+});
 
 // Create Question Business Logic
 export const createQuestion = async (req: Request, res: Response) => {
@@ -24,6 +38,29 @@ export const createQuestion = async (req: Request, res: Response) => {
     const question = new Question(req.body);
     await question.save();
     res.status(201).json(`${question.title} successfully added!`);
+  } catch (error) {
+    if (error instanceof QuestionError) {
+      res
+        .status(500)
+        .json({ errorCode: error.errorCode, message: error.message });
+    } else if (error instanceof Error) {
+      res
+        .status(500)
+        .json({ errorCode: UNKNOWN_ERROR_CODE, message: error.message });
+    }
+  }
+};
+
+export const createImage = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { imageData } = req.body;
+
+    const query =
+      "INSERT INTO Images (question_id, image_data) VALUES ($1, $2) RETURNING id";
+
+    const queryResult = await pool.query(query, [id, imageData]);
+    res.status(201).json(queryResult.rows[0].id);
   } catch (error) {
     if (error instanceof QuestionError) {
       res
@@ -87,6 +124,26 @@ export const getQuestions = async (req: Request, res: Response) => {
       .limit(size); // take the first (size) elements
 
     res.status(200).json({ content: questions, total: total });
+  } catch (error) {
+    if (error instanceof QuestionError) {
+      res
+        .status(500)
+        .json({ errorCode: error.errorCode, message: error.message });
+    } else if (error instanceof Error) {
+      res
+        .status(500)
+        .json({ errorCode: UNKNOWN_ERROR_CODE, message: error.message });
+    }
+  }
+};
+
+export const getImageById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const query = "SELECT * FROM Images WHERE text(id) = $1";
+
+    const queryResult = await pool.query(query, [id]);
+    res.status(200).json(queryResult.rows[0]);
   } catch (error) {
     if (error instanceof QuestionError) {
       res

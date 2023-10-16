@@ -8,6 +8,18 @@ services:
     ports:
       - 27017:27017
 
+  postgres:
+    image: postgres:latest
+    container_name: question-image-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: images
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "${PG_PORT}:5432"
+
   question-service:
     build:
       context: .
@@ -16,3 +28,4 @@ services:
       - ${PORT}:${PORT}
     depends_on:
       - mongodb
+      - postgres
