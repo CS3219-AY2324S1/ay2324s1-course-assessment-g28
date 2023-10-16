@@ -185,6 +185,10 @@ export const deleteQuestionById = async (req: Request, res: Response) => {
   try {
     const questionId = req.params.id;
     await Question.findOneAndDelete({ id: questionId });
+
+    const query = "DELETE FROM Images WHERE question_id=$1";
+    await pool.query(query, [questionId]);
+
     res.status(204).json(`Successfully deleted question ${questionId}!`);
   } catch (error) {
     if (error instanceof QuestionError) {
