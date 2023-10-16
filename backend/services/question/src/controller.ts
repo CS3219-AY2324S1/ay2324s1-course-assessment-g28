@@ -147,7 +147,7 @@ export const getImageById = async (req: Request, res: Response) => {
     const query = "SELECT * FROM Images WHERE text(id) = $1";
 
     const queryResult = await pool.query(query, [id]);
-    res.status(200).json(queryResult.rows[0]);
+    res.status(200).json({ imageData: queryResult.rows[0]["image_data"] });
   } catch (error) {
     if (error instanceof QuestionError) {
       res
