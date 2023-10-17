@@ -16,20 +16,14 @@ export default async function handler(
   }
 
   if (req.method === HttpMethod.POST) {
-    forwardRequestAndGetResponse(
-      req,
-      res,
-      process.env.USER_API as string,
-      {customPath: `/${session.user.email}/question-attempt`},
-    );
+    forwardRequestAndGetResponse(req, res, process.env.USER_API as string, {
+      customPath: `/${session.user.email}/question-attempt`,
+    });
   } else {
-    forwardRequestAndGetResponse(
-      req,
-      res,
-      process.env.USER_API as string,
-      {customPath: `${USER_API}/${session.user.email}/question-attempt/${req.url!.substring(
-        req.url!.lastIndexOf("/") + 1,
-      )}`},
-    );
+    forwardRequestAndGetResponse(req, res, process.env.USER_API as string, {
+      customPath: `${USER_API}/${
+        session.user.email
+      }/question-attempt/${req.url!.substring(req.url!.lastIndexOf("/") + 1)}`,
+    });
   }
 }

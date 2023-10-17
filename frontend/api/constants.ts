@@ -8,7 +8,7 @@ export enum HttpStatus {
   UNAUTHORIZED = 401,
   FORBIDDEN = 403,
   NOT_FOUND = 404,
-  INTERNAL_SERVER_ERROR = 500
+  INTERNAL_SERVER_ERROR = 500,
 }
 
 export enum HttpMethod {
@@ -20,10 +20,10 @@ export enum HttpMethod {
 }
 
 export const PagedResponse = z.object({
-  total: z.number().nonnegative().int()
+  total: z.number().nonnegative().int(),
 });
 
 // headers to use for json requests
 export const jsonRequestHeaders = {
   "Content-Type": "application/json",
-}
+};

@@ -21,6 +21,10 @@ export const createQuestion = async (req: Request, res: Response) => {
       );
     }
 
+    if (!req.body.description) {
+      req.body.description = {};
+    }
+
     const question = new Question(req.body);
     await question.save();
     res.status(201).json(`${question.title} successfully added!`);
@@ -128,6 +132,7 @@ export const deleteQuestionById = async (req: Request, res: Response) => {
   try {
     const questionId = req.params.id;
     await Question.findOneAndDelete({ id: questionId });
+
     res.status(204).json(`Successfully deleted question ${questionId}!`);
   } catch (error) {
     if (error instanceof QuestionError) {
