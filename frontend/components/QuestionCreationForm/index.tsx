@@ -14,6 +14,7 @@ import {
 } from "@/api/questions/types";
 import { ChevronDownIcon } from "@/assets/icons/ChevronDown";
 import CategoryAdder from "@/components/QuestionCreationForm/CategoryAdder";
+import QuestionDescription from "@/components/QuestionDescription";
 import { HOME } from "@/routes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -23,7 +24,6 @@ import {
   DropdownMenu,
   DropdownTrigger,
   Input,
-  Textarea,
 } from "@nextui-org/react";
 import router from "next/router";
 import { useState } from "react";
@@ -135,16 +135,22 @@ export default function QuestionCreationForm({
 
       <div>
         <label>Description</label>
-        <Textarea
-          classNames={{
-            base: "text-black ",
-            label: "hidden",
-          }}
-          {...register("description")}
-          placeholder="Enter question description"
-          errorMessage={errors.description?.message}
-          onValueChange={() => setIsEdited(true)}
-        ></Textarea>
+        <Controller
+          name="description"
+          control={control}
+          defaultValue={{ type: "doc", content: [] }}
+          render={({ field: { onChange } }) => (
+            <QuestionDescription
+              initialContent={
+                originalQuestion
+                  ? originalQuestion.description
+                  : { type: "doc", content: [] }
+              }
+              onChange={onChange}
+              className="min-h-screen-2/3"
+            ></QuestionDescription>
+          )}
+        />
       </div>
 
       <div>
