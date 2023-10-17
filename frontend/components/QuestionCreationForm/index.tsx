@@ -101,7 +101,7 @@ export default function QuestionCreationForm({
             name="complexity"
             control={control}
             defaultValue={QuestionComplexity.EASY}
-            render={({ field: { onChange, value } }) => (
+            render={({ field: { onChange, value }}) => (
               <Dropdown className="p-0">
                 <DropdownTrigger className="flex">
                   <Button
@@ -117,7 +117,7 @@ export default function QuestionCreationForm({
                   selectionMode="single"
                   selectedKeys={[value]}
                   onAction={(key) => {
-                    onChange(key);
+                    onChange(parseInt(key as string));
                     setIsEdited(true);
                   }}
                 >
@@ -132,7 +132,6 @@ export default function QuestionCreationForm({
           />
         </div>
       </div>
-
       <div>
         <label>Description</label>
         <Controller
@@ -146,7 +145,10 @@ export default function QuestionCreationForm({
                   ? originalQuestion.description
                   : { type: "doc", content: [] }
               }
-              onChange={onChange}
+              onChange={(val) => {
+                setIsEdited(true);
+                onChange(val);
+              }}
               className="min-h-screen-2/3"
             ></QuestionDescription>
           )}
