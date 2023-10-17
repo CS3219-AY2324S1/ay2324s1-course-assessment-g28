@@ -10,8 +10,8 @@ const config: Config = {
   ],
   theme: {
     minHeight: {
-      'screen-1/2': '50vh',
-      'screen-2/3': '67vh',
+      "screen-1/2": "50vh",
+      "screen-2/3": "67vh",
     },
     extend: {
       backgroundImage: {

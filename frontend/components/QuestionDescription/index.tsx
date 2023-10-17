@@ -57,7 +57,7 @@ export default function QuestionDescription({
         className,
       )}
     >
-      {!readonly && <Menubar editor={editor}/>}
+      {!readonly && <Menubar editor={editor} />}
       <EditorContent
         editor={editor}
         className="outline-none focus-visible:outline-none"

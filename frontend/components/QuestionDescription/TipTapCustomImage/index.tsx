@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Node, nodeInputRule } from "@tiptap/core";
 import { mergeAttributes } from "@tiptap/react";
 

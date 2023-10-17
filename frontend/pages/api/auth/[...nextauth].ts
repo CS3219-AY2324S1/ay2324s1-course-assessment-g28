@@ -29,7 +29,7 @@ export const authOptions: AuthOptions = {
     },
     session: async ({ session, token }) => {
       session.user.isAdmin = (token.isAdmin ?? false) as boolean;
-      session.user.username = (token?.username) as string | undefined;
+      session.user.username = token?.username as string | undefined;
       return session;
     },
   },

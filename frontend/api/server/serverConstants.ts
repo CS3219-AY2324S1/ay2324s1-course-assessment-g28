@@ -9,9 +9,9 @@ export async function forwardRequestAndGetResponse(
   res: NextApiResponse,
   apiAddr: string,
   options?: {
-    customPath?: string,
-    appendBody?: Record<string, string>
-  }
+    customPath?: string;
+    appendBody?: Record<string, string>;
+  },
 ) {
   try {
     let url = getBackendUrl(apiAddr, req);
@@ -46,7 +46,7 @@ export async function forwardRequestAndGetResponse(
 
     if (!backendResponse.ok) {
       const error = await backendResponse.json();
-      console.log(error)
+      console.log(error);
       res.status(backendResponse.status).json(error);
       return;
     }
