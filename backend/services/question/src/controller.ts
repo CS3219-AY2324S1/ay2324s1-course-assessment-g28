@@ -1,6 +1,4 @@
-import { config } from "dotenv";
 import { Request, Response } from "express";
-import { Pool } from "pg";
 import {
   QuestionError,
   QUESTION_NOT_FOUND_ERROR_CODE,
@@ -9,18 +7,6 @@ import {
 } from "./errors";
 
 import { Question } from "./models/question";
-
-// set up PG connection
-config();
-const { PG_PORT, POSTGRES_USER, POSTGRES_PASSWORD } = process.env;
-// initialise connection to images database
-const pool = new Pool({
-  user: POSTGRES_USER,
-  host: "images-postgres",
-  database: "images",
-  password: POSTGRES_PASSWORD,
-  port: Number(PG_PORT) || 5432,
-});
 
 // Create Question Business Logic
 export const createQuestion = async (req: Request, res: Response) => {
@@ -118,28 +104,6 @@ export const getQuestions = async (req: Request, res: Response) => {
   }
 };
 
-export const getImageById = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const query = "SELECT * FROM Images WHERE text(id) = $1";
-
-    const queryResult = await pool.query(query, [id]);
-    res
-      .status(200)
-      .end(Buffer.from(queryResult.rows[0]["image_data"], "base64"));
-  } catch (error) {
-    if (error instanceof QuestionError) {
-      res
-        .status(500)
-        .json({ errorCode: error.errorCode, message: error.message });
-    } else if (error instanceof Error) {
-      res
-        .status(500)
-        .json({ errorCode: UNKNOWN_ERROR_CODE, message: error.message });
-    }
-  }
-};
-
 // Update Question Business Logic
 export const updateQuestionById = async (req: Request, res: Response) => {
   try {
@@ -168,9 +132,6 @@ export const deleteQuestionById = async (req: Request, res: Response) => {
   try {
     const questionId = req.params.id;
     await Question.findOneAndDelete({ id: questionId });
-
-    const query = "DELETE FROM Images WHERE question_id=$1";
-    await pool.query(query, [questionId]);
 
     res.status(204).json(`Successfully deleted question ${questionId}!`);
   } catch (error) {
