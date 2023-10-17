@@ -25,7 +25,7 @@ export default function QuestionDescription({
     editable: readonly ?? true,
     editorProps: {
       attributes: {
-        class: "prose outline-none",
+        class: "prose outline-none w-full max-w-full min-h-[500px]",
       },
     },
     extensions: [
@@ -40,6 +40,7 @@ export default function QuestionDescription({
           keepMarks: true,
           keepAttributes: false,
         },
+        gapcursor: false
       }),
       TipTapCustomImage,
       Typography,
@@ -62,7 +63,7 @@ export default function QuestionDescription({
       {!readonly && <Menubar editor={editor} />}
       <EditorContent
         editor={editor}
-        className="outline-none focus-visible:outline-none"
+        className="flex flex-col grow gap-1"
       />
     </div>
   );
