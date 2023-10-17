@@ -11,10 +11,10 @@ export enum QuestionComplexity {
   HARD = 2,
 }
 
-const QuestionDescriptionZod =z.object({
+const QuestionDescriptionZod = z.object({
   type: z.literal("doc"),
-  content: z.any().array()
-})
+  content: z.any().array(),
+});
 
 // For displaying in list of questions, basic identifying information
 export const QuestionBaseZod = z.object({
@@ -28,8 +28,8 @@ export const QuestionCreationZod = z.object({
   title: z.string().min(1),
   category: z.string().array(),
   complexity: z.nativeEnum(QuestionComplexity),
-  description: QuestionDescriptionZod // a EditorContentState
-})
+  description: QuestionDescriptionZod, // a EditorContentState
+});
 
 export type QuestionCreation = z.infer<typeof QuestionCreationZod>;
 
@@ -38,7 +38,7 @@ export const PageOfQuestionsZod = z.object;
 export type QuestionBase = z.infer<typeof QuestionBaseZod>;
 
 export const QuestionZod = QuestionBaseZod.extend({
-  description: QuestionDescriptionZod
+  description: QuestionDescriptionZod,
 });
 
 export type Question = z.infer<typeof QuestionZod>;
@@ -57,4 +57,3 @@ export const GetQuestionResponseBodyZod = PagedResponse.extend({
 export type GetQuestionResponseBody = z.infer<
   typeof GetQuestionResponseBodyZod
 >;
-

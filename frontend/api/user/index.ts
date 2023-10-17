@@ -1,7 +1,20 @@
 import { HttpMethod, HttpStatus, jsonRequestHeaders } from "@/api/constants";
 import { RequestError } from "@/api/errors";
-import { USER_API, getIsUsernameExistsPath, getQuestionAttemptPath, getRoute } from "@/api/routes";
-import { AttemptedQuestionDetails, AttemptedQuestionDetailsZod, CreateUserRequestBody, User, UserExists, UserExistsZod, UserZod } from "@/api/user/types";
+import {
+  USER_API,
+  getIsUsernameExistsPath,
+  getQuestionAttemptPath,
+  getRoute,
+} from "@/api/routes";
+import {
+  AttemptedQuestionDetails,
+  AttemptedQuestionDetailsZod,
+  CreateUserRequestBody,
+  User,
+  UserExists,
+  UserExistsZod,
+  UserZod,
+} from "@/api/user/types";
 
 /**
  * Returns info for the logged in user.

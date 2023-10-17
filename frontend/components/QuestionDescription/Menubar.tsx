@@ -145,7 +145,7 @@ const Menubar = ({ editor }: MenubarProps) => {
         <Popover placement="bottom">
           <PopoverTrigger>
             <Button size="sm" variant="flat" color="secondary">
-            <ImagePlus />
+              <ImagePlus />
             </Button>
           </PopoverTrigger>
           <PopoverContent>

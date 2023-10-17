@@ -41,7 +41,9 @@ const defaultContext: QuestionTableContextType = {
   setPage: () => {
     throw new Error("Not in provider!");
   },
-  resetQuestionTableOptions: () => {throw new Error("Not in provider!");} 
+  resetQuestionTableOptions: () => {
+    throw new Error("Not in provider!");
+  },
 };
 
 const QuestionTableContext =
@@ -64,7 +66,7 @@ export const QuestionTableProvider = ({
     setSelectedComplexity(undefined);
     setPageSize(DEFAULT_PAGE_SIZE_SELECTION);
     setPage(1);
-  }, [])
+  }, []);
 
   return (
     <QuestionTableContext.Provider
@@ -77,7 +79,7 @@ export const QuestionTableProvider = ({
         setPageSize,
         page,
         setPage,
-        resetQuestionTableOptions
+        resetQuestionTableOptions,
       }}
     >
       {children}

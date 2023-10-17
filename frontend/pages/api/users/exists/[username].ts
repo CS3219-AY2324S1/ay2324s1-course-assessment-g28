@@ -14,9 +14,5 @@ export default async function handler(
     // }
     // return;
   }
-  await forwardRequestAndGetResponse(
-    req,
-    res,
-    process.env.USER_API as string,
-  );
+  await forwardRequestAndGetResponse(req, res, process.env.USER_API as string);
 }

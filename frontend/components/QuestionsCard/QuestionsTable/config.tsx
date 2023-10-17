@@ -17,7 +17,7 @@ export enum ColumnKeyAdminOnly {
   ACTION = "action",
 }
 
-export type ColumnKeyAdmin = ColumnKey | ColumnKeyAdminOnly
+export type ColumnKeyAdmin = ColumnKey | ColumnKeyAdminOnly;
 
 interface ColumnConfig {
   name: string;
@@ -34,10 +34,7 @@ export const COLUMNS = [
   ColumnKey.DIFFCULTY,
 ];
 
-export const COLUMNS_ADMIN = [
-  ...COLUMNS,
-  ColumnKeyAdminOnly.ACTION
-]
+export const COLUMNS_ADMIN = [...COLUMNS, ColumnKeyAdminOnly.ACTION];
 
 export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
   [ColumnKey.ID]: {
@@ -105,7 +102,7 @@ export const COLUMN_CONFIGS_ADMIN: Record<ColumnKeyAdmin, ColumnConfig> = {
     },
     align: "center",
   },
-}
+};
 
 export const DEFAULT_COMPLEXITY_SELECTION = QuestionComplexity.EASY;
 

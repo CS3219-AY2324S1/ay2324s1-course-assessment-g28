@@ -10,7 +10,7 @@ import { cn } from "@nextui-org/react";
 
 export interface QuestionDescriptionProps {
   initialContent: Content;
-  onChange: (content: Content) => void;
+  onChange?: (content: Content) => void;
   readonly?: boolean;
   className?: string;
 }
@@ -46,7 +46,9 @@ export default function QuestionDescription({
     ],
     content: initialContent,
     onUpdate({ editor }) {
-      onChange(editor?.getJSON());
+      if (onChange) {
+        onChange(editor?.getJSON());
+      }
     },
   });
 
@@ -57,7 +59,7 @@ export default function QuestionDescription({
         className,
       )}
     >
-      {!readonly && <Menubar editor={editor}/>}
+      {!readonly && <Menubar editor={editor} />}
       <EditorContent
         editor={editor}
         className="outline-none focus-visible:outline-none"

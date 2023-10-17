@@ -28,13 +28,13 @@ export const uploadImagePlugin = new Plugin({
       paste(view, event) {
         const items = Array.from(event.clipboardData?.items || []);
         const { schema } = view.state;
-  
+
         items.forEach(async (item) => {
           const image = item.getAsFile();
-  
+
           if (item.type.indexOf("image") === 0) {
             event.preventDefault();
-  
+
             // process image and save base 64
             const adjustedImage = await resizeFile(image!);
             if (image) {
@@ -42,7 +42,7 @@ export const uploadImagePlugin = new Plugin({
                 src: adjustedImage,
               });
               const transaction = view.state.tr.replaceSelectionWith(node);
-             
+
               view.dispatch(transaction);
             }
           } else {
@@ -58,7 +58,7 @@ export const uploadImagePlugin = new Plugin({
             reader.readAsDataURL(image);
           }
         });
-  
+
         return false;
       },
       drop(view, event) {
@@ -84,18 +84,18 @@ export const uploadImagePlugin = new Plugin({
           top: event.clientY,
         });
 
-         images.forEach(async (image) => {
+        images.forEach(async (image) => {
           // save base64 and data url
           const adjustedImage = await resizeFile(image!);
           if (image) {
             const node = schema.nodes.image.create({
-              src: adjustedImage
+              src: adjustedImage,
             });
             const transaction = view.state.tr.insert(coordinates!.pos, node);
             view.dispatch(transaction);
           }
         });
-        
+
         return false;
       },
     },

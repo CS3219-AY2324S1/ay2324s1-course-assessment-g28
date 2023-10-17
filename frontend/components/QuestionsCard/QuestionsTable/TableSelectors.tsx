@@ -22,7 +22,7 @@ interface TableSelectorsProps {
   userIsAdmin: boolean;
 }
 
-const TableSelectors = ({userIsAdmin}: TableSelectorsProps ) => {
+const TableSelectors = ({ userIsAdmin }: TableSelectorsProps) => {
   const {
     filterValue,
     setFilterValue,
@@ -98,15 +98,17 @@ const TableSelectors = ({userIsAdmin}: TableSelectorsProps ) => {
           </Button>
         )}
       </div>
-      {userIsAdmin && <Button
-        className="ml-auto"
-        color="secondary"
-        variant="flat"
-        onPress={() => router.push(CREATE_QUESTION)}
-        title="Go to question creation page"
-      >
-        Create Question <PlusSquare />
-      </Button>}
+      {userIsAdmin && (
+        <Button
+          className="ml-auto"
+          color="secondary"
+          variant="flat"
+          onPress={() => router.push(CREATE_QUESTION)}
+          title="Go to question creation page"
+        >
+          Create Question <PlusSquare />
+        </Button>
+      )}
     </div>
   );
 };

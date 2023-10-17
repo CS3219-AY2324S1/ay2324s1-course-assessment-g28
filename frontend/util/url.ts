@@ -3,5 +3,5 @@
  */
 
 export function getFirstPartOfPath(path: string) {
-  return "/" + path.split('/')[1]
+  return "/" + path.split("/")[1];
 }

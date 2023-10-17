@@ -25,7 +25,6 @@ export const UserZod = z.object({
   attemptedQuestions: AttemptedQuestionRecordZod.array(),
 });
 
-
 export const CreateUserRequestBodyZod = z.object({
   username: z.string().min(1, "Username must be provided"),
   favouriteProgrammingLanguage: z.string().optional(),
