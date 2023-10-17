@@ -6,7 +6,7 @@ const db = pgp(
   `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@localhost:${process.env.PG_PORT}/user`
 );
 
-emailsToMakeAdmin = [];
+emailsToMakeAdmin = ["geraldneo56@gmail.com"];
 
 for (let email of emailsToMakeAdmin) {
   db.none(`UPDATE Users SET is_admin = true WHERE email = '${email}'`)

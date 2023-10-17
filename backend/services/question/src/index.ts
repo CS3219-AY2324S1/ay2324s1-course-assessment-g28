@@ -7,7 +7,6 @@ import {
   getQuestions,
   getQuestionById,
   updateQuestionById,
-  createImage,
   getImageById,
 } from "./controller";
 
@@ -18,7 +17,6 @@ async function initConnection(MONGO_URI: string) {
 async function createEndpoints(router: express.Router) {
   // POST endpoints
   router.post("/questions", createQuestion);
-  router.post("/questions/:id/images", createImage);
 
   // GET endpoints
   router.get("/questions/:id", getQuestionById);

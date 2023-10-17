@@ -16,7 +16,7 @@ const { PG_PORT, POSTGRES_USER, POSTGRES_PASSWORD } = process.env;
 // initialise connection to images database
 const pool = new Pool({
   user: POSTGRES_USER,
-  host: "postgres",
+  host: "images-postgres",
   database: "images",
   password: POSTGRES_PASSWORD,
   port: Number(PG_PORT) || 5432,
@@ -42,29 +42,6 @@ export const createQuestion = async (req: Request, res: Response) => {
     const question = new Question(req.body);
     await question.save();
     res.status(201).json(`${question.title} successfully added!`);
-  } catch (error) {
-    if (error instanceof QuestionError) {
-      res
-        .status(500)
-        .json({ errorCode: error.errorCode, message: error.message });
-    } else if (error instanceof Error) {
-      res
-        .status(500)
-        .json({ errorCode: UNKNOWN_ERROR_CODE, message: error.message });
-    }
-  }
-};
-
-export const createImage = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { imageData } = req.body;
-
-    const query =
-      "INSERT INTO Images (question_id, image_data) VALUES ($1, $2) RETURNING id";
-
-    const queryResult = await pool.query(query, [id, imageData]);
-    res.status(201).json({ imageId: queryResult.rows[0].id });
   } catch (error) {
     if (error instanceof QuestionError) {
       res
@@ -147,7 +124,9 @@ export const getImageById = async (req: Request, res: Response) => {
     const query = "SELECT * FROM Images WHERE text(id) = $1";
 
     const queryResult = await pool.query(query, [id]);
-    res.status(200).json({ imageData: queryResult.rows[0]["image_data"] });
+    res
+      .status(200)
+      .end(Buffer.from(queryResult.rows[0]["image_data"], "base64"));
   } catch (error) {
     if (error instanceof QuestionError) {
       res

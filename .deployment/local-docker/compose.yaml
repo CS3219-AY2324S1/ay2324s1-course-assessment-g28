@@ -31,6 +31,9 @@ services:
       - 1234
     ports:
       - 1234:1234
+    depends_on:
+      - mongodb
+      - images-postgres
   mongodb:
     image: mongo
     environment:
@@ -41,6 +44,18 @@ services:
       - 27017:27017
     volumes:
       - dev-mongodb:/data/db
+  images-postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=dev
+      - POSTGRES_DB=images
+    volumes:
+      - ../../backend/services/question/init.sql:/docker-entrypoint-initdb.d/init.sql
+    expose:
+      - 5432
+    ports:
+      - 5433:5432
 
   # User service
   pp-user:
@@ -64,7 +79,7 @@ services:
       POSTGRES_PASSWORD: dev
       POSTGRES_DB: user
     volumes:
-     # - dev-postgres:/var/lib/postgresql/data
+      # - dev-postgres:/var/lib/postgresql/data
       - ../../backend/services/user/init.sql:/docker-entrypoint-initdb.d/init.sql
     expose:
       - 5432
@@ -96,7 +111,7 @@ services:
       - MATCHMAKING_MAX_WAIT_SECONDS=100
 # Names our volume
 volumes:
- # dev-postgres:
-    #driver: local
+  # dev-postgres:
+  #driver: local
   dev-mongodb:
     driver: local
