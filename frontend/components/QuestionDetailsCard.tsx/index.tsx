@@ -1,6 +1,7 @@
 import { Question } from "@/api/questions/types";
 import Card from "@/components/Card";
 import ComplexityChip from "@/components/ComplexityChip";
+import QuestionDescription from "@/components/QuestionDescription";
 
 interface QuestionDetailsProps {
   question: Question;
@@ -21,7 +22,7 @@ export default function QuestionDetailsCard({
         <ComplexityChip complexity={complexity} />
       </div>
       <div>
-        <p className="whitespace-pre-line font-light">{description}</p>
+        <QuestionDescription initialContent={description} readonly/>
       </div>
     </Card>
   );
