@@ -136,7 +136,8 @@ wsServer.on('connection', function(connection: WebSocket, request: Request, clie
 
   connection.onmessage = (message: any) => {
     const data = JSON.parse(message.data);
-    console.log(data);
+    //console.log("New Message:::", data);
+    console.log(WS_METHODS.OP, data.method, WS_METHODS.OP === data.method);
 
     const partnerConnection = clients[partners[userId]];
 
@@ -164,7 +165,7 @@ wsServer.on('connection', function(connection: WebSocket, request: Request, clie
   }
 
   connection.onclose = (message: any) => {
-    console.log("Connection closed: ", connection);
+    console.log("Connection closed: ", userId);
 
     // Order of deletion: partners[userId, partnerId], pairs[pairId], clients[userId]
     // Then partnerConnection is also closed which will only delete clients[userId]
