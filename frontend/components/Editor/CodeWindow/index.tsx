@@ -97,7 +97,17 @@ export default function CodeWindow(props: CodeWindowProps) {
 
   function handleOp(data) {
     // TODO: Real time collab
-    setCode(data.op);
+    console.log(data);
+    const requestId: string = data.requestId;
+
+    if (requestId in requestQueue) {
+      requestQueue[requestId](data.data);
+      
+      let newState = {...requestQueue};
+      delete newState[requestId];
+
+      setRequestQueue(newState);
+    }
   }
 
   function handleCaretPos(data) {
@@ -146,11 +156,11 @@ export default function CodeWindow(props: CodeWindowProps) {
 
     console.log(val);
 
-    // TODO: Handle ops
-    sendJsonMessage({
-      method: WS_METHODS.OP,
-      op: val
-    });
+    // // TODO: Handle ops
+    // sendJsonMessage({
+    //   method: WS_METHODS.OP,
+    //   op: val
+    // });
   }
 
   function pause(time: number) {
@@ -183,7 +193,7 @@ export default function CodeWindow(props: CodeWindowProps) {
 
         value.method = WS_METHODS.OP;
         value.requestId = requestId;
-        sendJsonMessage(JSON.stringify(value));
+        sendJsonMessage(value);
 
         // Store the promise resolve to be called when result arrives via onMessage
         setRequestQueue({
@@ -278,7 +288,10 @@ export default function CodeWindow(props: CodeWindowProps) {
       async pull() {
         while (!this.done) {
           let version = getSyncedVersion(this.view.state)
+          console.log("BEFORE PULL");
+          // Somehow this is not resolving
           let updates = await pullUpdates(connection, version)
+          console.log("AFTER PULL");
           this.view.dispatch(receiveUpdates(this.view.state, updates))
         }
       }
@@ -294,7 +307,6 @@ export default function CodeWindow(props: CodeWindowProps) {
   
   async function addPeer() {
     console.log("Adding peer")
-    // Stuck here until we get the connection working
     let {version, doc} = await getDocument(new Connection())
     let connection = new Connection()
     let state = EditorState.create({
