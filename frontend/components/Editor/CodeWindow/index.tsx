@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 import CodeMirror from '@uiw/react-codemirror';
 import { EditorSelection } from '@uiw/react-codemirror';
@@ -10,6 +10,12 @@ import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import ResizeHandleHorizontal from '../ResizeHandleHorizontal';
 import LoadingScreen from '../LoadingScreen';
 import { LANGUAGES, LANGUAGE_DATA, LANGUAGE_TYPE, WS_METHODS } from '../constants';
+import {Update, receiveUpdates, sendableUpdates, collab, getSyncedVersion} from "@codemirror/collab"
+import {basicSetup} from "codemirror"
+import {ChangeSet, EditorState, Text} from "@codemirror/state"
+import {EditorView, ViewPlugin, ViewUpdate} from "@codemirror/view"
+import {workerScript} from "./worker.ts";
+import { v4 as uuidv4 } from "uuid";
 
 interface CodeWindowProps {
   template?: string,
@@ -25,10 +31,14 @@ export default function CodeWindow(props: CodeWindowProps) {
   const [isMyTurn, setIsMyTurn] = useState(false);
   const [isWebsocketLoaded, setIsWebsocketLoaded] = useState(false);
   const [isCodeRunning, setIsCodeRunning] = useState(false);
+  const [isCodeMirrorLoaded, setIsCodeMirrorLoaded] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [requestQueue, setRequestQueue] = useState({});
+
+  const editorsRef = useRef(null);
 
   useEffect(() => {
-
+  
   }, props.question);
 
   const { sendJsonMessage, readyState } = useWebSocket(props.websocketUrl, {
@@ -143,6 +153,167 @@ export default function CodeWindow(props: CodeWindowProps) {
     });
   }
 
+  function pause(time: number) {
+    return new Promise<void>(resolve => setTimeout(resolve, time))
+  }
+  
+  function currentLatency() {
+    let base = 500
+    return base * (1 + (Math.random() - 0.5))
+  }
+  
+  class Connection {
+    private disconnected: null | {wait: Promise<void>, resolve: () => void} = null
+  
+    constructor(
+      private getLatency: () => number = currentLatency
+    ) {}
+  
+    private _request(value: any): Promise<any> {
+      return new Promise(resolve => {
+        //let channel = new MessageChannel
+        //channel.port2.onmessage = event => resolve(JSON.parse(event.data))
+        //this.worker.postMessage(JSON.stringify(value), [channel.port1]) 
+        
+        
+        // Need to somehow send request and receive feedback through WS here
+        // Can we send message here and return promise for the original push/pull
+        // to wait, then during the onmessage we resolve the promise
+        const requestId = uuidv4();
+
+        value.method = WS_METHODS.OP;
+        value.requestId = requestId;
+        sendJsonMessage(JSON.stringify(value));
+
+        // Store the promise resolve to be called when result arrives via onMessage
+        setRequestQueue({
+          ...requestQueue,
+          [requestId]: resolve
+        })
+      })
+    }
+  
+    async request(value: any) {
+      let latency = this.getLatency()
+      if (this.disconnected) await this.disconnected.wait
+      await pause(latency)
+      let result = await this._request(value)
+      if (this.disconnected) await this.disconnected.wait
+      await pause(latency)
+      return result
+    }
+  
+    setConnected(value: boolean) {
+      if (value && this.disconnected) {
+        this.disconnected.resolve()
+        this.disconnected = null
+      } else if (!value && !this.disconnected) {
+        let resolve, wait = new Promise<void>(r => resolve = r)
+        this.disconnected = {wait, resolve}
+      }
+    }
+  }
+  
+  //!wrappers
+  
+  function pushUpdates(
+    connection: Connection,
+    version: number,
+    fullUpdates: readonly Update[]
+  ): Promise<boolean> {
+    // Strip off transaction data
+    let updates = fullUpdates.map(u => ({
+      clientID: u.clientID,
+      changes: u.changes.toJSON()
+    }))
+    return connection.request({type: "pushUpdates", version, updates})
+  }
+  
+  function pullUpdates(
+    connection: Connection,
+    version: number
+  ): Promise<readonly Update[]> {
+    return connection.request({type: "pullUpdates", version})
+      .then(updates => updates.map(u => ({
+        changes: ChangeSet.fromJSON(u.changes),
+        clientID: u.clientID
+      })))
+  }
+  
+  function getDocument(
+    connection: Connection
+  ): Promise<{version: number, doc: Text}> {
+    return connection.request({type: "getDocument"}).then(data => ({
+      version: data.version,
+      doc: Text.of(data.doc.split("\n"))
+    }))
+  }
+  
+  //!peerExtension
+  
+  function peerExtension(startVersion: number, connection: Connection) {
+    let plugin = ViewPlugin.fromClass(class {
+      private pushing = false
+      private done = false
+  
+      constructor(private view: EditorView) { this.pull() }
+  
+      update(update: ViewUpdate) {
+        if (update.docChanged) this.push()
+      }
+  
+      async push() {
+        let updates = sendableUpdates(this.view.state)
+        if (this.pushing || !updates.length) return
+        this.pushing = true
+        let version = getSyncedVersion(this.view.state)
+        await pushUpdates(connection, version, updates)
+        this.pushing = false
+        // Regardless of whether the push failed or new updates came in
+        // while it was running, try again if there's updates remaining
+        if (sendableUpdates(this.view.state).length)
+          setTimeout(() => this.push(), 100)
+      }
+  
+      async pull() {
+        while (!this.done) {
+          let version = getSyncedVersion(this.view.state)
+          let updates = await pullUpdates(connection, version)
+          this.view.dispatch(receiveUpdates(this.view.state, updates))
+        }
+      }
+  
+      destroy() { this.done = true }
+    })
+    return [collab({startVersion}), plugin]
+  }
+  
+  //!rest
+  
+  //const worker = new Worker(workerScript)
+  
+  async function addPeer() {
+    console.log("Adding peer")
+    // Stuck here until we get the connection working
+    let {version, doc} = await getDocument(new Connection())
+    let connection = new Connection()
+    let state = EditorState.create({
+      doc,
+      extensions: [basicSetup, peerExtension(version, connection)]
+    })
+    let editors = editorsRef.current;
+    new EditorView({state, parent: editors})
+    setIsCodeMirrorLoaded(true);
+  }
+
+
+  useEffect(() => {
+    if (editorsRef.current !== null && isWebsocketLoaded && !isCodeMirrorLoaded) {
+      console.log("CodeMirror Ref initialized and WebSocket is loaded");
+      addPeer();  
+    }
+  }, [editorsRef, isWebsocketLoaded]);
+
   function onMouseUp(e) {
     console.log("=====MOUSE UP=======");
     console.log(e.srcElement?.selectionStart, e.srcElement?.selectionEnd);
@@ -245,7 +416,7 @@ export default function CodeWindow(props: CodeWindowProps) {
               </Button>
             </div>
           </div>
-          <CodeMirror
+          {/**<CodeMirror
             className="h-full w-full"
             value={code} 
             height="100%" 
@@ -253,7 +424,8 @@ export default function CodeWindow(props: CodeWindowProps) {
             onChange={onCodeChange}
             lang={language}
             onMouseUp={onMouseUp}
-          />
+            />*/}
+          <div id="editors" className="h-full w-full overflow-y-scroll" ref={editorsRef}></div>
         </div>
       </Panel>
       <PanelResizeHandle children={ResizeHandleHorizontal()}></PanelResizeHandle>
