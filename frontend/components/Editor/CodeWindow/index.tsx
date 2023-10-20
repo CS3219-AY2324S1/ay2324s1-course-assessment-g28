@@ -55,7 +55,7 @@ export default function CodeWindow(props: CodeWindowProps) {
 
   function onMessage(e: Event) {
     const data = JSON.parse(e.data);
-    console.log("CodeWindow received: ", data);
+    //console.log("CodeWindow received: ", data);
 
     switch (data.method) {
       case WS_METHODS.READY:
@@ -97,16 +97,19 @@ export default function CodeWindow(props: CodeWindowProps) {
 
   function handleOp(data) {
     // TODO: Real time collab
-    console.log(data);
+    console.log("Received OP:", data);
+    console.log("Queue:", requestQueue);
     const requestId: string = data.requestId;
 
     if (requestId in requestQueue) {
+      console.log(`Resolving request `, requestId);
       requestQueue[requestId](data.data);
-      
-      let newState = {...requestQueue};
-      delete newState[requestId];
 
-      setRequestQueue(newState);
+      setRequestQueue(prevState => {
+        let newState = {...prevState};
+        delete newState[requestId];
+        return newState;
+      })
     }
   }
 
@@ -168,7 +171,7 @@ export default function CodeWindow(props: CodeWindowProps) {
   }
   
   function currentLatency() {
-    let base = 500
+    let base = 100
     return base * (1 + (Math.random() - 0.5))
   }
   
@@ -191,15 +194,25 @@ export default function CodeWindow(props: CodeWindowProps) {
         // to wait, then during the onmessage we resolve the promise
         const requestId = uuidv4();
 
+        if (value.type == "pullUpdates") {
+          console.log("Sending pullUpdate with id:", requestId);
+        } else if (value.type == "pushUpdates") {
+          console.log("Pushing updates with id:", requestId);
+        } else {
+          console.log("Retrieving document with requestId:", requestId);
+        }
+
         value.method = WS_METHODS.OP;
         value.requestId = requestId;
         sendJsonMessage(value);
 
         // Store the promise resolve to be called when result arrives via onMessage
-        setRequestQueue({
-          ...requestQueue,
-          [requestId]: resolve
-        })
+        setRequestQueue(prevState => {
+          return {
+            ...prevState,
+            [requestId]: resolve
+          };
+        });
       })
     }
   
@@ -244,10 +257,12 @@ export default function CodeWindow(props: CodeWindowProps) {
     version: number
   ): Promise<readonly Update[]> {
     return connection.request({type: "pullUpdates", version})
-      .then(updates => updates.map(u => ({
+      .then(updates => {
+        console.log("pullUpdates::: resolved")
+        return updates.map(u => ({
         changes: ChangeSet.fromJSON(u.changes),
         clientID: u.clientID
-      })))
+      }))})
   }
   
   function getDocument(

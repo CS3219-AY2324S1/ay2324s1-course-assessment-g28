@@ -9,7 +9,7 @@ let updates: Update[] = []
 let doc = Text.of(["Start document"])
 
 
-let pending: ((connection: WebSocket, requestId: string, value: any) => void)[] = []
+let pending: [connection: WebSocket, requestId: string][] = []
 
 function resp(connection: WebSocket, requestId: string, value: any) {
   const json = {
@@ -25,11 +25,17 @@ function resp(connection: WebSocket, requestId: string, value: any) {
 export function handleOperation(connection: WebSocket, requestId: string, data) {
   if (data.type == "pullUpdates") {
     console.log("PULLING UPDATES");
-    if (data.version < updates.length)
+    if (data.version < updates.length) {
+      console.log("PULLING UPDATES::: Responding with updates")
       resp(connection, requestId, updates.slice(data.version))
-    else
-      pending.push(resp)
+    }
+    else {
+      // Maybe there should only be 1 pending pull per connection?
+      pending.push([connection, requestId]);
+      console.log("PULLING UPDATES::: Number of pending responses: ", pending.length)
+    }
   } else if (data.type == "pushUpdates") {
+    console.log("PUSHING UPDATES");
     // Convert the JSON representation to an actual ChangeSet
     // instance
     let received = data.updates.map(json => ({
@@ -49,9 +55,17 @@ export function handleOperation(connection: WebSocket, requestId: string, data) 
         clientID: update.clientID,
         changes: update.changes.toJSON()
       }))
-      while (pending.length) pending.pop()!(connection, requestId, json)
+      while (pending.length) {
+        console.log("PUSHING UPDATES::: Responding to pending requests. Currently left ", pending.length)
+        const respDetails = pending.pop() ?? null;
+        console.log(respDetails != null);
+        if (respDetails) {
+          resp(respDetails[0], respDetails[1], json)
+        }
+      }
     }
   } else if (data.type == "getDocument") {
+    console.log("GETTING DOCUMENT")
     resp(connection, requestId, {version: updates.length, doc: doc.toString()})
   }
 }
