@@ -307,7 +307,10 @@ export default function CodeWindow(props: CodeWindowProps) {
       extensions: [basicSetup, peerExtension(version, connection)]
     })
     let editors = editorsRef.current;
-    new EditorView({state, parent: editors})
+    // TODO: Add 3 EditorViews one for each language
+    // Display only the one for the selected language
+    // This ensures version history is consistent for all languages
+    new EditorView({state, parent: editors}).
     setIsCodeMirrorLoaded(true);
   }
 
@@ -421,15 +424,6 @@ export default function CodeWindow(props: CodeWindowProps) {
               </Button>
             </div>
           </div>
-          {/**<CodeMirror
-            className="h-full w-full"
-            value={code} 
-            height="100%" 
-            extensions={[LANGUAGE_DATA[language].codeMirrorExtension]} 
-            onChange={onCodeChange}
-            lang={language}
-            onMouseUp={onMouseUp}
-            />*/}
           <div id="editors" className="h-full w-full overflow-y-scroll" ref={editorsRef}></div>
         </div>
       </Panel>

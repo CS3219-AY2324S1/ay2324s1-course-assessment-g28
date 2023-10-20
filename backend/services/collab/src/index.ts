@@ -137,7 +137,6 @@ wsServer.on('connection', function(connection: WebSocket, request: Request, clie
   connection.onmessage = (message: any) => {
     const data = JSON.parse(message.data);
     //console.log("New Message:::", data);
-    console.log(WS_METHODS.OP, data.method, WS_METHODS.OP === data.method);
 
     const partnerConnection = clients[partners[userId]];
 

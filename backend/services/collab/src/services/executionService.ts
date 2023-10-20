@@ -7,6 +7,8 @@ const execPromise = util.promisify(exec);
 export async function runCode(code: string, language: string): Promise<string> {
   let result = "";
 
+  console.log(`Running ${language} code: `, code);
+
   switch (language) {
     case "JavaScript":
       result = await runJavaScriptCode(code);

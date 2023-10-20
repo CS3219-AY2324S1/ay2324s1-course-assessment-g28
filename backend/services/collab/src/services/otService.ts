@@ -2,8 +2,7 @@ import {ChangeSet, Text} from "@codemirror/state"
 import {Update, rebaseUpdates} from "@codemirror/collab"
 import { WS_METHODS } from "../constants"
 
-// The updates received so far (updates.length gives the current
-// version)
+// The updates received so far (updates.length gives the current version)
 let updates: Update[] = []
 // The current document
 let doc = Text.of(["Start document"])
@@ -24,18 +23,13 @@ function resp(connection: WebSocket, requestId: string, value: any) {
 
 export function handleOperation(connection: WebSocket, requestId: string, data) {
   if (data.type == "pullUpdates") {
-    console.log("PULLING UPDATES");
     if (data.version < updates.length) {
-      console.log("PULLING UPDATES::: Responding with updates")
       resp(connection, requestId, updates.slice(data.version))
     }
     else {
-      // Maybe there should only be 1 pending pull per connection?
       pending.push([connection, requestId]);
-      console.log("PULLING UPDATES::: Number of pending responses: ", pending.length)
     }
   } else if (data.type == "pushUpdates") {
-    console.log("PUSHING UPDATES");
     // Convert the JSON representation to an actual ChangeSet
     // instance
     let received = data.updates.map(json => ({
@@ -56,16 +50,13 @@ export function handleOperation(connection: WebSocket, requestId: string, data) 
         changes: update.changes.toJSON()
       }))
       while (pending.length) {
-        console.log("PUSHING UPDATES::: Responding to pending requests. Currently left ", pending.length)
         const respDetails = pending.pop() ?? null;
-        console.log(respDetails != null);
         if (respDetails) {
           resp(respDetails[0], respDetails[1], json)
         }
       }
     }
   } else if (data.type == "getDocument") {
-    console.log("GETTING DOCUMENT")
     resp(connection, requestId, {version: updates.length, doc: doc.toString()})
   }
 }

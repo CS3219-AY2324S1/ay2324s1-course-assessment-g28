@@ -28,7 +28,6 @@ export function handleReady(connection: WebSocket, partnerConnection: WebSocket,
 }
 
 export function handleOp(connection: WebSocket, partnerConnection: WebSocket, data) {
-  //console.log("wsService::handleOp", data);
   const requestId = data.requestId;
   handleOperation(connection, requestId, data);
 }
