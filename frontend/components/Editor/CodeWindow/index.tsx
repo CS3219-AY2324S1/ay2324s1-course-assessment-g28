@@ -307,7 +307,7 @@ export default function CodeWindow(props: CodeWindowProps) {
     let connection = new Connection()
     let state = EditorState.create({
       doc,
-      extensions: [basicSetup, peerExtension(version, connection, lang)]
+      extensions: [basicSetup, LANGUAGE_DATA[lang].codeMirrorExtension, peerExtension(version, connection, lang)]
     })
     let editorDiv = editorsRef.current[idx];
     console.log(editorDiv)
@@ -315,7 +315,6 @@ export default function CodeWindow(props: CodeWindowProps) {
     // Display only the one for the selected language
     // This ensures version history is consistent for all languages
     new EditorView({state, parent: editorDiv})
-    setIsCodeMirrorLoaded(true);
   }
 
 
@@ -327,6 +326,8 @@ export default function CodeWindow(props: CodeWindowProps) {
         console.log(LANGUAGES[idx], parseInt(idx))
         addPeer(LANGUAGES[idx], parseInt(idx));  
       }
+
+      setIsCodeMirrorLoaded(true);
     }
   }, [editorsRef, isWebsocketLoaded]);
 
