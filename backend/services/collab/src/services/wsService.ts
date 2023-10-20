@@ -1,5 +1,6 @@
 import { WS_METHODS } from "../constants";
 import { runCode } from "./executionService";
+import { handleOperation } from "./otService";
 
 export function getQueryParams(url: string): { [key: string]: string } {
   const queryIdx = url.indexOf("?");
@@ -26,9 +27,10 @@ export function handleReady(connection: WebSocket, partnerConnection: WebSocket,
   partnerConnection.send(messagePartner);
 }
 
-export function handleOp(connection: WebSocket, partnerConnection: WebSocket, data) {
-  const message = JSON.stringify({ method: WS_METHODS.OP, op: data.op });
-  partnerConnection.send(message);
+export function handleOp(connection: WebSocket, partnerConnection: WebSocket, pairId: string, data) {
+  const requestId = data.requestId;
+  const lang = data.lang;
+  handleOperation(connection, pairId, requestId, lang, data);
 }
 
 export function handleCaretPos(connection: WebSocket, partnerConnection: WebSocket, data) {
