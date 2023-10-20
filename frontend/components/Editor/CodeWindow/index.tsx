@@ -451,7 +451,7 @@ export default function CodeWindow(props: CodeWindowProps) {
               );
             }
           })()}
-          <div className="h-full w-full p-3 whitespace-pre">
+          <div className="h-full w-full max-w-full p-3 whitespace-pre-wrap break-words">
             {result}
           </div>
         </div>
