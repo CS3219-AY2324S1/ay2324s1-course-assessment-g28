@@ -27,9 +27,9 @@ export function handleReady(connection: WebSocket, partnerConnection: WebSocket,
   partnerConnection.send(messagePartner);
 }
 
-export function handleOp(connection: WebSocket, partnerConnection: WebSocket, data) {
+export function handleOp(connection: WebSocket, partnerConnection: WebSocket, pairId: string, data) {
   const requestId = data.requestId;
-  handleOperation(connection, requestId, data);
+  handleOperation(connection, pairId, requestId, data);
 }
 
 export function handleCaretPos(connection: WebSocket, partnerConnection: WebSocket, data) {

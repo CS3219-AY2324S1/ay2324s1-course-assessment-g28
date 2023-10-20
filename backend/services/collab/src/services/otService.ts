@@ -2,10 +2,10 @@ import {ChangeSet, Text} from "@codemirror/state"
 import {Update, rebaseUpdates} from "@codemirror/collab"
 import { WS_METHODS } from "../constants"
 
-// The updates received so far (updates.length gives the current version)
-let updates: Update[] = []
+// The updates received so far (updates[pairId].length gives the current version)
+let updates: { [pairId: string]: Update[] } = {}
 // The current document
-let doc = Text.of(["Start document"])
+let doc: { [pairId: string]: Text} = {};
 
 
 let pending: [connection: WebSocket, requestId: string][] = []
@@ -21,10 +21,35 @@ function resp(connection: WebSocket, requestId: string, value: any) {
   connection.send(message);
 }
 
-export function handleOperation(connection: WebSocket, requestId: string, data) {
+export function addPair(pairId: string) {
+  console.log("ADDING PAIR")
+  if (!(pairId in updates)) {
+    updates[pairId] = [];
+  }
+  if (!(pairId in doc)) {
+    doc[pairId] = Text.of(["Start document"]);
+  }
+  console.log(updates, doc);
+}
+
+export function removePair(pairId: string) {
+  if (pairId in updates) {
+    delete updates[pairId];
+  }
+  if (pairId in doc) {
+    delete doc[pairId];
+  }
+}
+
+export function handleOperation(connection: WebSocket, pairId: string, requestId: string, data) {
+  // const pairUpdates = updates[pairId];
+  // const pairDoc = doc[pairId];
+
+  console.log(pairId, updates[pairId], doc[pairId]);
+
   if (data.type == "pullUpdates") {
-    if (data.version < updates.length) {
-      resp(connection, requestId, updates.slice(data.version))
+    if (data.version < updates[pairId].length) {
+      resp(connection, requestId, updates[pairId].slice(data.version))
     }
     else {
       pending.push([connection, requestId]);
@@ -36,11 +61,11 @@ export function handleOperation(connection: WebSocket, requestId: string, data) 
       clientID: json.clientID,
       changes: ChangeSet.fromJSON(json.changes)
     }))
-    if (data.version != updates.length)
-      received = rebaseUpdates(received, updates.slice(data.version))
+    if (data.version != updates[pairId].length)
+      received = rebaseUpdates(received, updates[pairId].slice(data.version))
     for (let update of received) {
-      updates.push(update)
-      doc = update.changes.apply(doc)
+      updates[pairId].push(update)
+      doc[pairId] = update.changes.apply(doc[pairId])
     }
     resp(connection, requestId, true)
     if (received.length) {
@@ -57,6 +82,6 @@ export function handleOperation(connection: WebSocket, requestId: string, data) 
       }
     }
   } else if (data.type == "getDocument") {
-    resp(connection, requestId, {version: updates.length, doc: doc.toString()})
+    resp(connection, requestId, {version: updates[pairId].length, doc: doc[pairId].toString()})
   }
 }

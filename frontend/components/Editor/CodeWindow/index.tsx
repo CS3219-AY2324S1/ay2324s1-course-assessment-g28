@@ -310,7 +310,7 @@ export default function CodeWindow(props: CodeWindowProps) {
     // TODO: Add 3 EditorViews one for each language
     // Display only the one for the selected language
     // This ensures version history is consistent for all languages
-    new EditorView({state, parent: editors}).
+    new EditorView({state, parent: editors})
     setIsCodeMirrorLoaded(true);
   }
 

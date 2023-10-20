@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { checkValidPairAndUser, getPairIdFromUrl, getPair } from './services/pairService';
 import { getQueryParams, handleCaretPos, handleExit, handleMessage, handleOp, handleReady, handleRunCode, handleSwitchLang } from './services/wsService';
 import { WS_METHODS } from './constants';
+import { addPair, removePair } from './services/otService';
 dotenv.config();
 
 const app: Express = express();
@@ -117,6 +118,8 @@ wsServer.on('connection', function(connection: WebSocket, request: Request, clie
         pairs[pairId] = pairDoc.user2;
       }
 
+      addPair(pairId);
+
       const partnerId = userId === pairDoc.user1 ? pairDoc.user2 : pairDoc.user1;
       const currTurnId = pairDoc.currTurn;
 
@@ -142,7 +145,7 @@ wsServer.on('connection', function(connection: WebSocket, request: Request, clie
 
     switch (data.method) {
       case WS_METHODS.OP:
-        handleOp(connection, partnerConnection, data);
+        handleOp(connection, partnerConnection, pairId, data);
         break;
       case WS_METHODS.CARET_POS:
         handleCaretPos(connection, partnerConnection, data);
@@ -170,6 +173,7 @@ wsServer.on('connection', function(connection: WebSocket, request: Request, clie
     // Then partnerConnection is also closed which will only delete clients[userId]
 
     // Close partner connection if it exists
+    // Also remove the pair from the OT service
     if (userId in partners) {
       const partnerId = partners[userId];
       if (partnerId in clients) {
@@ -179,6 +183,8 @@ wsServer.on('connection', function(connection: WebSocket, request: Request, clie
       delete partners[userId];
       delete partners[partnerId];
       delete pairs[pairId];
+
+      removePair(pairId);
     }
 
     delete clients[userId];
