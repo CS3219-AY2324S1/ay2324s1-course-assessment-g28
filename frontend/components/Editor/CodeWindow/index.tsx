@@ -35,7 +35,7 @@ export default function CodeWindow(props: CodeWindowProps) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [requestQueue, setRequestQueue] = useState({});
 
-  const editorsRef = useRef(null);
+  const editorsRef = useRef([]);
 
   useEffect(() => {
   
@@ -178,7 +178,7 @@ export default function CodeWindow(props: CodeWindowProps) {
       private getLatency: () => number = currentLatency
     ) {}
   
-    private _request(value: any, lang: string): Promise<any> {
+    private _request(value: any): Promise<any> {
       return new Promise(resolve => {
         //let channel = new MessageChannel
         //channel.port2.onmessage = event => resolve(JSON.parse(event.data))
@@ -302,18 +302,19 @@ export default function CodeWindow(props: CodeWindowProps) {
   
   //const worker = new Worker(workerScript)
   
-  async function addPeer(lang: string) {
+  async function addPeer(lang: string, idx: number) {
     let {version, doc} = await getDocument(new Connection(), lang)
     let connection = new Connection()
     let state = EditorState.create({
       doc,
       extensions: [basicSetup, peerExtension(version, connection, lang)]
     })
-    let editors = editorsRef.current;
+    let editorDiv = editorsRef.current[idx];
+    console.log(editorDiv)
     // TODO: Add 3 EditorViews one for each language
     // Display only the one for the selected language
     // This ensures version history is consistent for all languages
-    new EditorView({state, parent: editors})
+    new EditorView({state, parent: editorDiv})
     setIsCodeMirrorLoaded(true);
   }
 
@@ -322,8 +323,9 @@ export default function CodeWindow(props: CodeWindowProps) {
     if (editorsRef.current !== null && isWebsocketLoaded && !isCodeMirrorLoaded) {
       console.log("CodeMirror Ref initialized and WebSocket is loaded");
       
-      for (const lang of LANGUAGES) {
-        addPeer(lang);  
+      for (const idx in LANGUAGES) {
+        console.log(LANGUAGES[idx], parseInt(idx))
+        addPeer(LANGUAGES[idx], parseInt(idx));  
       }
     }
   }, [editorsRef, isWebsocketLoaded]);
@@ -430,7 +432,15 @@ export default function CodeWindow(props: CodeWindowProps) {
               </Button>
             </div>
           </div>
-          <div id="editors" className="h-full w-full overflow-y-scroll" ref={editorsRef}></div>
+          <div id="editors" className="h-full w-full">
+            {LANGUAGES.map((lang, i) => (
+              <div 
+                className={`h-full w-full overflow-y-scroll ${language === lang ? "visible" : "invisible max-h-0"}`}
+                key={i}
+                ref={el => editorsRef.current[i] = el}
+              />
+            ))}
+          </div>
         </div>
       </Panel>
       <PanelResizeHandle children={ResizeHandleHorizontal()}></PanelResizeHandle>
