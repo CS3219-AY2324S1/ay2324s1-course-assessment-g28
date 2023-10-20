@@ -26,7 +26,6 @@ interface CodeWindowProps {
 
 export default function CodeWindow(props: CodeWindowProps) {
   const [language, setLanguage] = useState<string>(props.language ?? "Java");
-  const [code, setCode] = useState(LANGUAGE_DATA[language].templateCode);
   const [result, setResult] = useState("Click \"Run Code\" to execute your code!");
   const [isMyTurn, setIsMyTurn] = useState(false);
   const [isWebsocketLoaded, setIsWebsocketLoaded] = useState(false);
@@ -35,7 +34,8 @@ export default function CodeWindow(props: CodeWindowProps) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [requestQueue, setRequestQueue] = useState({});
 
-  const editorsRef = useRef([]);
+  const editorsParentRef = useRef<{ [lang: string]: HTMLDivElement|null }>({});
+  const editorsRef = useRef<{ [lang: string]: EditorView }>({});
 
   useEffect(() => {
   
@@ -115,7 +115,6 @@ export default function CodeWindow(props: CodeWindowProps) {
 
   function handleSwitchLang(data) {
     setLanguage(data.language);
-    setCode(LANGUAGE_DATA[data.language].templateCode);
   }
 
   function handleRunCode(data) {
@@ -150,8 +149,6 @@ export default function CodeWindow(props: CodeWindowProps) {
 
   function onCodeChange(val: string) {
     console.log("=====CODE CHANGE=======");
-
-    setCode(val);
 
     console.log(val);
 
@@ -302,34 +299,34 @@ export default function CodeWindow(props: CodeWindowProps) {
   
   //const worker = new Worker(workerScript)
   
-  async function addPeer(lang: string, idx: number) {
+  async function addPeer(lang: string) {
     let {version, doc} = await getDocument(new Connection(), lang)
     let connection = new Connection()
     let state = EditorState.create({
       doc,
       extensions: [basicSetup, LANGUAGE_DATA[lang].codeMirrorExtension, peerExtension(version, connection, lang)]
     })
-    let editorDiv = editorsRef.current[idx];
-    console.log(editorDiv)
+    let editorParentDiv = editorsParentRef.current[lang];
+    console.log(editorParentDiv)
     // TODO: Add 3 EditorViews one for each language
     // Display only the one for the selected language
     // This ensures version history is consistent for all languages
-    new EditorView({state, parent: editorDiv})
+    editorsRef.current[lang] = new EditorView({state, parent: editorParentDiv});
   }
 
 
   useEffect(() => {
-    if (editorsRef.current !== null && isWebsocketLoaded && !isCodeMirrorLoaded) {
+    if (editorsParentRef.current !== null && isWebsocketLoaded && !isCodeMirrorLoaded) {
       console.log("CodeMirror Ref initialized and WebSocket is loaded");
       
       for (const idx in LANGUAGES) {
         console.log(LANGUAGES[idx], parseInt(idx))
-        addPeer(LANGUAGES[idx], parseInt(idx));  
+        addPeer(LANGUAGES[idx]);  
       }
 
       setIsCodeMirrorLoaded(true);
     }
-  }, [editorsRef, isWebsocketLoaded]);
+  }, [editorsParentRef, isWebsocketLoaded]);
 
   function onMouseUp(e) {
     console.log("=====MOUSE UP=======");
@@ -351,7 +348,6 @@ export default function CodeWindow(props: CodeWindowProps) {
 
   function onLanguageChange(val: string) {
     setLanguage(val);
-    setCode(LANGUAGE_DATA[val].templateCode);
     sendJsonMessage({
       method: WS_METHODS.SWITCH_LANG,
       language: val
@@ -363,6 +359,7 @@ export default function CodeWindow(props: CodeWindowProps) {
    * WebSocket will inform both users of the result
    */
   function runCode(e) {
+    const code = editorsRef.current[language].state.doc.toString();
     sendJsonMessage({
       method: WS_METHODS.RUN_CODE,
       language: language,
@@ -437,8 +434,8 @@ export default function CodeWindow(props: CodeWindowProps) {
             {LANGUAGES.map((lang, i) => (
               <div 
                 className={`h-full w-full overflow-y-scroll ${language === lang ? "visible" : "invisible max-h-0"}`}
-                key={i}
-                ref={el => editorsRef.current[i] = el}
+                key={lang}
+                ref={el => editorsParentRef.current[lang] = el}
               />
             ))}
           </div>
@@ -454,7 +451,7 @@ export default function CodeWindow(props: CodeWindowProps) {
               );
             }
           })()}
-          <div className="h-full w-full p-3">
+          <div className="h-full w-full p-3 whitespace-pre">
             {result}
           </div>
         </div>
