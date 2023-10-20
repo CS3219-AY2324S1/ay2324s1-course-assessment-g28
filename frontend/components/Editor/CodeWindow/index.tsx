@@ -178,7 +178,7 @@ export default function CodeWindow(props: CodeWindowProps) {
       private getLatency: () => number = currentLatency
     ) {}
   
-    private _request(value: any): Promise<any> {
+    private _request(value: any, lang: string): Promise<any> {
       return new Promise(resolve => {
         //let channel = new MessageChannel
         //channel.port2.onmessage = event => resolve(JSON.parse(event.data))
@@ -229,21 +229,23 @@ export default function CodeWindow(props: CodeWindowProps) {
   function pushUpdates(
     connection: Connection,
     version: number,
-    fullUpdates: readonly Update[]
+    fullUpdates: readonly Update[], 
+    lang: string
   ): Promise<boolean> {
     // Strip off transaction data
     let updates = fullUpdates.map(u => ({
       clientID: u.clientID,
       changes: u.changes.toJSON()
     }))
-    return connection.request({type: "pushUpdates", version, updates})
+    return connection.request({type: "pushUpdates", version, updates, lang: lang})
   }
   
   function pullUpdates(
     connection: Connection,
-    version: number
+    version: number, 
+    lang: string
   ): Promise<readonly Update[]> {
-    return connection.request({type: "pullUpdates", version})
+    return connection.request({type: "pullUpdates", version, lang: lang})
       .then(updates => {
         return updates.map(u => ({
         changes: ChangeSet.fromJSON(u.changes),
@@ -252,15 +254,16 @@ export default function CodeWindow(props: CodeWindowProps) {
   }
   
   function getDocument(
-    connection: Connection
+    connection: Connection,
+    lang: string
   ): Promise<{version: number, doc: Text}> {
-    return connection.request({type: "getDocument"}).then(data => ({
+    return connection.request({type: "getDocument", lang: lang}).then(data => ({
       version: data.version,
       doc: Text.of(data.doc.split("\n"))
     }))
   }
     
-  function peerExtension(startVersion: number, connection: Connection) {
+  function peerExtension(startVersion: number, connection: Connection, lang: string) {
     let plugin = ViewPlugin.fromClass(class {
       private pushing = false
       private done = false
@@ -276,7 +279,7 @@ export default function CodeWindow(props: CodeWindowProps) {
         if (this.pushing || !updates.length) return
         this.pushing = true
         let version = getSyncedVersion(this.view.state)
-        await pushUpdates(connection, version, updates)
+        await pushUpdates(connection, version, updates, lang)
         this.pushing = false
         // Regardless of whether the push failed or new updates came in
         // while it was running, try again if there's updates remaining
@@ -287,7 +290,7 @@ export default function CodeWindow(props: CodeWindowProps) {
       async pull() {
         while (!this.done) {
           let version = getSyncedVersion(this.view.state)
-          let updates = await pullUpdates(connection, version)
+          let updates = await pullUpdates(connection, version, lang)
           this.view.dispatch(receiveUpdates(this.view.state, updates))
         }
       }
@@ -299,12 +302,12 @@ export default function CodeWindow(props: CodeWindowProps) {
   
   //const worker = new Worker(workerScript)
   
-  async function addPeer() {
-    let {version, doc} = await getDocument(new Connection())
+  async function addPeer(lang: string) {
+    let {version, doc} = await getDocument(new Connection(), lang)
     let connection = new Connection()
     let state = EditorState.create({
       doc,
-      extensions: [basicSetup, peerExtension(version, connection)]
+      extensions: [basicSetup, peerExtension(version, connection, lang)]
     })
     let editors = editorsRef.current;
     // TODO: Add 3 EditorViews one for each language
@@ -318,7 +321,10 @@ export default function CodeWindow(props: CodeWindowProps) {
   useEffect(() => {
     if (editorsRef.current !== null && isWebsocketLoaded && !isCodeMirrorLoaded) {
       console.log("CodeMirror Ref initialized and WebSocket is loaded");
-      addPeer();  
+      
+      for (const lang of LANGUAGES) {
+        addPeer(lang);  
+      }
     }
   }, [editorsRef, isWebsocketLoaded]);
 

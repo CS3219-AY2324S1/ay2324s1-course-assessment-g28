@@ -29,7 +29,8 @@ export function handleReady(connection: WebSocket, partnerConnection: WebSocket,
 
 export function handleOp(connection: WebSocket, partnerConnection: WebSocket, pairId: string, data) {
   const requestId = data.requestId;
-  handleOperation(connection, pairId, requestId, data);
+  const lang = data.lang;
+  handleOperation(connection, pairId, requestId, lang, data);
 }
 
 export function handleCaretPos(connection: WebSocket, partnerConnection: WebSocket, data) {

@@ -3,12 +3,12 @@ import {Update, rebaseUpdates} from "@codemirror/collab"
 import { WS_METHODS } from "../constants"
 
 // The updates received so far (updates[pairId].length gives the current version)
-let updates: { [pairId: string]: Update[] } = {}
+let updates: { [pairId: string]: { [lang: string]: Update[] } } = {};
 // The current document
-let doc: { [pairId: string]: Text} = {};
+let doc: { [pairId: string]: { [lang: string]: Text }} = {};
 
 
-let pending: [connection: WebSocket, requestId: string][] = []
+let pending: { [pairId: string]: { [lang: string]: [connection: WebSocket, requestId: string][] }} = {};
 
 function resp(connection: WebSocket, requestId: string, value: any) {
   const json = {
@@ -24,12 +24,27 @@ function resp(connection: WebSocket, requestId: string, value: any) {
 export function addPair(pairId: string) {
   console.log("ADDING PAIR")
   if (!(pairId in updates)) {
-    updates[pairId] = [];
+    updates[pairId] = {
+      Java: [],
+      JavaScript: [],
+      Python: []
+    };
   }
   if (!(pairId in doc)) {
-    doc[pairId] = Text.of(["Start document"]);
+    doc[pairId] = {
+      Java: Text.of(["// Write your code here"]),
+      JavaScript: Text.of(["// Write your code here"]),
+      Python: Text.of(["# Write your code here"])
+    };
   }
-  console.log(updates, doc);
+  if (!(pairId in pending)) {
+    pending[pairId] = {
+      Java: [],
+      JavaScript: [],
+      Python: []
+    };
+  } 
+  console.log(updates, doc, pending);
 }
 
 export function removePair(pairId: string) {
@@ -39,20 +54,23 @@ export function removePair(pairId: string) {
   if (pairId in doc) {
     delete doc[pairId];
   }
+  if (pairId in pending) {
+    delete pending[pairId];
+  }
 }
 
-export function handleOperation(connection: WebSocket, pairId: string, requestId: string, data) {
+export function handleOperation(connection: WebSocket, pairId: string, requestId: string, lang: string, data) {
   // const pairUpdates = updates[pairId];
   // const pairDoc = doc[pairId];
 
-  console.log(pairId, updates[pairId], doc[pairId]);
+  console.log("handleOp::: pairID:", pairId, "lang:", lang);
 
   if (data.type == "pullUpdates") {
-    if (data.version < updates[pairId].length) {
-      resp(connection, requestId, updates[pairId].slice(data.version))
+    if (data.version < updates[pairId][lang].length) {
+      resp(connection, requestId, updates[pairId][lang].slice(data.version))
     }
     else {
-      pending.push([connection, requestId]);
+      pending[pairId][lang].push([connection, requestId]);
     }
   } else if (data.type == "pushUpdates") {
     // Convert the JSON representation to an actual ChangeSet
@@ -61,11 +79,11 @@ export function handleOperation(connection: WebSocket, pairId: string, requestId
       clientID: json.clientID,
       changes: ChangeSet.fromJSON(json.changes)
     }))
-    if (data.version != updates[pairId].length)
-      received = rebaseUpdates(received, updates[pairId].slice(data.version))
+    if (data.version != updates[pairId][lang].length)
+      received = rebaseUpdates(received, updates[pairId][lang].slice(data.version))
     for (let update of received) {
-      updates[pairId].push(update)
-      doc[pairId] = update.changes.apply(doc[pairId])
+      updates[pairId][lang].push(update)
+      doc[pairId][lang] = update.changes.apply(doc[pairId][lang])
     }
     resp(connection, requestId, true)
     if (received.length) {
@@ -74,14 +92,14 @@ export function handleOperation(connection: WebSocket, pairId: string, requestId
         clientID: update.clientID,
         changes: update.changes.toJSON()
       }))
-      while (pending.length) {
-        const respDetails = pending.pop() ?? null;
+      while (pending[pairId][lang].length) {
+        const respDetails = pending[pairId][lang].pop() ?? null;
         if (respDetails) {
           resp(respDetails[0], respDetails[1], json)
         }
       }
     }
   } else if (data.type == "getDocument") {
-    resp(connection, requestId, {version: updates[pairId].length, doc: doc[pairId].toString()})
+    resp(connection, requestId, {version: updates[pairId][lang].length, doc: doc[pairId][lang].toString()})
   }
 }
