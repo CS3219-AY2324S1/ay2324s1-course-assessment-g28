@@ -96,13 +96,9 @@ export default function CodeWindow(props: CodeWindowProps) {
   }
 
   function handleOp(data) {
-    // TODO: Real time collab
-    console.log("Received OP:", data);
-    console.log("Queue:", requestQueue);
     const requestId: string = data.requestId;
 
     if (requestId in requestQueue) {
-      console.log(`Resolving request `, requestId);
       requestQueue[requestId](data.data);
 
       setRequestQueue(prevState => {
@@ -186,27 +182,20 @@ export default function CodeWindow(props: CodeWindowProps) {
       return new Promise(resolve => {
         //let channel = new MessageChannel
         //channel.port2.onmessage = event => resolve(JSON.parse(event.data))
-        //this.worker.postMessage(JSON.stringify(value), [channel.port1]) 
+        //this.worker.postMessage(JSON.stringify(value), [channel.port1])      
         
-        
-        // Need to somehow send request and receive feedback through WS here
-        // Can we send message here and return promise for the original push/pull
-        // to wait, then during the onmessage we resolve the promise
+        // Send request but need to find a way to receive the result
+        // Send request here and return promise for caller to wait
+        // The promise is stored in the state object requestQueue with a unique ID
+        // Then during the WebSocket onMessage we resolve the promise
         const requestId = uuidv4();
-
-        if (value.type == "pullUpdates") {
-          console.log("Sending pullUpdate with id:", requestId);
-        } else if (value.type == "pushUpdates") {
-          console.log("Pushing updates with id:", requestId);
-        } else {
-          console.log("Retrieving document with requestId:", requestId);
-        }
 
         value.method = WS_METHODS.OP;
         value.requestId = requestId;
         sendJsonMessage(value);
 
         // Store the promise resolve to be called when result arrives via onMessage
+        // Using callback function to setState ensures convergence to correct state
         setRequestQueue(prevState => {
           return {
             ...prevState,
@@ -237,8 +226,6 @@ export default function CodeWindow(props: CodeWindowProps) {
     }
   }
   
-  //!wrappers
-  
   function pushUpdates(
     connection: Connection,
     version: number,
@@ -258,7 +245,6 @@ export default function CodeWindow(props: CodeWindowProps) {
   ): Promise<readonly Update[]> {
     return connection.request({type: "pullUpdates", version})
       .then(updates => {
-        console.log("pullUpdates::: resolved")
         return updates.map(u => ({
         changes: ChangeSet.fromJSON(u.changes),
         clientID: u.clientID
@@ -273,9 +259,7 @@ export default function CodeWindow(props: CodeWindowProps) {
       doc: Text.of(data.doc.split("\n"))
     }))
   }
-  
-  //!peerExtension
-  
+    
   function peerExtension(startVersion: number, connection: Connection) {
     let plugin = ViewPlugin.fromClass(class {
       private pushing = false
@@ -303,10 +287,7 @@ export default function CodeWindow(props: CodeWindowProps) {
       async pull() {
         while (!this.done) {
           let version = getSyncedVersion(this.view.state)
-          console.log("BEFORE PULL");
-          // Somehow this is not resolving
           let updates = await pullUpdates(connection, version)
-          console.log("AFTER PULL");
           this.view.dispatch(receiveUpdates(this.view.state, updates))
         }
       }
@@ -316,12 +297,9 @@ export default function CodeWindow(props: CodeWindowProps) {
     return [collab({startVersion}), plugin]
   }
   
-  //!rest
-  
   //const worker = new Worker(workerScript)
   
   async function addPeer() {
-    console.log("Adding peer")
     let {version, doc} = await getDocument(new Connection())
     let connection = new Connection()
     let state = EditorState.create({
