@@ -26,7 +26,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - PORT=1234
-      - MONGO_URI=mongodb+srv://peerprep:Dhl3ib6FRiaPbMVj@cluster0.famfy54.mongodb.net/?retryWrites=true&w=majority
+      - MONGO_URI=mongodb://mongodb:27017
     expose:
       - 1234
     ports:
@@ -52,10 +52,10 @@ services:
       dockerfile: Dockerfile
     environment:
       - PORT=1235
-      - POSTGRES_USER=peerprep
-      - POSTGRES_PASSWORD=Y2NhNz['A[FT*-2[
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=dev
       - PG_PORT=5432
-      - POSTGRES_URI=34.87.4.15
+      - POSTGRES_URI=postgres
     expose:
       - 1235
     ports:
