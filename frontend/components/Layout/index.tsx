@@ -1,3 +1,4 @@
+import { useTheme } from "next-themes";
 import { CSSProperties, PropsWithChildren } from "react";
 import cx from "classnames";
 import { POPPINS_CLASS } from "@/assets/fonts/poppins";
@@ -14,17 +15,26 @@ const backgroundWithImageStyle: CSSProperties = {
 const Layout = ({ children }: PropsWithChildren<unknown>) => {
   const pathname = usePathname();
   const isLoginPage = pathname === "/login";
+  const { theme } = useTheme();
+
   return (
     <div
-      className="w-screen h-screen overflow-x-hidden overflow-y-hidden
-        bg-neutral-700 transition-all duration-300"
+      className={cx(
+        theme,
+        "text-foreground bg-background w-screen",
+        "h-screen overflow-x-hidden overflow-y-hidden",
+        "transition-all duration-300",
+      )}
       style={isLoginPage ? backgroundWithImageStyle : {}}
     >
-      <Navbar />
-      <main className={cx("h-full", POPPINS_CLASS)}>
-        <div className="h-full w-full pb-[110px] p-8 overflow-y-auto fixed">
-          {children}
-        </div>
+      <main
+        className={cx(
+          "h-full w-full pb-[110px] overflow-y-auto",
+          POPPINS_CLASS,
+        )}
+      >
+        <Navbar />
+        <div className="px-8">{children}</div>
       </main>
     </div>
   );

@@ -40,7 +40,7 @@ export default function QuestionDescription({
           keepMarks: true,
           keepAttributes: false,
         },
-        gapcursor: false
+        gapcursor: false,
       }),
       TipTapCustomImage,
       Typography,
@@ -56,15 +56,12 @@ export default function QuestionDescription({
   return (
     <div
       className={cn(
-        "bg-white text-black p-2 flex flex-col gap-y-2 rounded-md",
+        "bg-default-100 text-foreground p-2 flex flex-col gap-y-2 rounded-lg",
         className,
       )}
     >
       {!readonly && <Menubar editor={editor} />}
-      <EditorContent
-        editor={editor}
-        className="flex flex-col grow gap-1"
-      />
+      <EditorContent editor={editor} className="flex flex-col grow gap-1" />
     </div>
   );
 }

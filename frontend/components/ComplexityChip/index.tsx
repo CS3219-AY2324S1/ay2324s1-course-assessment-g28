@@ -15,8 +15,11 @@ const ComplexityChip = (props: ComplexityChipProps) => {
   const { color, name } = QuestionComplexityConfigsMap?.[complexity] ?? {};
   return (
     <Chip
-      color={color}
-      className={cx("text-white font-bold", className)}
+      className={cx(
+        "text-background bg-orange-400 font-bold",
+        className,
+        color,
+      )}
       style={style}
     >
       {name}

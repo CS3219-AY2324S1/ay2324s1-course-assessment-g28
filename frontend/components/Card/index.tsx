@@ -1,5 +1,6 @@
 import { CSSProperties, PropsWithChildren } from "react";
 import cx from "classnames";
+import { useTheme } from "next-themes";
 
 interface CardProps {
   className?: string;
@@ -12,11 +13,13 @@ const Card = ({
   styles,
   ...props
 }: PropsWithChildren<CardProps>) => {
+  const { theme } = useTheme();
   return (
     <div
       className={cx(
-        "p-[24px] bg-brand-white text-zinc-700 rounded-xl",
+        "p-[24px] bg-content1 rounded-xl",
         classNames,
+        theme === "light" ? "bg-zinc-200" : "",
       )}
       style={styles}
       {...props}
