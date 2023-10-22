@@ -37,12 +37,14 @@ const UserDropdown = () => {
           <DropdownItem
             onClick={() => router.push(PROFILE)}
             endContent={<UserCircle size={20} color="purple" />}
+            className="text-foreground"
           >
             User Profile
           </DropdownItem>
           <DropdownItem
             onClick={() => signOut()}
             endContent={<LogOut size={20} />}
+            className="text-foreground"
           >
             Logout
           </DropdownItem>
