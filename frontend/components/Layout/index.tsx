@@ -21,10 +21,10 @@ const Layout = ({ children }: PropsWithChildren<unknown>) => {
       style={isLoginPage ? backgroundWithImageStyle : {}}
     >
       <Navbar />
-      <main
-        className={cx("h-full pb-[110px] p-8 overflow-y-scroll", POPPINS_CLASS)}
-      >
-        {children}
+      <main className={cx("h-full", POPPINS_CLASS)}>
+        <div className="h-full w-full pb-[110px] p-8 overflow-y-auto fixed">
+          {children}
+        </div>
       </main>
     </div>
   );

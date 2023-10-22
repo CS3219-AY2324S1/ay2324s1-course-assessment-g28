@@ -9,7 +9,10 @@ const Brand = () => {
   return (
     <NavbarBrand>
       <div
-        className={cx("font-bold text-xl w-fit cursor-pointer hover:text-purple-300", RACING_SANS_ONE_CLASS)}
+        className={cx(
+          "font-bold text-xl w-fit cursor-pointer hover:text-purple-300",
+          RACING_SANS_ONE_CLASS,
+        )}
         onClick={() => router.push(HOME)}
       >
         PeerPrep
