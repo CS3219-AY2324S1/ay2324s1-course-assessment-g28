@@ -1,17 +1,15 @@
-# Use an official Node.js runtime as a parent image
-FROM node:14
-
-# Set the working directory in the container
+FROM node:20 as BUILDER
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json to the container
 COPY package*.json ./
-
-# Install app dependencies
 RUN npm ci
-
-# Bundle app source
 COPY . .
+RUN npm run build
 
-# Define the command to run the application
-CMD ["npm", "run", "start"]
+FROM node:20-alpine as RUNNER
+WORKDIR /usr/src/app
+COPY --from=BUILDER /usr/src/app/dist ./dist
+COPY --from=BUILDER /usr/src/app/node_modules ./node_modules
+COPY --from=BUILDER /usr/src/app/package*.json ./
+ENV NODE_ENV=production
+CMD ["npm", "start"]

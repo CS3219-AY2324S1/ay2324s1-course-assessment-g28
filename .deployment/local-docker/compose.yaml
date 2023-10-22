@@ -55,6 +55,7 @@ services:
       - POSTGRES_USER=dev
       - POSTGRES_PASSWORD=dev
       - PG_PORT=5432
+      - POSTGRES_URI=postgres
     expose:
       - 1235
     ports:
@@ -95,6 +96,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - RABBITMQ_URL=amqp://rabbitmq:5672
+      - QUESTION_URL=http://pp-question:1234
       - MATCHMAKING_MAX_WAIT_SECONDS=100
 # Names our volume
 volumes:

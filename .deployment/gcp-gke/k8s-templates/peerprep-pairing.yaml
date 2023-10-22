@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peerprep-pairing-back
+spec:
+  selector:
+    matchLabels:
+      app: peerprep-pairing-back
+  template:
+    metadata:
+      labels:
+        app: peerprep-pairing-back
+    spec:
+      containers:
+        - name: peerprep-pairing-back
+          image: asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-back
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: RABBITMQ_URL
+              valueFrom:
+                secretKeyRef:
+                  name: peerprep-secret
+                  key: RABBITMQ_URL
+            - name: QUESTION_URL
+              value: "http://peerprep-question.default.svc.cluster.local:1234"
+            - name: MATCHMAKING_MAX_WAIT_SECONDS
+              value: "100"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peerprep-pairing-front
+spec:
+  selector:
+    matchLabels:
+      app: peerprep-pairing-front
+  template:
+    metadata:
+      labels:
+        app: peerprep-pairing-front
+    spec:
+      containers:
+        - name: peerprep-pairing-front
+          image: asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-front
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: RABBITMQ_URL
+              valueFrom:
+                secretKeyRef:
+                  name: peerprep-secret
+                  key: RABBITMQ_URL
+            - name: PORT
+              value: "3000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: peerprep-pairing-front
+  name: peerprep-pairing
+  namespace: default
+spec:
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - port: 4000
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app: peerprep-pairing-front
+  type: LoadBalancer
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: peerprep-pairing-back-autoscaler
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: peerprep-pairing-back
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: peerprep-pairing-front-autoscaler
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: peerprep-pairing-front
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
