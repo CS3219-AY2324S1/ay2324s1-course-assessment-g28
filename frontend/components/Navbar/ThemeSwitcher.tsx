@@ -32,7 +32,7 @@ const ThemeSwitcher = () => {
       className="text-foreground"
     >
       <div onClick={handleClick} className="cursor-pointer">
-        {isDark ? <CiDark /> : <BsSun />}
+        {isDark ? <BsSun /> : <CiDark />}
       </div>
     </Tooltip>
   );

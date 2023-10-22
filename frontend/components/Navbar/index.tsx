@@ -3,15 +3,20 @@ import Brand from "./brand";
 import UserDropdown from "./UserDropdown";
 import useUserInfo from "@/hooks/useUserInfo";
 import ThemeSwitcher from "./ThemeSwitcher";
+import cx from "classnames";
 
 export default function Navbar() {
   const { isSignedIn } = useUserInfo();
+
   return (
     <NextNavBar
       maxWidth="full"
-      height="70px"
+      height={isSignedIn ? "70px" : "60px"}
       classNames={{
-        base: "bg-gradient-to-b from-purple-700 pb-[10px]",
+        base: cx(
+          "bg-gradient-to-b from-purple-700",
+          isSignedIn ? "pb-[10px]" : "",
+        ),
       }}
     >
       <Brand />

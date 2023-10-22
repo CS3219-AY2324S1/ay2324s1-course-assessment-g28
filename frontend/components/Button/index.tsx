@@ -4,12 +4,12 @@ import cx from "classnames";
 
 interface ButtonProps {
   onClick?: () => void;
-  classnames?: string;
+  className?: string;
   styles?: CSSProperties;
 }
 
 const Button = (props: PropsWithChildren<ButtonProps>) => {
-  const { onClick, classnames, styles, children } = props ?? {};
+  const { onClick, className: classnames, styles, children } = props ?? {};
   return (
     <NextButton
       onClick={onClick}
