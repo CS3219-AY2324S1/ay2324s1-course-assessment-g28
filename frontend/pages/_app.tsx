@@ -12,8 +12,8 @@ export default function App({
   return (
     <NextUIProvider>
       <SessionProvider session={session}>
+        <Toaster />
         <Layout>
-          <Toaster />
           <Component {...pageProps} />
         </Layout>
       </SessionProvider>
