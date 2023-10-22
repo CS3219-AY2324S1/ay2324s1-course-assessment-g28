@@ -5,11 +5,11 @@ import { UNKNOWN_ERROR_CODE, USERNAME_ALREADY_EXISTS_CODE } from "./errors";
 
 // set up PG connection
 config();
-const { PG_PORT, POSTGRES_USER, POSTGRES_PASSWORD } = process.env;
+const { PG_PORT, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_URI } = process.env;
 // initialise connection to postgres database
 const pool = new Pool({
   user: POSTGRES_USER,
-  host: "postgres",
+  host: POSTGRES_URI,
   database: "user",
   password: POSTGRES_PASSWORD,
   port: 5432,
