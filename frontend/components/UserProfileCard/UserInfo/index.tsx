@@ -10,6 +10,7 @@ import EditUserButton from "./EditUserButton";
 const UserInfo = ({ data }: { data?: User }) => {
   const { image, name, username } = useUserInfo();
   const { favouriteProgrammingLanguage } = data ?? {};
+
   return (
     <Card>
       <div className="flex flex-col items-stretch gap-4">
@@ -33,7 +34,7 @@ const UserInfo = ({ data }: { data?: User }) => {
         </div>
         <div className="text-xs">
           {"Favourite programming language: "}
-          <span className="font-semibold text-purple-800">
+          <span className="font-semibold dark:text-purple-400 text-violet-800">
             {favouriteProgrammingLanguage || UNDEFINED_VALUE}
           </span>
         </div>

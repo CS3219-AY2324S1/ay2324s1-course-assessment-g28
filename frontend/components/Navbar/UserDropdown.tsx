@@ -30,19 +30,21 @@ const UserDropdown = () => {
               alt="User Thumbnail"
               className="rounded-full"
             />
-            <div className="text-white">{username ? username : name}</div>
+            <div>{username ? username : name}</div>
           </Button>
         </DropdownTrigger>
-        <DropdownMenu aria-label="User actions" className="text-black">
+        <DropdownMenu aria-label="User actions">
           <DropdownItem
             onClick={() => router.push(PROFILE)}
             endContent={<UserCircle size={20} color="purple" />}
+            className="text-foreground"
           >
             User Profile
           </DropdownItem>
           <DropdownItem
             onClick={() => signOut()}
             endContent={<LogOut size={20} />}
+            className="text-foreground"
           >
             Logout
           </DropdownItem>

@@ -49,7 +49,7 @@ export default function EditUserButton(props: EditUserButtonProps) {
   return (
     <>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent className="text-zinc-600 bg-brand-white">
+        <ModalContent>
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
@@ -57,14 +57,14 @@ export default function EditUserButton(props: EditUserButtonProps) {
               </ModalHeader>
               <ModalBody>
                 <form
-                  className="flex flex-col text-zinc-600 mb-[12px]"
+                  className="flex flex-col mb-[12px]"
                   onChange={(e) => e.preventDefault()}
                 >
-                  <div className="flex-grow mb-[24px]">
-                    {"Favourite programming language: "}
+                  <div className="flex flex-col gap-3 flex-grow mb-[24px]">
+                    <span>{"Favourite programming language: "}</span>
                     <Input
-                      className="text-zinc-600"
                       color="secondary"
+                      variant="bordered"
                       placeholder="Favourite Programming Language (optional)"
                       value={favLangField}
                       onChange={(e) => setFavLangField(e.target.value)}

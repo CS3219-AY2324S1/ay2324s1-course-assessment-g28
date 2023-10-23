@@ -76,9 +76,6 @@ export default function QuestionTable({ userIsAdmin }: QuestionTableProps) {
       topContentPlacement="outside"
       bottomContent={<TablePagination total={data?.total ?? 0} />}
       bottomContentPlacement="outside"
-      classNames={{
-        wrapper: "text-zinc-600",
-      }}
       onRowAction={(key) => router.push(getQuestionPath(Number(key)))}
     >
       <TableHeader
@@ -101,6 +98,7 @@ export default function QuestionTable({ userIsAdmin }: QuestionTableProps) {
         )}
       </TableHeader>
       <TableBody
+        className="shadow-large"
         emptyContent={"No questions found"}
         items={questions ?? []}
         loadingContent={<Spinner />}
@@ -109,7 +107,7 @@ export default function QuestionTable({ userIsAdmin }: QuestionTableProps) {
         {(question) => (
           <TableRow
             key={question.id}
-            className="cursor-pointer hover:bg-gray-200"
+            className="cursor-pointer hover:bg-content3 hover:transition-colors"
           >
             {userIsAdmin
               ? (columnKey: string | number) => (

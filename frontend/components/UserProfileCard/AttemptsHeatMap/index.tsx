@@ -1,11 +1,12 @@
 import { User } from "@/api/user/types";
 import { Tooltip } from "@nextui-org/react";
 import HeatMap from "@uiw/react-heat-map";
-import { useMemo } from "react";
+import { CSSProperties, useMemo } from "react";
 import dayjs from "dayjs";
 import Card from "@/components/Card";
 import { BE_DATE_FORMAT, CHART_DATE_FORMAT } from "../config";
 import { useForceRerender } from "./useForceRerender";
+import { useTheme } from "next-themes";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const customParseFormat = require("dayjs/plugin/customParseFormat");
@@ -13,6 +14,7 @@ dayjs.extend(customParseFormat);
 
 const AttemptsHeatMap = ({ data }: { data?: User }) => {
   const { attemptedQuestions } = data ?? {};
+  const { theme } = useTheme();
 
   const oneYearAgo = useMemo(
     () => new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
@@ -65,7 +67,7 @@ const AttemptsHeatMap = ({ data }: { data?: User }) => {
         {/* wrap heatmap in scrolling box for small widths */}
         <div
           className="w-[730px] m-auto
-          overflow-x-scroll md:w-full grid place-items-center"
+          overflow-x-scroll md:w-full grid place-items-center text-white"
         >
           <HeatMap
             key={useForceRerender()}
@@ -77,6 +79,12 @@ const AttemptsHeatMap = ({ data }: { data?: User }) => {
             rectProps={{
               rx: 2.5,
             }}
+            style={
+              {
+                color: theme === "dark" ? "#D9D9D9" : "#4a148c",
+                "--rhm-rect": theme === "dark" ? "#424242" : "#bdbdbd",
+              } as CSSProperties
+            }
             rectRender={(props, data) => {
               const { count, date } = data;
               return (
@@ -84,7 +92,10 @@ const AttemptsHeatMap = ({ data }: { data?: User }) => {
                   className="rounded-[2px]"
                   placement="top"
                   content={
-                    <div className="text-[18px] text-zinc-600 cursor-default">
+                    <div
+                      className="text-[18px] text-zinc-600
+                      cursor-default p-2"
+                    >
                       <span className="font-semibold">{count ?? 0}</span>
                       <span>{` attempt${
                         count !== 1 ? "s" : ""

@@ -90,7 +90,6 @@ export default function QuestionCreationForm({
           <label>Title</label>
           <Input
             {...register("title")}
-            className="text-black"
             errorMessage={errors.title?.message}
             onValueChange={() => setIsEdited(true)}
           />

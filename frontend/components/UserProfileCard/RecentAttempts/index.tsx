@@ -4,12 +4,14 @@ import Card from "@/components/Card";
 import dayjs from "dayjs";
 import { useMemo } from "react";
 import cx from "classnames";
+import { useTheme } from "next-themes";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
 
 const RecentAttempts = ({ data }: { data?: User }) => {
+  const { theme } = useTheme();
   const processedData = useMemo(() => {
     const { attemptedQuestions } = data ?? {};
     const formattedDateData = attemptedQuestions?.map((qn) => ({
@@ -42,7 +44,6 @@ const RecentAttempts = ({ data }: { data?: User }) => {
               key={`${questionId}-${attemptDate}-${index}`}
               className={cx(
                 "flex gap-6 justify-between p-2 pl-4 pr-8 rounded-lg",
-                index % 2 ? "" : "bg-neutral-200",
               )}
             >
               <div
@@ -51,7 +52,12 @@ const RecentAttempts = ({ data }: { data?: User }) => {
               >
                 {questionTitle}
               </div>
-              <div className="text-sm text-purple-700 shrink-0">
+              <div
+                className={cx(
+                  "text-sm shrink-0",
+                  theme === "dark" ? "text-purple-400" : "text-violet-800",
+                )}
+              >
                 {attemptDateString}
               </div>
             </div>

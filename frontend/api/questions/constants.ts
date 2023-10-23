@@ -1,9 +1,8 @@
 import { QuestionComplexity } from "@/api/questions/types";
-import { ChipProps } from "@nextui-org/react";
 
 interface QuestionComplexityConfig {
   name: "Easy" | "Medium" | "Hard";
-  color: ChipProps["color"];
+  color: string;
 }
 
 export const QuestionComplexityConfigsMap: Record<
@@ -12,15 +11,15 @@ export const QuestionComplexityConfigsMap: Record<
 > = {
   [QuestionComplexity.EASY]: {
     name: "Easy",
-    color: "success",
+    color: "bg-lime-500",
   },
   [QuestionComplexity.MEDIUM]: {
     name: "Medium",
-    color: "warning",
+    color: "bg-orange-400",
   },
   [QuestionComplexity.HARD]: {
     name: "Hard",
-    color: "danger",
+    color: "bg-red-600",
   },
 };
 export const COMPLEXITY_OPTIONS = Object.keys(QuestionComplexityConfigsMap).map(

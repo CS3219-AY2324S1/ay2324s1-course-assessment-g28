@@ -1,6 +1,7 @@
 import { COMPLEXITY_OPTIONS } from "@/api/questions/constants";
 import { Button, ModalBody, ModalHeader } from "@nextui-org/react";
 import { useMatchContext } from "../MatchContext";
+import cx from "classnames";
 
 const SelectDifficultyCard = () => {
   const { onChangeComplexity } = useMatchContext();
@@ -12,10 +13,12 @@ const SelectDifficultyCard = () => {
       <ModalBody className="w-full pt-10">
         {COMPLEXITY_OPTIONS.map((complexity) => (
           <Button
-            className="w-full text-white font-bold
-                hover:scale-105 hover:transition-transform"
+            className={cx(
+              "w-full text-white font-bold",
+              "hover:scale-105 hover:transition-transform",
+              complexity.color,
+            )}
             key={complexity.key}
-            color={complexity.color}
             onClick={() => onChangeComplexity(complexity.key)}
           >
             {complexity.name}

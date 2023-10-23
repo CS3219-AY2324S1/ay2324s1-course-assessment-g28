@@ -50,7 +50,12 @@ const TableSelectors = ({ userIsAdmin }: TableSelectorsProps) => {
     <div className="flex flex-row gap-4 w-full">
       <Input
         isClearable
-        className="w-full sm:max-w-[44%] text-zinc-600"
+        color="secondary"
+        variant="bordered"
+        className="w-full sm:max-w-[44%] text-foreground-500"
+        classNames={{
+          inputWrapper: "!border-purple-600 hover:!border-purple-500",
+        }}
         placeholder="Search by question title..."
         value={filterValue}
         onClear={() => onClear()}
@@ -60,12 +65,14 @@ const TableSelectors = ({ userIsAdmin }: TableSelectorsProps) => {
         }}
       />
       <div className="flex flex-row items-center">
-        <Dropdown className="p-0">
+        <Dropdown className="p-0" classNames={{}}>
           <DropdownTrigger className="hidden sm:flex">
             <Button
               endContent={<ChevronDownIcon />}
-              variant="flat"
+              variant="bordered"
               title="Difficulty"
+              className="text-foreground-500 !border-purple-600
+               hover:!border-purple-500"
             >
               {selectedComplexity
                 ? QuestionComplexityConfigsMap[selectedComplexity].name
