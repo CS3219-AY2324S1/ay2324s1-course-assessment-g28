@@ -35,9 +35,6 @@ export default function CategoryAdder({
         <Input
           label="Add new category"
           onValueChange={setNewCategory}
-          classNames={{
-            input: "text-black",
-          }}
           onKeyDown={addCategoryEnterKeyCallback}
           size="sm"
         />

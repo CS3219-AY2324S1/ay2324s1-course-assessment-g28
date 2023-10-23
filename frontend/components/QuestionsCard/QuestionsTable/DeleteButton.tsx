@@ -37,10 +37,10 @@ export default function DeleteButton({ questionId }: DeleteButtonProps) {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1 text-black">
+              <ModalHeader className="flex flex-col gap-1">
                 Are you sure?
               </ModalHeader>
-              <ModalBody className="text-black">
+              <ModalBody>
                 <p>This question will be deleted.</p>
               </ModalBody>
               <ModalFooter>

@@ -57,7 +57,7 @@ export default function EditUserButton(props: EditUserButtonProps) {
               </ModalHeader>
               <ModalBody>
                 <form
-                  className="flex flex-col text-zinc-600 mb-[12px]"
+                  className="flex flex-col mb-[12px]"
                   onChange={(e) => e.preventDefault()}
                 >
                   <div className="flex flex-col gap-3 flex-grow mb-[24px]">

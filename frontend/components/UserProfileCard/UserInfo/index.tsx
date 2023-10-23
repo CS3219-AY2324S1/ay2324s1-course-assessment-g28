@@ -6,12 +6,9 @@ import DeleteUserButton from "@/components/UserProfileCard/UserInfo/DeleteUserBu
 import { User } from "@/api/user/types";
 import { UNDEFINED_VALUE } from "../config";
 import EditUserButton from "./EditUserButton";
-import { useTheme } from "next-themes";
-import cx from "classnames";
 
 const UserInfo = ({ data }: { data?: User }) => {
   const { image, name, username } = useUserInfo();
-  const { theme } = useTheme();
   const { favouriteProgrammingLanguage } = data ?? {};
 
   return (
@@ -37,12 +34,7 @@ const UserInfo = ({ data }: { data?: User }) => {
         </div>
         <div className="text-xs">
           {"Favourite programming language: "}
-          <span
-            className={cx(
-              "font-semibold",
-              theme === "dark" ? "text-purple-400" : "text-violet-800",
-            )}
-          >
+          <span className="font-semibold dark:text-purple-400 text-violet-800">
             {favouriteProgrammingLanguage || UNDEFINED_VALUE}
           </span>
         </div>

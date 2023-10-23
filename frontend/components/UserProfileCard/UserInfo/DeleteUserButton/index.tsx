@@ -28,7 +28,7 @@ export default function DeleteUserButton() {
   return (
     <>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent className="text-zinc-600 bg-brand-white">
+        <ModalContent>
           {(onClose) => (
             <>
               <ModalHeader>Are you sure?</ModalHeader>

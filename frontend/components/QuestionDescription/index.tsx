@@ -25,7 +25,7 @@ export default function QuestionDescription({
     editable: readonly ?? true,
     editorProps: {
       attributes: {
-        class: "prose outline-none w-full max-w-full min-h-[500px]",
+        class: "prose dark:prose-invert outline-none w-full max-w-full min-h-[500px]",
       },
     },
     extensions: [
@@ -56,7 +56,7 @@ export default function QuestionDescription({
   return (
     <div
       className={cn(
-        "bg-default-100 text-foreground p-2 flex flex-col gap-y-2 rounded-lg",
+        "bg-default-100 p-2 flex flex-col gap-y-2 rounded-lg",
         className,
       )}
     >
