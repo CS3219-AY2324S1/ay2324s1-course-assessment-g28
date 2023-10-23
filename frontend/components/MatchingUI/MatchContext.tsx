@@ -89,7 +89,7 @@ export const MatchContextProvider = ({
     const ws = new WebSocket(
       getPairingServiceUri({
         userId: user.email!,
-        complexity: selectedComplexity!,
+        complexity: complexity,
       }),
     );
 
@@ -110,11 +110,9 @@ export const MatchContextProvider = ({
           toast.success(`Matched with ${JSON.stringify(parsed.data)}`);
           ws.close();
         } else if (parsed.status == 200) {
-          console.log(parsed);
         } else {
           setMatchStatus(MatchStatus.MATCH_ERROR);
           ws.close();
-          console.log(msg);
           clearTimeout(pairingTimer);
         }
       } catch (e) {

@@ -34,7 +34,7 @@ function getWsCallback(rmq_conn: amqp.Connection) {
       channel.assertQueue("", { exclusive: true }),
     ]);
 
-    let correlationId = uuidv4();
+    const correlationId = uuidv4();
 
     function cancelPairing() {
       channel.sendToQueue(cancel_queue.queue, Buffer.from(JSON.stringify({})), {
@@ -44,8 +44,7 @@ function getWsCallback(rmq_conn: amqp.Connection) {
     ws.on("close", cancelPairing);
 
     await channel.consume(return_queue.queue, async function (msg) {
-      console.log(JSON.parse(msg!.content.toString()));
-      if (msg?.properties.correlationId == correlationId) {
+      if (msg?.properties.correlationId === correlationId) {
         try {
           let content = JSON.parse(msg.content.toString());
           ws.send(
