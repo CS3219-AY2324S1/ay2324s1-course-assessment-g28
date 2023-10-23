@@ -59,7 +59,7 @@ export function removePair(pairId: string) {
   }
 }
 
-export function handleOperation(connection: WebSocket, pairId: string, requestId: string, lang: string, data) {
+export function handleOperation(connection: WebSocket, pairId: string, requestId: string, lang: string, data: any) {
   // const pairUpdates = updates[pairId];
   // const pairDoc = doc[pairId];
 
@@ -75,7 +75,7 @@ export function handleOperation(connection: WebSocket, pairId: string, requestId
   } else if (data.type == "pushUpdates") {
     // Convert the JSON representation to an actual ChangeSet
     // instance
-    let received = data.updates.map(json => ({
+    let received = data.updates.map((json: any) => ({
       clientID: json.clientID,
       changes: ChangeSet.fromJSON(json.changes)
     }))
@@ -88,7 +88,7 @@ export function handleOperation(connection: WebSocket, pairId: string, requestId
     resp(connection, requestId, true)
     if (received.length) {
       // Notify pending requests
-      let json = received.map(update => ({
+      let json = received.map((update: any) => ({
         clientID: update.clientID,
         changes: update.changes.toJSON()
       }))

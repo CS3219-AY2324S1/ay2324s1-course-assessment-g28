@@ -27,23 +27,23 @@ export function handleReady(connection: WebSocket, partnerConnection: WebSocket,
   partnerConnection.send(messagePartner);
 }
 
-export function handleOp(connection: WebSocket, partnerConnection: WebSocket, pairId: string, data) {
+export function handleOp(connection: WebSocket, partnerConnection: WebSocket, pairId: string, data: any) {
   const requestId = data.requestId;
   const lang = data.lang;
   handleOperation(connection, pairId, requestId, lang, data);
 }
 
-export function handleCaretPos(connection: WebSocket, partnerConnection: WebSocket, data) {
+export function handleCaretPos(connection: WebSocket, partnerConnection: WebSocket, data: any) {
   const message = JSON.stringify({ method: WS_METHODS.CARET_POS, start: data.start, end: data.end });
   partnerConnection.send(message);
 }
 
-export function handleSwitchLang(connection: WebSocket, partnerConnection: WebSocket, data) {
+export function handleSwitchLang(connection: WebSocket, partnerConnection: WebSocket, data: any) {
   const message = JSON.stringify({ method: WS_METHODS.SWITCH_LANG, language: data.language });
   partnerConnection.send(message);
 }
 
-export function handleRunCode(connection: WebSocket, partnerConnection: WebSocket, data) {
+export function handleRunCode(connection: WebSocket, partnerConnection: WebSocket, data: any) {
   const message = JSON.stringify({ method: WS_METHODS.RUN_CODE });
   partnerConnection.send(message);
 
@@ -57,12 +57,12 @@ export function handleRunCode(connection: WebSocket, partnerConnection: WebSocke
   });
 }
 
-export function handleMessage(connection: WebSocket, partnerConnection: WebSocket, data) {
+export function handleMessage(connection: WebSocket, partnerConnection: WebSocket, data: any) {
   const message = JSON.stringify({ method: WS_METHODS.MESSAGE, message: data.message });
   partnerConnection.send(message);
 }
 
-export function handleExit(connection: WebSocket, partnerConnection: WebSocket, data) {
+export function handleExit(connection: WebSocket, partnerConnection: WebSocket, data: any) {
   const message = JSON.stringify({ method: WS_METHODS.EXIT });
   connection.close();
   partnerConnection.send(message);

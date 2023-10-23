@@ -1,6 +1,6 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express, Request } from 'express';
 import dotenv from 'dotenv';
-import { checkValidPairAndUser, getPairIdFromUrl, getPair } from './services/pairService';
+import { getPair } from './services/pairService';
 import { getQueryParams, handleCaretPos, handleExit, handleMessage, handleOp, handleReady, handleRunCode, handleSwitchLang } from './services/wsService';
 import { WS_METHODS } from './constants';
 import { addPair, removePair } from './services/otService';
@@ -12,11 +12,11 @@ app.use(express.json());
 /**
  * Initialize environment variables based on environment
  */
-if (app.get('env') === 'production') {
-  dotenv.config({ path: '.env.production.local' });
-} else {
-  dotenv.config({ path: '.env.development.local' });
-}
+// if (app.get('env') === 'production') {
+//   dotenv.config({ path: '.env.production.local' });
+// } else {
+//   dotenv.config({ path: '.env.development.local' });
+// }
 
 // Set up rate limiter: maximum of twenty requests per minute
 const RateLimit = require("express-rate-limit");
@@ -32,7 +32,6 @@ app.use(limiter);
 
 const cors = require("cors");
 const corsOptions = {
-  origin: process.env.ALLOW_ORIGIN_HEADER, 
   credentials: true,
   optionSuccessStatus: 200,
   exposedHeaders: ["Set-Cookie"],
@@ -54,7 +53,8 @@ app.use(cookieParser());
  */
 
 const mongoose = require('mongoose');
-mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
+console.log(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI);
 const db = mongoose.connection;
 db.on('error', (error: Error) => console.error(error));
 db.once('open', () => console.log('Connected to MongoDB'));
@@ -95,7 +95,7 @@ const clients: { [userId: string]: WebSocket } = {};
 const pairs: { [pairId: string]: string } = {};
 
 // A new client connection request received
-wsServer.on('connection', function(connection: WebSocket, request: Request, client) {
+wsServer.on('connection', function(connection: WebSocket, request: Request) {
   console.log(`Recieved a new connection.`);
 
   // Store the new connection and handle messages

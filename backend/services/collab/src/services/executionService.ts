@@ -30,12 +30,12 @@ export async function runJavaScriptCode(code: string): Promise<string> {
   const fileName = uuidv4();
   const filePath = `sandbox/${fileName}.js`;
   
-  fs.writeFileSync(filePath, code, err => {
-    if (err) {
-      console.error(err);
-    }
-    // file written successfully
-  });
+  try {
+    fs.writeFileSync(filePath, code);
+  } catch (err) {
+    console.error(err);
+  }
+
 
   let result = "";
 
@@ -48,7 +48,7 @@ export async function runJavaScriptCode(code: string): Promise<string> {
       console.log(`stdout: ${stdout}`);
       result =  stdout;
     }
-  } catch (error) {
+  } catch (error: any) {
     console.log("ERROR", error.toString());
     result = error.toString();
   }
@@ -64,12 +64,11 @@ export async function runJavaCode(code: string): Promise<string> {
   const filePath = `sandbox/${fileName}.java`;
   const compiledFilePath = `sandbox/${fileName}`;
   
-  fs.writeFileSync(filePath, code, err => {
-    if (err) {
-      console.error(err);
-    }
-    // file written successfully
-  });
+  try {
+    fs.writeFileSync(filePath, code);
+  } catch (err) {
+    console.error(err);
+  }
 
   let result = "";
   let isCompiled = false;
@@ -82,7 +81,7 @@ export async function runJavaCode(code: string): Promise<string> {
     } else {
       isCompiled = true;
     }
-  } catch (error) {
+  } catch (error: any) {
     console.log("ERROR", error.toString());
     result = error.toString();
   }
@@ -97,7 +96,7 @@ export async function runJavaCode(code: string): Promise<string> {
         console.log(`stdout: ${stdout}`);
         result =  stdout;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log("ERROR", error.toString());
       result = error.toString();
     }
@@ -113,12 +112,11 @@ export async function runPythonCode(code: string): Promise<string> {
   const fileName = uuidv4();
   const filePath = `sandbox/${fileName}.py`;
   
-  fs.writeFileSync(filePath, code, err => {
-    if (err) {
-      console.error(err);
-    }
-    // file written successfully
-  });
+  try {
+    fs.writeFileSync(filePath, code);
+  } catch (err) {
+    console.error(err);
+  }
 
   let result = "";
 
@@ -131,7 +129,7 @@ export async function runPythonCode(code: string): Promise<string> {
       console.log(`stdout: ${stdout}`);
       result =  stdout;
     }
-  } catch (error) {
+  } catch (error: any) {
     console.log("ERROR", error.toString());
     result = error.toString();
   }
