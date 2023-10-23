@@ -13,6 +13,10 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - QUESTIONS_API=http://pp-question:1234
+      - USER_API=http://pp-user:1235
+      - NEXT_PUBLIC_PAIRING_API=ws://pp-pairing-front:4000
+    profiles:
+      - frontend
 
   # Question service
   pp-question:
@@ -27,6 +31,8 @@ services:
       - 1234
     ports:
       - 1234:1234
+    depends_on:
+      - mongodb
   mongodb:
     image: mongo
     environment:
@@ -49,6 +55,7 @@ services:
       - POSTGRES_USER=dev
       - POSTGRES_PASSWORD=dev
       - PG_PORT=5432
+      - POSTGRES_URI=postgres
     expose:
       - 1235
     ports:
@@ -60,7 +67,8 @@ services:
       POSTGRES_PASSWORD: dev
       POSTGRES_DB: user
     volumes:
-      - dev-postgres:/var/lib/postgresql/data
+      # - dev-postgres:/var/lib/postgresql/data
+      - ../../backend/services/user/init.sql:/docker-entrypoint-initdb.d/init.sql
     expose:
       - 5432
     ports:
@@ -78,7 +86,9 @@ services:
       dockerfile: Dockerfile
     environment:
       - RABBITMQ_URL=amqp://rabbitmq:5672
-      - PORT=3000
+      - PORT=4000
+    ports:
+      - 4000:4000
   pp-pairing-back:
     image: peerprep/pairing-back
     build:
@@ -86,10 +96,11 @@ services:
       dockerfile: Dockerfile
     environment:
       - RABBITMQ_URL=amqp://rabbitmq:5672
+      - QUESTION_URL=http://pp-question:1234
       - MATCHMAKING_MAX_WAIT_SECONDS=100
 # Names our volume
 volumes:
-  dev-postgres:
-    driver: local
+  # dev-postgres:
+  #driver: local
   dev-mongodb:
     driver: local

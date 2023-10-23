@@ -4,6 +4,7 @@ import type { AppProps } from "next/app";
 import { NextUIProvider } from "@nextui-org/react";
 import Layout from "@/components/Layout";
 import { Toaster } from "react-hot-toast";
+import { ThemeProvider } from "next-themes";
 
 export default function App({
   Component,
@@ -12,10 +13,12 @@ export default function App({
   return (
     <NextUIProvider>
       <SessionProvider session={session}>
-        <Layout>
+        <ThemeProvider attribute="class" defaultTheme="dark">
           <Toaster />
-          <Component {...pageProps} />
-        </Layout>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </ThemeProvider>
       </SessionProvider>
     </NextUIProvider>
   );

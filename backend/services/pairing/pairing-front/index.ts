@@ -7,12 +7,20 @@ import { v4 as uuidv4 } from "uuid";
 
 dotenv.config();
 const RABBITMQ_URL = process.env.RABBITMQ_URL!;
+const PORT = Number(process.env.PORT!);
 
 function getWsCallback(rmq_conn: amqp.Connection) {
   return async (ws: WebSocket, req: IncomingMessage) => {
     let params = url.parse(req.url!, true).query;
-    if (!params.user) {
-      ws.send("Invalid request");
+
+    if (!params.user || Number(params.complexity == null)) {
+      const msg = JSON.stringify({
+        status: 400,
+        data: {
+          message: "Bad request",
+        },
+      });
+      ws.send(msg);
       ws.close();
       return;
     }
@@ -38,7 +46,20 @@ function getWsCallback(rmq_conn: amqp.Connection) {
     await channel.consume(return_queue.queue, async function (msg) {
       console.log(JSON.parse(msg!.content.toString()));
       if (msg?.properties.correlationId == correlationId) {
-        ws.send(msg!.content);
+        try {
+          let content = JSON.parse(msg.content.toString());
+          ws.send(
+            JSON.stringify({
+              status: 200,
+              data: {
+                url: content.url,
+              },
+            })
+          );
+        } catch (error) {
+          console.log(`Failed to parse ${msg}. Closing websocket`);
+          ws.close();
+        }
       }
       ws.off("close", cancelPairing);
       ws.close();
@@ -47,7 +68,10 @@ function getWsCallback(rmq_conn: amqp.Connection) {
     console.log(return_queue.queue);
 
     var msg = {
-      match_options: { user: params.user },
+      match_options: {
+        user: params.user,
+        complexity: Number(params.complexity),
+      },
     };
     channel.sendToQueue(request_queue.queue, Buffer.from(JSON.stringify(msg)), {
       correlationId,
@@ -73,7 +97,7 @@ function startServer() {
     .then((rmq_conn) => {
       console.log(`Connected to ${RABBITMQ_URL}`);
 
-      const wss = new WebSocketServer({ port: 8080, path: "/pairing" });
+      const wss = new WebSocketServer({ port: PORT, path: "/pairing" });
 
       console.log("created wss");
 
