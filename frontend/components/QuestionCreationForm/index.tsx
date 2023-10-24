@@ -100,7 +100,7 @@ export default function QuestionCreationForm({
             name="complexity"
             control={control}
             defaultValue={QuestionComplexity.EASY}
-            render={({ field: { onChange, value }}) => (
+            render={({ field: { onChange, value } }) => (
               <Dropdown className="p-0">
                 <DropdownTrigger className="flex">
                   <Button

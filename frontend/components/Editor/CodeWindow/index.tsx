@@ -5,7 +5,7 @@ import { Button, Select, SelectItem } from "@nextui-org/react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import ResizeHandleHorizontal from "../ResizeHandleHorizontal";
 import LoadingScreen from "../LoadingScreen";
-import {dracula, tomorrow} from 'thememirror';
+import { dracula, tomorrow } from "thememirror";
 import {
   LANGUAGES,
   LANGUAGE_DATA,
@@ -22,9 +22,8 @@ import {
 import { basicSetup } from "codemirror";
 import { ChangeSet, EditorState, Text } from "@codemirror/state";
 import { EditorView, ViewPlugin, ViewUpdate, keymap } from "@codemirror/view";
-import {indentWithTab} from "@codemirror/commands"
+import { indentWithTab } from "@codemirror/commands";
 import { v4 as uuidv4 } from "uuid";
-import Card from "@/components/Card";
 import { useTheme } from "next-themes";
 
 interface CodeWindowProps {
@@ -38,7 +37,7 @@ interface CodeWindowProps {
  */
 
 export default function CodeWindow(props: CodeWindowProps) {
-  const {theme} = useTheme();
+  const { theme } = useTheme();
   const [language, setLanguage] = useState<string>(props.language ?? "Java");
   const [result, setResult] = useState(
     'Click "Run Code" to execute your code!',
@@ -346,7 +345,6 @@ export default function CodeWindow(props: CodeWindowProps) {
     });
     let editorParentDiv = editorsParentRef.current[lang];
 
-    
     // TODO: Add 3 EditorViews one for each language
     // Display only the one for the selected language
     // This ensures version history is consistent for all languages

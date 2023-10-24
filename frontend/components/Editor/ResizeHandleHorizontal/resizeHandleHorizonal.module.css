@@ -1,16 +1,16 @@
 .resize-handle-horizontal {
-    height: 6px;
-    background-color: rgb(209 213 219);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
+  height: 6px;
+  background-color: rgb(209 213 219);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 
 .triple-dots {
-    width: 2px;
-    height: 2px;
-    background-color: gray;
-    border-radius: 2px;
-    margin: 1px;
+  width: 2px;
+  height: 2px;
+  background-color: gray;
+  border-radius: 2px;
+  margin: 1px;
 }

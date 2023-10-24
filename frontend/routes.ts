@@ -18,5 +18,4 @@ export const getUpdateQuestionPath = (questionId: number) =>
 export const PAIRING_DIRECTORY = "/pairing";
 export const EDITOR_DIRECTORY = "/editor";
 export const getEditorPath = (questionId: number, wsUrl: string) =>
-EDITOR_DIRECTORY+ "/" + questionId.toString() + "?wsUrl=" + wsUrl;
-
+  EDITOR_DIRECTORY + "/" + questionId.toString() + "?wsUrl=" + wsUrl;

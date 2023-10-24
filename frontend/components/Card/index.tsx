@@ -16,10 +16,7 @@ const Card = ({
   const { theme } = useTheme();
   return (
     <div
-      className={cx(
-        "p-[24px] bg-content1 rounded-xl",
-        classNames,
-      )}
+      className={cx("p-[24px] bg-content1 rounded-xl", classNames)}
       style={styles}
       {...props}
     >
