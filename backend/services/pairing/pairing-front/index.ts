@@ -92,7 +92,7 @@ function getWsCallback(rmq_conn: amqp.Connection) {
 
   return async (ws: WebSocket, req: IncomingMessage) => {
     try {
-      callback;
+      callback(ws, req);
     } catch (e) {
       console.log(e);
     }

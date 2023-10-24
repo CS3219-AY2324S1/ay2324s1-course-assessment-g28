@@ -54,6 +54,7 @@ function removeUser(userList: List<User>, correlationId: string): void {
       curr.detach();
       return;
     }
+    curr = curr.next;
   }
 
   return;
