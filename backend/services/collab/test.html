@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Editor</title>
+</head>
+<body>
+    <h1>Test Editor</h1>
+    
+    <textarea id="textArea" rows="4" cols="50" placeholder="Type your text here..."></textarea>
+    
+    <p>Current selection: <span id="caretLeft">0</span> to <span id="caretRight">0</span></p>
+    
+    <script>
+        const textArea = document.getElementById('textArea');
+        const caretLeft = document.getElementById('caretLeft');
+        const caretRight = document.getElementById('caretRight');
+        
+        textArea.addEventListener('keyup', function(e) {
+            // Update the caret position
+            caretLeft.textContent = e.target.selectionStart;
+            caretRight.textContent = e.target.selectionStart;
+        });
+
+        // Resets caret position if user starts click outside of textarea
+        document.addEventListener('mousedown', function(e) {
+            if (e.target != textArea) {
+                textArea.selectionStart = 0;
+                textArea.selectionEnd = 0;
+            }
+        });
+
+        // Only registers div where mouse is lifted
+        // Doesn't work if user selects in text then drags mouse outside textarea
+        // Solution: Use mousedown to reset caret position
+        document.addEventListener('mouseup', function(e) {
+
+            var start = textArea.selectionStart;
+            var end = textArea.selectionEnd;
+
+            console.log(e.srcElement, e.target, e.currentTarget);
+
+            caretLeft.textContent = start;  // inclusive
+            caretRight.textContent = end;   // exclusive
+            if (start >= 0 && end >= 0){
+                
+            }
+        });
+
+    </script>
+</body>
+</html>

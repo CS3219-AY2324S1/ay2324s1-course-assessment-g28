@@ -20,7 +20,6 @@ const Layout = ({ children }: PropsWithChildren<unknown>) => {
   return (
     <div
       className={cx(
-        theme,
         "text-foreground bg-background w-screen",
         "h-screen overflow-x-hidden overflow-y-hidden",
         "transition-all duration-300",
@@ -29,12 +28,12 @@ const Layout = ({ children }: PropsWithChildren<unknown>) => {
     >
       <main
         className={cx(
-          "h-full w-full pb-[110px] overflow-y-auto",
+          "h-full w-full flex flex-col pb-[110px] overflow-y-auto",
           POPPINS_CLASS,
         )}
       >
         <Navbar />
-        <div className="px-8">{children}</div>
+        <div className="px-8 flex flex-col flex-grow">{children}</div>
       </main>
     </div>
   );

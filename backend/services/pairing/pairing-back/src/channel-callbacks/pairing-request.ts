@@ -1,12 +1,35 @@
 import amqp from "amqplib";
-import MockEditor from "../services/editor/mock-editor";
 import { List } from "../models/linked-list";
 import { User } from "../models/user";
 import logger from "../utils/logger";
 import { matchUser } from "../controllers/user-pairing";
 import { getRandomQuestion } from "../services/question/pp-question-service";
 
-let editorService = new MockEditor();
+export interface EditorWebSocketUrls {
+  user1: string;
+  user2: string;
+}
+
+const editorServiceApiPath = "/pairing/getWebSocketUrl";
+
+async function postPair(_user1: string, _user2: string): Promise<EditorWebSocketUrls> {
+  const queryParams = new URLSearchParams({
+    user1: _user1,
+    user2: _user2,
+  });
+
+  const reqUrl =
+    process.env.EDITOR_SERVICE_URL +
+    editorServiceApiPath +
+    "?" +
+    queryParams.toString();
+  const res = await fetch(reqUrl, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+  const body = await res.json();
+  return body;
+}
 
 export default function getPairingRequestCallback(
   channel: amqp.Channel,
@@ -31,17 +54,17 @@ export default function getPairingRequestCallback(
       content.match_options
     );
     let match = await matchUser(userList, user);
+    console.log(match);
     channel.ack(msg!);
 
     if (match) {
-      let url = await editorService.postPair(
+      const {user1, user2} = await postPair(
         match.user1.match_options.user,
         match.user2.match_options.user
       );
-
       // Reply to user 1
-      let reply1 = {
-        url,
+      const reply1 = {
+        url: user1,
         otherUser: match.user2.match_options.user,
         questionId: match.question.id,
       };
@@ -54,8 +77,8 @@ export default function getPairingRequestCallback(
       );
 
       // Reply to user 2
-      let reply2 = {
-        url,
+      const reply2 = {
+        url: user2,
         otherUser: match.user1.match_options.user,
         questionId: match.question.id,
       };

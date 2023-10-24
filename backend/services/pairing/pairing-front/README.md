@@ -2,9 +2,11 @@
 
 To establish a connection, the client should ping the service via the url:
 
-`ws://<pp-pairing-front url>:<port>/pairing/?user=<user id>`
+`ws://<pp-pairing-front url>:<port>/pairing/?user=<user id>&complexity=<complexity>`
 
-Note that the user is a query string parameter
+where:
+  `user` is the id of the user requesting the pairing
+  `complexity` is a number from 0 to 2 representing easy, medium and hard in that order
 
 Currently the websocket runs forever until a match is found. When a match is found,
 the websocket replies with payload { url: string }, where url is the websocket

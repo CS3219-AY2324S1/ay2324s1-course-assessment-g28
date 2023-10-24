@@ -26,21 +26,21 @@ services:
       dockerfile: Dockerfile
     environment:
       - PORT=1234
-      - MONGO_URI=mongodb://mongodb:27017
+      - MONGO_URI=mongodb://pp-question-mongodb:27017
     expose:
       - 1234
     ports:
       - 1234:1234
     depends_on:
-      - mongodb
-  mongodb:
+      - pp-question-mongodb
+  pp-question-mongodb:
     image: mongo
     environment:
       MONGO_INITDB_DATABASE: questions
     expose:
       - 27017
     ports:
-      - 27017:27017
+      - 27018:27017
     volumes:
       - dev-mongodb:/data/db
 
@@ -97,7 +97,37 @@ services:
     environment:
       - RABBITMQ_URL=amqp://rabbitmq:5672
       - QUESTION_URL=http://pp-question:1234
+      - EDITOR_SERVICE_URL=http://pp-collab-service:8000
       - MATCHMAKING_MAX_WAIT_SECONDS=100
+
+  pp-collab-service:
+    image: peerprep/collab-service
+    build:
+      context: ../../backend/services/collab
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+      - 8888:8888
+    expose:
+      - 8000
+      - 8888
+    depends_on:
+      - pp-collab-service-mongodb
+    environment:
+      - MONGO_URI=mongodb://pp-collab-service-mongodb:27017/pairs
+      - WEBSOCKET_URL=ws://localhost
+      - PORT=8000
+      - WEBSOCKET_PORT=8888
+
+  pp-collab-service-mongodb:
+    image: mongo
+    expose: 
+      - 27017
+    ports:
+      - 27019:27017
+    environment:
+      MONGO_INITDB_DATABASE: pairs
+  
 # Names our volume
 volumes:
   # dev-postgres:

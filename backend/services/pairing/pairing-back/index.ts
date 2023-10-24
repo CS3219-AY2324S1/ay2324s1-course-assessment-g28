@@ -2,7 +2,6 @@ import amqp from "amqplib";
 import { User } from "./src/models/user";
 import { List } from "./src/models/linked-list";
 import { matchUser, removeUser } from "./src/controllers/user-pairing";
-import MockEditor from "./src/services/editor/mock-editor";
 import logger from "./src/utils/logger";
 import config from "./src/utils/config";
 import getPairingRequestCallback from "./src/channel-callbacks/pairing-request";
@@ -13,7 +12,6 @@ function startServer() {
     .then(async (rmq_conn) => {
       logger.info(`Connected to ${config.RABBITMQ_URL}`);
 
-      let editorService = new MockEditor();
       let userList = new List<User>();
 
       let channel = await rmq_conn.createChannel();

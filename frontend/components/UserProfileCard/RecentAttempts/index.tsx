@@ -55,7 +55,7 @@ const RecentAttempts = ({ data }: { data?: User }) => {
               <div
                 className={cx(
                   "text-sm shrink-0",
-                  theme === "dark" ? "text-purple-400" : "text-violet-800",
+                  "dark:text-purple-400 text-violet-800",
                 )}
               >
                 {attemptDateString}

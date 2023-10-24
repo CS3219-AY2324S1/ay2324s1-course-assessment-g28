@@ -19,7 +19,6 @@ const Card = ({
       className={cx(
         "p-[24px] bg-content1 rounded-xl",
         classNames,
-        theme === "light" ? "bg-zinc-200" : "",
       )}
       style={styles}
       {...props}
