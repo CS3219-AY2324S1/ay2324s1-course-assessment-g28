@@ -18,6 +18,12 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "public/js/worker.js", "components/Editor/CodeWindow/worker.js"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "public/js/worker.js",
+    "components/Editor/CodeWindow/worker.js"
+  ],
   "exclude": ["node_modules"]
 }

@@ -22,7 +22,7 @@ export default function QuestionDetailsCard({
         <ComplexityChip complexity={complexity} />
       </div>
       <div>
-        <QuestionDescription initialContent={description} readonly/>
+        <QuestionDescription initialContent={description} readonly />
       </div>
     </Card>
   );

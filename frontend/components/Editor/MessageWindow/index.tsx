@@ -2,17 +2,20 @@
 // @ts-nocheck TODO: fix the type errors in this file and remove this.
 import { useEffect, useRef, useState } from "react";
 import useWebSocket from "react-use-websocket";
-import { CLASSNAME_MY_MESSAGE, CLASSNAME_PARTNER_MESSAGE, WS_METHODS } from "../constants";
+import {
+  CLASSNAME_MY_MESSAGE,
+  CLASSNAME_PARTNER_MESSAGE,
+  WS_METHODS,
+} from "../constants";
 import LoadingScreen from "../LoadingScreen";
 import { Input } from "@nextui-org/react";
 import sendIcon from "@/assets/images/chatbox-send-icon.png";
 
 interface MessageWindowProps {
-  websocketUrl: string,
+  websocketUrl: string;
 }
 
 export default function MessageWindow(props: MessageWindowProps) {
-
   const [isWebsocketLoaded, setIsWebsocketLoaded] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [messageValue, setMessageValue] = useState("");
@@ -24,7 +27,7 @@ export default function MessageWindow(props: MessageWindowProps) {
   useEffect(() => {
     // TODO: Fix this
     // @ts-ignore
-    messageScrollDiv.current?.scrollIntoView({ behavior: 'smooth' });
+    messageScrollDiv.current?.scrollIntoView({ behavior: "smooth" });
   }, [messageList]);
 
   const { sendJsonMessage, readyState } = useWebSocket(props.websocketUrl, {
@@ -36,7 +39,7 @@ export default function MessageWindow(props: MessageWindowProps) {
     },
     onMessage: onMessage,
     onClose: onClose,
-    onError: onError
+    onError: onError,
   });
 
   function onMessage(e: any) {
@@ -73,13 +76,13 @@ export default function MessageWindow(props: MessageWindowProps) {
 
   function sendMessage() {
     console.log(messageValue);
-    if (messageValue === '') {
+    if (messageValue === "") {
       return;
     }
 
     sendJsonMessage({
       method: WS_METHODS.MESSAGE,
-      message: messageValue
+      message: messageValue,
     });
 
     addMessageToList(messageValue, true);
@@ -88,7 +91,7 @@ export default function MessageWindow(props: MessageWindowProps) {
 
   function addMessageToList(message: string, isFromMe: boolean) {
     // TODO: fix this...This definitely dosent look correct, the state types dont match at all...
-    setMessageList(prev => {
+    setMessageList((prev) => {
       return [...prev, [message, isFromMe]];
     });
   }
@@ -109,13 +112,13 @@ export default function MessageWindow(props: MessageWindowProps) {
           );
         }
       })()}
-      <div 
-        className="w-full flex grow flex-col overflow-y-scroll p-2 space-y-2"
-      >
+      <div className="w-full flex grow flex-col overflow-y-scroll p-2 space-y-2">
         {messageList.map((val, idx) => (
           <div
             key={idx}
-            className={val[1] ? CLASSNAME_MY_MESSAGE : CLASSNAME_PARTNER_MESSAGE}
+            className={
+              val[1] ? CLASSNAME_MY_MESSAGE : CLASSNAME_PARTNER_MESSAGE
+            }
           >
             {val[0]}
           </div>
@@ -130,11 +133,11 @@ export default function MessageWindow(props: MessageWindowProps) {
             <img src={sendIcon.src} className="h-4/5" onClick={sendMessage} />
           }
           value={messageValue}
-          onInput={e => setMessageValue(e.target.value)}
+          onInput={(e) => setMessageValue(e.target.value)}
           onKeyUp={onKeyUp}
           ref={messageInput}
         />
       </div>
     </div>
-  )
+  );
 }

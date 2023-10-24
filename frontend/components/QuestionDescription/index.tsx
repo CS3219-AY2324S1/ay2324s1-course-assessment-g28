@@ -25,7 +25,8 @@ export default function QuestionDescription({
     editable: readonly ?? true,
     editorProps: {
       attributes: {
-        class: "prose dark:prose-invert outline-none w-full max-w-full min-h-[500px]",
+        class:
+          "prose dark:prose-invert outline-none w-full max-w-full min-h-[500px]",
       },
     },
     extensions: [

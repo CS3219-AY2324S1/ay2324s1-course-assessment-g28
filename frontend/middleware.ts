@@ -1,5 +1,11 @@
 import { API_PREFIX } from "@/api/routes";
-import { CREATE_QUESTION, HOME, LOGIN, REGISTER, UPDATE_PATH_SEGMENT } from "@/routes";
+import {
+  CREATE_QUESTION,
+  HOME,
+  LOGIN,
+  REGISTER,
+  UPDATE_PATH_SEGMENT,
+} from "@/routes";
 import { getFirstPartOfPath } from "@/util/url";
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
@@ -20,7 +26,13 @@ export default withAuth(
     } else if (req.nextUrl.pathname === REGISTER && isUserExists) {
       // redirect to home page if already registered user
       return NextResponse.redirect(new URL(HOME, req.url));
-    } else if ((req.nextUrl.pathname === CREATE_QUESTION || req.nextUrl.pathname.substring(req.nextUrl.pathname.lastIndexOf("/")) === UPDATE_PATH_SEGMENT) && !isAdmin) {
+    } else if (
+      (req.nextUrl.pathname === CREATE_QUESTION ||
+        req.nextUrl.pathname.substring(
+          req.nextUrl.pathname.lastIndexOf("/"),
+        ) === UPDATE_PATH_SEGMENT) &&
+      !isAdmin
+    ) {
       // if not admin but try to access create and update question paths, redirect back to home
       return NextResponse.redirect(new URL(HOME, req.url));
     }

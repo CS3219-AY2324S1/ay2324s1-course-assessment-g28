@@ -50,7 +50,7 @@ const defaultContext: MatchContextType = {
     throw new Error("Not in provider!");
   },
   pairingWebsocket: null,
-  editorUrl: ""
+  editorUrl: "",
 };
 
 const MatchContext = createContext<MatchContextType>(defaultContext);
@@ -97,7 +97,12 @@ export const MatchContextProvider = ({
         const parsed = JSON.parse(msg.data);
         if (parsed.data.url) {
           setMatchStatus(MatchStatus.MATCH_SUCCESS);
-          setEditorUrl(getEditorPath(parseInt(parsed.data.questionId as string), parsed.data.url as string));
+          setEditorUrl(
+            getEditorPath(
+              parseInt(parsed.data.questionId as string),
+              parsed.data.url as string,
+            ),
+          );
           // TODO: replace toast with actual usage of returned details
           ws.close();
         } else if (parsed.status == 200) {
