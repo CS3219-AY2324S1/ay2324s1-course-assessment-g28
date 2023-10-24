@@ -10,7 +10,7 @@ const RABBITMQ_URL = process.env.RABBITMQ_URL!;
 const PORT = Number(process.env.PORT!);
 
 function getWsCallback(rmq_conn: amqp.Connection) {
-  return async (ws: WebSocket, req: IncomingMessage) => {
+  async function callback(ws: WebSocket, req: IncomingMessage) {
     let params = url.parse(req.url!, true).query;
 
     if (!params.user || Number(params.complexity == null)) {
@@ -52,7 +52,7 @@ function getWsCallback(rmq_conn: amqp.Connection) {
               status: 200,
               data: {
                 url: content.url,
-                questionId: content.questionId
+                questionId: content.questionId,
               },
             })
           );
@@ -88,6 +88,14 @@ function getWsCallback(rmq_conn: amqp.Connection) {
     ws.send(JSON.stringify(reply));
 
     return;
+  }
+
+  return async (ws: WebSocket, req: IncomingMessage) => {
+    try {
+      callback;
+    } catch (e) {
+      console.log(e);
+    }
   };
 }
 
