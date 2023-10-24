@@ -101,7 +101,7 @@ export default function MessageWindow(props: MessageWindowProps) {
   }
 
   return (
-    <div className="h-full w-full flex flex-col bg-white rounded-xl relative">
+    <div className="h-full w-full flex flex-col rounded-xl relative">
       {(() => {
         if (!isInitialized) {
           return (
@@ -124,7 +124,6 @@ export default function MessageWindow(props: MessageWindowProps) {
       </div>
       <div className="w-full flex flex-row p-2">
         <Input
-          color="primary"
           placeholder="Send a message..."
           labelPlacement="outside"
           endContent={

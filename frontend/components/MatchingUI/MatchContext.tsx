@@ -2,7 +2,6 @@ import { MAX_PAIRING_DURATION, getPairingServiceUri } from "@/api/pairing";
 import { QuestionComplexity } from "@/api/questions/types";
 import useUserInfo from "@/hooks/useUserInfo";
 import { getEditorPath } from "@/routes";
-import { useRouter } from "next/router";
 import {
   Dispatch,
   PropsWithChildren,
@@ -11,7 +10,6 @@ import {
   useContext,
   useState,
 } from "react";
-import toast from "react-hot-toast";
 
 export enum MatchStatus {
   SELECT_DIFFICULTY,
@@ -62,7 +60,6 @@ export const useMatchContext = () => useContext<MatchContextType>(MatchContext);
 export const MatchContextProvider = ({
   children,
 }: PropsWithChildren<unknown>) => {
-  const router = useRouter();
   const [editorUrl, setEditorUrl] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pairingWebsocket, setPairingWebsocket] = useState<WebSocket | null>(

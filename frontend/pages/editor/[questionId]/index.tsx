@@ -68,7 +68,7 @@ export default function EditorPage({
   }
 
   return (
-    <div className="flex flex-col w-full flex-grow border-8 rounded-xl border-gray-300 border-solid bg-gray-300 relative">
+    <div className="flex flex-col w-full flex-grow border-8 rounded-xl relative">
       <PanelGroup direction="horizontal" className="grow">
         <Panel defaultSize={40}>
           <PanelGroup direction="vertical">
@@ -85,12 +85,9 @@ export default function EditorPage({
         </Panel>
         <PanelResizeHandle>{ResizeHandleVertical()}</PanelResizeHandle>
         <Panel>
-          {(() => {
-            // This is to ensure we don't send empty url
-            if (websocketUrl) {
-              return <CodeWindow websocketUrl={websocketUrl}></CodeWindow>;
-            }
-          })()}
+          {websocketUrl && (
+            <CodeWindow websocketUrl={websocketUrl}></CodeWindow>
+          )}
         </Panel>
       </PanelGroup>
     </div>
