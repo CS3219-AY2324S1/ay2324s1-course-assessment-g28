@@ -99,7 +99,7 @@ services:
       - QUESTION_URL=http://pp-question:1234
       - EDITOR_SERVICE_URL=http://pp-collab-service:8000
       - MATCHMAKING_MAX_WAIT_SECONDS=100
-
+      - LOGGING_LEVEL=debug
   pp-collab-service:
     image: peerprep/collab-service
     build:
