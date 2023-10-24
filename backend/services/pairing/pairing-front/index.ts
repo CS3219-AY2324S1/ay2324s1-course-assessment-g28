@@ -52,6 +52,7 @@ function getWsCallback(rmq_conn: amqp.Connection) {
               status: 200,
               data: {
                 url: content.url,
+                questionId: content.questionId
               },
             })
           );

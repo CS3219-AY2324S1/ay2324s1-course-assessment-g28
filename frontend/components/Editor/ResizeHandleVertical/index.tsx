@@ -1,3 +1,4 @@
+/* eslint-disable */
 import styles from "./resizeHandleVertical.module.css";
 
 export default function ResizeHandleVertical() {

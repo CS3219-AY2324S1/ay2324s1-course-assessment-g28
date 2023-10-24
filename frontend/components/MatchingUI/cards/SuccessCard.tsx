@@ -1,17 +1,18 @@
 import { ModalBody, ModalHeader } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { useMatchContext } from "../MatchContext";
+import { useRouter } from "next/router";
 
 const SuccessCard = () => {
   const [secondsLeft, setSecondsLeft] = useState(5);
-  const { redirectToRoom } = useMatchContext();
-
+  const { editorUrl } = useMatchContext();
+  const router = useRouter();
   useEffect(() => {
     if (secondsLeft < 1) {
-      return redirectToRoom();
+      router.push(editorUrl);
     }
     setTimeout(() => setSecondsLeft((currSeconds) => currSeconds - 0.05), 50);
-  }, [secondsLeft, redirectToRoom]);
+  }, [secondsLeft, editorUrl]);
 
   return (
     <>

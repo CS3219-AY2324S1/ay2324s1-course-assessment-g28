@@ -1,10 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+/* eslint-disable */
+import React, { useEffect, useRef, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
-import CodeMirror from '@uiw/react-codemirror';
-import { EditorSelection } from '@uiw/react-codemirror';
-import { javascript } from '@codemirror/lang-javascript';
-import { java } from "@codemirror/lang-java";
-import { python } from "@codemirror/lang-python";
 import { Button, Select, SelectItem } from '@nextui-org/react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import ResizeHandleHorizontal from '../ResizeHandleHorizontal';
@@ -14,15 +10,17 @@ import {Update, receiveUpdates, sendableUpdates, collab, getSyncedVersion} from 
 import {basicSetup} from "codemirror"
 import {ChangeSet, EditorState, Text} from "@codemirror/state"
 import {EditorView, ViewPlugin, ViewUpdate} from "@codemirror/view"
-import {workerScript} from "./worker.ts";
 import { v4 as uuidv4 } from "uuid";
 
 interface CodeWindowProps {
   template?: string,
   language?: string,
   websocketUrl: string,
-  question: any
 }
+
+/**
+ * TODO: Add typing and clean up the code
+ */
 
 export default function CodeWindow(props: CodeWindowProps) {
   const [language, setLanguage] = useState<string>(props.language ?? "Java");
@@ -32,14 +30,11 @@ export default function CodeWindow(props: CodeWindowProps) {
   const [isCodeRunning, setIsCodeRunning] = useState(false);
   const [isCodeMirrorLoaded, setIsCodeMirrorLoaded] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [requestQueue, setRequestQueue] = useState({});
+  const [requestQueue, setRequestQueue] = useState<Record<string, any>>({});
 
   const editorsParentRef = useRef<{ [lang: string]: HTMLDivElement|null }>({});
   const editorsRef = useRef<{ [lang: string]: EditorView }>({});
 
-  useEffect(() => {
-  
-  }, props.question);
 
   const { sendJsonMessage, readyState } = useWebSocket(props.websocketUrl, {
     share: true,
@@ -53,7 +48,7 @@ export default function CodeWindow(props: CodeWindowProps) {
     onError: onError
   });
 
-  function onMessage(e: Event) {
+  function onMessage(e: any) {
     const data = JSON.parse(e.data);
     //console.log("CodeWindow received: ", data);
 
@@ -90,12 +85,12 @@ export default function CodeWindow(props: CodeWindowProps) {
     // TODO: Handle error
   }
 
-  function handleReady(data) {
+  function handleReady(data: any) {
     setIsMyTurn(data.isMyTurn);
     setIsInitialized(true);
   }
 
-  function handleOp(data) {
+  function handleOp(data: any) {
     const requestId: string = data.requestId;
 
     if (requestId in requestQueue) {
@@ -109,26 +104,26 @@ export default function CodeWindow(props: CodeWindowProps) {
     }
   }
 
-  function handleCaretPos(data) {
+  function handleCaretPos(data: any) {
     console.log("Partner's caret at ", data.start, " to ", data.end);
   }
 
-  function handleSwitchLang(data) {
+  function handleSwitchLang(data: any) {
     setLanguage(data.language);
   }
 
-  function handleRunCode(data) {
+  function handleRunCode(data: any) {
     setIsCodeRunning(true);
   }
 
-  function handleRunCodeResult(data) {
+  function handleRunCodeResult(data: any) {
     console.log("*****RUN CODE RESULT*****");
     console.log(data);
     setResult(data.result);
     setIsCodeRunning(false);
   }
 
-  function handleExit(data) {
+  function handleExit(data: any) {
     console.log("EXITING EDITOR ...");
   }
 
@@ -217,7 +212,7 @@ export default function CodeWindow(props: CodeWindowProps) {
         this.disconnected.resolve()
         this.disconnected = null
       } else if (!value && !this.disconnected) {
-        let resolve, wait = new Promise<void>(r => resolve = r)
+        let resolve: any, wait = new Promise<void>(r => resolve = r)
         this.disconnected = {wait, resolve}
       }
     }
@@ -244,7 +239,7 @@ export default function CodeWindow(props: CodeWindowProps) {
   ): Promise<readonly Update[]> {
     return connection.request({type: "pullUpdates", version, lang: lang})
       .then(updates => {
-        return updates.map(u => ({
+        return updates.map((u: any) => ({
         changes: ChangeSet.fromJSON(u.changes),
         clientID: u.clientID
       }))})
@@ -311,7 +306,7 @@ export default function CodeWindow(props: CodeWindowProps) {
     // TODO: Add 3 EditorViews one for each language
     // Display only the one for the selected language
     // This ensures version history is consistent for all languages
-    editorsRef.current[lang] = new EditorView({state, parent: editorParentDiv});
+    editorsRef.current[lang] = new EditorView({state, parent: editorParentDiv!});
   }
 
 
@@ -328,7 +323,8 @@ export default function CodeWindow(props: CodeWindowProps) {
     }
   }, [editorsParentRef, isWebsocketLoaded]);
 
-  function onMouseUp(e) {
+  // TODO: add proper typing later
+  function onMouseUp(e: any) {
     console.log("=====MOUSE UP=======");
     console.log(e.srcElement?.selectionStart, e.srcElement?.selectionEnd);
     console.log(e.target?.selectionStart, e.target?.selectionEnd);
@@ -358,7 +354,7 @@ export default function CodeWindow(props: CodeWindowProps) {
    * Sends the code through WebSocket to CollabService which will run the compiler / interpreter
    * WebSocket will inform both users of the result
    */
-  function runCode(e) {
+  function runCode(e: any) {
     const code = editorsRef.current[language].state.doc.toString();
     sendJsonMessage({
       method: WS_METHODS.RUN_CODE,

@@ -115,7 +115,7 @@ services:
       - pp-collab-service-mongodb
     environment:
       - MONGO_URI=mongodb://pp-collab-service-mongodb:27017/pairs
-      - WEBSOCKET_URL=ws://pp-collab-service
+      - WEBSOCKET_URL=ws://localhost
       - PORT=8000
       - WEBSOCKET_PORT=8888
 

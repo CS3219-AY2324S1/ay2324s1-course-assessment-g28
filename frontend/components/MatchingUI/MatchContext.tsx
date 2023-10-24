@@ -1,6 +1,8 @@
 import { MAX_PAIRING_DURATION, getPairingServiceUri } from "@/api/pairing";
 import { QuestionComplexity } from "@/api/questions/types";
 import useUserInfo from "@/hooks/useUserInfo";
+import { getEditorPath } from "@/routes";
+import { useRouter } from "next/router";
 import {
   Dispatch,
   PropsWithChildren,
@@ -24,12 +26,11 @@ type MatchContextType = {
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
   matchStatus: MatchStatus;
   setMatchStatus: Dispatch<SetStateAction<MatchStatus>>;
-  redirectToRoom: () => void;
+  editorUrl: string;
   onChangeComplexity: (complexity: QuestionComplexity) => void;
   onRetry: () => void;
   onClose: () => void;
   pairingWebsocket: WebSocket | null;
-  editorUri: string | null;
 };
 
 const defaultContext: MatchContextType = {
@@ -39,9 +40,6 @@ const defaultContext: MatchContextType = {
   },
   matchStatus: MatchStatus.SELECT_DIFFICULTY,
   setMatchStatus: () => {
-    throw new Error("Not in provider!");
-  },
-  redirectToRoom: () => {
     throw new Error("Not in provider!");
   },
   onChangeComplexity: () => {
@@ -54,7 +52,7 @@ const defaultContext: MatchContextType = {
     throw new Error("Not in provider!");
   },
   pairingWebsocket: null,
-  editorUri: null,
+  editorUrl: ""
 };
 
 const MatchContext = createContext<MatchContextType>(defaultContext);
@@ -64,11 +62,12 @@ export const useMatchContext = () => useContext<MatchContextType>(MatchContext);
 export const MatchContextProvider = ({
   children,
 }: PropsWithChildren<unknown>) => {
+  const router = useRouter();
+  const [editorUrl, setEditorUrl] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pairingWebsocket, setPairingWebsocket] = useState<WebSocket | null>(
     null,
   );
-  const [editorUri, setEditorUri] = useState<string | null>(null);
   const user = useUserInfo();
   const [selectedComplexity, setSelectComplexity] = useState<
     QuestionComplexity | undefined
@@ -77,10 +76,6 @@ export const MatchContextProvider = ({
     MatchStatus.SELECT_DIFFICULTY,
   );
   const [pairingTimer, setPairingTimer] = useState<NodeJS.Timeout>();
-
-  const redirectToRoom = () => {
-    // todo redirect to room
-  };
 
   const onChangeComplexity = async (complexity: QuestionComplexity) => {
     setSelectComplexity(complexity);
@@ -104,12 +99,12 @@ export const MatchContextProvider = ({
       try {
         const parsed = JSON.parse(msg.data);
         if (parsed.data.url) {
-          setEditorUri(parsed.data.url);
           setMatchStatus(MatchStatus.MATCH_SUCCESS);
+          setEditorUrl(getEditorPath(parseInt(parsed.data.questionId as string), parsed.data.url as string));
           // TODO: replace toast with actual usage of returned details
-          toast.success(`Matched with ${JSON.stringify(parsed.data)}`);
           ws.close();
         } else if (parsed.status == 200) {
+          //TODO: Should this if block even exist?
         } else {
           setMatchStatus(MatchStatus.MATCH_ERROR);
           ws.close();
@@ -147,11 +142,10 @@ export const MatchContextProvider = ({
         setIsModalOpen,
         matchStatus,
         setMatchStatus,
-        redirectToRoom,
+        editorUrl,
         onChangeComplexity,
         onRetry,
         onClose,
-        editorUri,
         pairingWebsocket,
       }}
     >

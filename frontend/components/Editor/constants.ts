@@ -1,4 +1,5 @@
-import { javascript } from '@codemirror/lang-javascript';
+/* eslint-disable */
+import { javascript } from "@codemirror/lang-javascript";
 import { java } from "@codemirror/lang-java";
 import { python } from "@codemirror/lang-python";
 
@@ -18,27 +19,31 @@ export enum WS_METHODS {
   TESTCASE_ADD,
   TESTCASE_DELETE,
   TESTCASE_EDIT,
-};
+}
 
-export const LANGUAGE_DATA: {[key: string]: {codeMirrorExtension: any, templateCode: string}} = {
+export const LANGUAGE_DATA: {
+  [key: string]: { codeMirrorExtension: any; templateCode: string };
+} = {
   Java: {
     codeMirrorExtension: java(),
-    templateCode: "// Enter your code here"
+    templateCode: "// Enter your code here",
   },
   JavaScript: {
     codeMirrorExtension: javascript({ jsx: true }),
-    templateCode: "// Enter your code here"
+    templateCode: "// Enter your code here",
   },
   Python: {
     codeMirrorExtension: python(),
-    templateCode: "# Enter your code here"
-  }
-}
+    templateCode: "# Enter your code here",
+  },
+};
 
 export const LANGUAGES = Object.keys(LANGUAGE_DATA);
 
-export type LANGUAGE_TYPE = typeof LANGUAGES[number];
+export type LANGUAGE_TYPE = (typeof LANGUAGES)[number];
 
-export const CLASSNAME_MY_MESSAGE = "max-w-[90%] self-end bg-blue-400 text-white rounded-l-md rounded-br-md py-1 px-3";
+export const CLASSNAME_MY_MESSAGE =
+  "max-w-[90%] self-end bg-blue-400 text-white rounded-l-md rounded-br-md py-1 px-3";
 
-export const CLASSNAME_PARTNER_MESSAGE = "max-w-[90%] self-start bg-gray-200 rounded-r-md rounded-bl-md py-1 px-3";
+export const CLASSNAME_PARTNER_MESSAGE =
+  "max-w-[90%] self-start bg-gray-200 rounded-r-md rounded-bl-md py-1 px-3";

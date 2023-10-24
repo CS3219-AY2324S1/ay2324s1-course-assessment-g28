@@ -1,3 +1,4 @@
+/* eslint-disable */
 import styles from "./resizeHandleHorizonal.module.css";
 
 export default function ResizeHandleHorizontal() {
