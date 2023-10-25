@@ -15,3 +15,9 @@ export enum WS_METHODS {
   TESTCASE_DELETE,
   TESTCASE_EDIT,
 };
+
+export const LANGUAGE_IDS: { [language: string]: number } = {
+  Java: 91,
+  JavaScript: 93,
+  Python: 92
+}

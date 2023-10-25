@@ -2,23 +2,46 @@ import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import util from "util";
 import { exec } from "child_process";
+import { toBase64 } from "../utils/formatUtil";
+import { LANGUAGE_IDS } from "../constants";
+import { RequestInfo, RequestInit } from "node-fetch";
+const fetch = (url: RequestInfo, init?: RequestInit) =>  import("node-fetch").then(({ default: fetch }) => fetch(url, init));
 const execPromise = util.promisify(exec);
 
 export async function runCode(code: string, language: string): Promise<string> {
-  let result = "";
-
   console.log(`Running ${language} code: `, code);
 
-  switch (language) {
-    case "JavaScript":
-      result = await runJavaScriptCode(code);
-      break;
-    case "Java":
-      result = await runJavaCode(code);
-      break;
-    case "Python":
-      result = await runPythonCode(code);
-      break;
+  const url = "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*";
+
+  const apiKey = process.env.JUDGE0_API_KEY;
+  const languageId = LANGUAGE_IDS[language];
+  const codeBase64 = toBase64(code);
+
+  console.log(apiKey);
+
+  const options = {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "Content-Type": "application/json",
+      "X-RapidAPI-Key": apiKey,
+      "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"
+    },
+    body: {
+      language_id: languageId,
+      source_code: codeBase64,
+      //stdin: ""
+    }
+  };
+
+  let result = "";
+
+  try {
+    const response = await fetch(url, options);
+    result = await response.text();
+    console.log(result);
+  } catch (error) {
+    console.error(error);
   }
 
   return result === "" ? "No output" : result;
