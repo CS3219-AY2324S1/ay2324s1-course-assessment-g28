@@ -4,6 +4,7 @@ import { Question } from "../models/question";
 import { User } from "../models/user";
 import { getRandomQuestion } from "../services/question/pp-question-service";
 import config from "../utils/config";
+import logger from "../utils/logger";
 
 const SECOND = 1000;
 
@@ -16,7 +17,15 @@ function matchOnQuestion(user1: User, user2: User): Question | null {
     return null;
   }
 
-  return getRandomQuestion(user1.match_options.complexity);
+  let question = getRandomQuestion(user1.match_options.complexity);
+
+  if (!question) {
+    logger.info(
+      `Question not found for parameters ${user1.match_options} and ${user2.match_options}`
+    );
+  }
+
+  return question;
 }
 
 function matchUser(userList: List<User>, user: User): Match | null {
@@ -54,6 +63,7 @@ function removeUser(userList: List<User>, correlationId: string): void {
       curr.detach();
       return;
     }
+    curr = curr.next;
   }
 
   return;
