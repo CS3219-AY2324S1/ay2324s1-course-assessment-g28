@@ -103,6 +103,27 @@ steps:
         "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-back",
       ]
 
+  # Build and push peerprep-collab images
+  - id: "docker build peerprep-collab"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-collab",
+        "--cache-from",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-collab:latest",
+        "./backend/services/collab",
+      ]
+
+  - id: "docker push peerprep-collab"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-collab",
+      ]
+
   # Deploy to GKE
   - id: "gke apply config"
     name: "gcr.io/cloud-builders/gke-deploy"
