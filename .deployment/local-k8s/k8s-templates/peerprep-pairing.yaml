@@ -27,6 +27,8 @@ spec:
                   key: RABBITMQ_URL
             - name: QUESTION_URL
               value: "http://peerprep-question.default.svc.cluster.local:1234"
+            - name: EDITOR_SERVICE_URL
+              value: "http://peerprep-collab-internal.default.svc.cluster.local:8000"
             - name: MATCHMAKING_MAX_WAIT_SECONDS
               value: "100"
 ---
