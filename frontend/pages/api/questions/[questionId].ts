@@ -1,5 +1,8 @@
 import { HttpMethod, HttpStatus } from "@/api/constants";
-import { forwardRequestAndGetResponse } from "@/api/server/serverConstants";
+import {
+  checkIfUserIsAdmin,
+  forwardRequestAndGetResponse,
+} from "@/api/server/serverConstants";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -21,6 +24,16 @@ export default async function handler(
       res.status(HttpStatus.OK);
     }
     return;
+  }
+
+  // if edit question or create question, need check for admin
+  if (req.method === "POST" || req.method === "PATCH") {
+    const isAdmin = await checkIfUserIsAdmin(req, res);
+    // if edit question or create question, need check for admin
+    if (!isAdmin) {
+      res.status(HttpStatus.FORBIDDEN).send("");
+      return;
+    }
   }
 
   await forwardRequestAndGetResponse(
