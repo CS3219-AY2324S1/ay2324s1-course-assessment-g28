@@ -7,6 +7,7 @@ COPY package*.json ./
 COPY yarn.lock ./
 RUN yarn
 COPY . .
+RUN echo "NEXT_PUBLIC_PAIRING_API is ${NEXT_PUBLIC_PAIRING_API}"
 RUN yarn run build
 
 FROM node:20-alpine as RUNNER
