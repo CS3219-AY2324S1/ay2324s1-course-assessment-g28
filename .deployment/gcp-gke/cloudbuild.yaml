@@ -2,9 +2,10 @@ steps:
   # Build and push peerprep-frontend image
   - id: "docker build peerprep-frontend"
     name: "gcr.io/cloud-builders/docker"
-    args:
-      [
-        "build",
+    entrypoint: "bash"
+    args: [
+        "-c",
+        "docker build",
         "-t",
         "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-frontend",
         # "--cache-from",
