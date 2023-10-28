@@ -10,6 +10,7 @@ steps:
         "--cache-from",
         "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-frontend:latest",
         "--build-arg=NEXT_PUBLIC_PAIRING_API=ws://35.240.156.212:4000",
+        "--rm=false",
         "./frontend/",
       ]
 
