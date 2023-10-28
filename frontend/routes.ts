@@ -19,3 +19,4 @@ export const PAIRING_DIRECTORY = "/pairing";
 export const EDITOR_DIRECTORY = "/editor";
 export const getEditorPath = (questionId: number, wsUrl: string) =>
   EDITOR_DIRECTORY + "/" + questionId.toString() + "?wsUrl=" + wsUrl;
+export const UNAUTHORIZED_PAGE = "/error/unauthorized";
