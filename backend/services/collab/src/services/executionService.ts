@@ -2,10 +2,11 @@ import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import util from "util";
 import { exec } from "child_process";
-import { toBase64 } from "../utils/formatUtil";
+import { fromBase64, toBase64 } from "../utils/formatUtil";
 import { LANGUAGE_IDS } from "../constants";
-import { RequestInfo, RequestInit } from "node-fetch";
-const fetch = (url: RequestInfo, init?: RequestInit) =>  import("node-fetch").then(({ default: fetch }) => fetch(url, init));
+import * as fetch from "node-fetch";
+import { sleep } from "../utils/asyncUtil";
+
 const execPromise = util.promisify(exec);
 
 export async function runCode(code: string, language: string): Promise<string> {
@@ -17,147 +18,81 @@ export async function runCode(code: string, language: string): Promise<string> {
   const languageId = LANGUAGE_IDS[language];
   const codeBase64 = toBase64(code);
 
-  console.log(apiKey);
+  console.log("API key:", apiKey);
+  console.log("Code:", codeBase64);
+  console.log("languageId:", languageId);
 
   const options = {
     method: "POST",
     headers: {
-      "content-type": "application/json",
       "Content-Type": "application/json",
       "X-RapidAPI-Key": apiKey,
-      "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"
+      "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
+      "Host": "judge0-ce.p.rapidapi.com"
     },
-    body: {
+    body: JSON.stringify({
       language_id: languageId,
       source_code: codeBase64,
       //stdin: ""
-    }
+    })
   };
 
+  const getSubmissionOptions = {
+    method: "GET",
+    headers: {
+      "X-RapidAPI-Key": apiKey,
+      "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"      
+    }
+  }
+
   let result = "";
+  let isInQueue = true;
 
   try {
-    const response = await fetch(url, options);
-    result = await response.text();
-    console.log(result);
+    const response: Response = await fetch(url, options);
+    console.log("Response:", response);
+    const submissionToken = (await response.json())["token"];
+    console.log("Submission Token:", submissionToken);
+
+    while (isInQueue) {
+      sleep(2000);
+
+      const getSubmissionUrl = `https://judge0-ce.p.rapidapi.com/submissions/${submissionToken}?base64_encoded=true&fields=*`;
+      const submissionResponse: Response = await fetch(getSubmissionUrl, getSubmissionOptions);
+      const submissionDetails = await submissionResponse.json();
+
+      console.log("Your submission details:", submissionDetails);
+
+      const status = submissionDetails["status"]["id"];
+
+      if (status === 1 || status === 2) {   // description: 'In Queue' or 'Processing'
+        isInQueue = true;
+      } else {
+        isInQueue = false
+      }
+
+      // TODO: Enforce class Main for Java
+      const compileOutput = submissionDetails["compile_output"];
+      const stdout = submissionDetails["stdout"];
+      const stderr = submissionDetails["stderr"];
+
+      if (compileOutput !== null) {
+        result = fromBase64(compileOutput);
+        console.log("compile_output:", result);
+      }
+      
+      if (stderr !== null) {
+        result += fromBase64(stderr);
+        console.log("stderr:", result);
+      } else if (stdout !== null) {
+        result += fromBase64(stdout);
+        console.log("stdout:", result);
+      }
+    }
+
   } catch (error) {
-    console.error(error);
+    console.error("ERROR:", error);
   }
 
   return result === "" ? "No output" : result;
-}
-
-export async function runJavaScriptCode(code: string): Promise<string> {
-  // TODO: Does not work either, time to use Judge0
-
-  const fileName = uuidv4();
-  const filePath = `sandbox/${fileName}.js`;
-  
-  try {
-    fs.writeFileSync(filePath, code);
-  } catch (err) {
-    console.error(err);
-  }
-
-
-  let result = "";
-
-  try {
-    const { stdout, stderr } = await execPromise(`node ${filePath}`);
-    if (stderr) {
-      console.log(`stderr: ${stderr}`);
-      result = stderr;
-    } else {
-      console.log(`stdout: ${stdout}`);
-      result =  stdout;
-    }
-  } catch (error: any) {
-    console.log("ERROR", error.toString());
-    result = error.toString();
-  }
-
-  fs.unlinkSync(filePath);
-
-  return result;
-}
-
-export async function runJavaCode(code: string): Promise<string> {
-  // TODO: May have to use Judge0 API if can't compile using shell command
-  const fileName = uuidv4();
-  const filePath = `sandbox/${fileName}.java`;
-  const compiledFilePath = `sandbox/${fileName}`;
-  
-  try {
-    fs.writeFileSync(filePath, code);
-  } catch (err) {
-    console.error(err);
-  }
-
-  let result = "";
-  let isCompiled = false;
-
-  try {
-    const { stdout, stderr } = await execPromise(`javac ${filePath}`);
-    if (stderr) {
-      console.log(`stderr: ${stderr}`);
-      result = stderr;
-    } else {
-      isCompiled = true;
-    }
-  } catch (error: any) {
-    console.log("ERROR", error.toString());
-    result = error.toString();
-  }
-
-  if (isCompiled) {
-    try {
-      const { stdout, stderr } = await execPromise(`java ${compiledFilePath}`);
-      if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        result = stderr;
-      } else {
-        console.log(`stdout: ${stdout}`);
-        result =  stdout;
-      }
-    } catch (error: any) {
-      console.log("ERROR", error.toString());
-      result = error.toString();
-    }
-  }
-
-  fs.unlinkSync(filePath);
-  fs.unlinkSync(compiledFilePath);
-
-  return result;
-}
-
-export async function runPythonCode(code: string): Promise<string> {
-  const fileName = uuidv4();
-  const filePath = `sandbox/${fileName}.py`;
-  
-  try {
-    fs.writeFileSync(filePath, code);
-  } catch (err) {
-    console.error(err);
-  }
-
-  let result = "";
-
-  try {
-    const { stdout, stderr } = await execPromise(`python ${filePath}`);
-    if (stderr) {
-      console.log(`stderr: ${stderr}`);
-      result = stderr;
-    } else {
-      console.log(`stdout: ${stdout}`);
-      result =  stdout;
-    }
-  } catch (error: any) {
-    console.log("ERROR", error.toString());
-    result = error.toString();
-  }
-
-  fs.unlinkSync(filePath);
-
-  return result;
 }
