@@ -40,6 +40,7 @@ function getWsCallback(rmq_conn: amqp.Connection) {
       channel.sendToQueue(cancel_queue.queue, Buffer.from(JSON.stringify({})), {
         correlationId,
       });
+      channel.close();
     }
     ws.on("close", cancelPairing);
 
