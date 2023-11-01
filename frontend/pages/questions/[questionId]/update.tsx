@@ -5,10 +5,7 @@
 import { getQuestion } from "@/api/questions";
 import { Question } from "@/api/questions/types";
 import QuestionCreationForm from "@/components/QuestionCreationForm";
-import {
-  GetServerSideProps,
-  InferGetStaticPropsType,
-} from "next";
+import { GetServerSideProps, InferGetStaticPropsType } from "next";
 
 export const getServerSideProps = (async ({ params }) => {
   const data = await getQuestion(Number(params?.questionId), true);

@@ -23,7 +23,7 @@ export default function DeleteButton({ questionId }: DeleteButtonProps) {
     setIsLoading(true);
     try {
       await deleteQuestion(questionId);
-      onClose()
+      onClose();
       toast.success("Question deleted.");
     } catch {
       toast.error("Something went wrong. Please try again.");
@@ -37,10 +37,10 @@ export default function DeleteButton({ questionId }: DeleteButtonProps) {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1 text-black">
+              <ModalHeader className="flex flex-col gap-1">
                 Are you sure?
               </ModalHeader>
-              <ModalBody className="text-black">
+              <ModalBody>
                 <p>This question will be deleted.</p>
               </ModalBody>
               <ModalFooter>

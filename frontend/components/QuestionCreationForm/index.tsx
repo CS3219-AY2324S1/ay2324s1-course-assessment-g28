@@ -3,8 +3,8 @@ import { RequestError } from "@/api/errors";
 import { patchQuestion, postQuestion } from "@/api/questions";
 import {
   COMPLEXITY_OPTIONS,
-  QuestionComplexityToNameMap,
-  getErrorMessageFromErrorCode,
+  QuestionComplexityConfigsMap,
+  getQuestionErrorMessageFromErrorCode,
 } from "@/api/questions/constants";
 import {
   Question,
@@ -14,6 +14,8 @@ import {
 } from "@/api/questions/types";
 import { ChevronDownIcon } from "@/assets/icons/ChevronDown";
 import CategoryAdder from "@/components/QuestionCreationForm/CategoryAdder";
+import QuestionDescription from "@/components/QuestionDescription";
+import { HOME } from "@/routes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
@@ -22,8 +24,8 @@ import {
   DropdownMenu,
   DropdownTrigger,
   Input,
-  Textarea,
 } from "@nextui-org/react";
+import router from "next/router";
 import { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -38,7 +40,6 @@ export default function QuestionCreationForm({
   const {
     register,
     handleSubmit,
-    watch,
     control,
     formState: { errors },
   } = useForm<QuestionCreation>({
@@ -70,7 +71,7 @@ export default function QuestionCreationForm({
         e.response.status === HttpStatus.INTERNAL_SERVER_ERROR
       ) {
         const errorInfo = await e.response.json();
-        toast.error(getErrorMessageFromErrorCode(errorInfo.error));
+        toast.error(getQuestionErrorMessageFromErrorCode(errorInfo.error));
       } else {
         toast.error("Something went wrong. Please try again.");
       }
@@ -89,7 +90,6 @@ export default function QuestionCreationForm({
           <label>Title</label>
           <Input
             {...register("title")}
-            className="text-black"
             errorMessage={errors.title?.message}
             onValueChange={() => setIsEdited(true)}
           />
@@ -108,7 +108,7 @@ export default function QuestionCreationForm({
                     variant="flat"
                     title="Difficulty"
                   >
-                    {QuestionComplexityToNameMap[value]}
+                    {QuestionComplexityConfigsMap[value].name}
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu
@@ -116,7 +116,7 @@ export default function QuestionCreationForm({
                   selectionMode="single"
                   selectedKeys={[value]}
                   onAction={(key) => {
-                    onChange(key);
+                    onChange(parseInt(key as string));
                     setIsEdited(true);
                   }}
                 >
@@ -131,19 +131,27 @@ export default function QuestionCreationForm({
           />
         </div>
       </div>
-
       <div>
         <label>Description</label>
-        <Textarea
-          classNames={{
-            base: "text-black ",
-            label: "hidden",
-          }}
-          {...register("description")}
-          placeholder="Enter question description"
-          errorMessage={errors.description?.message}
-          onValueChange={() => setIsEdited(true)}
-        ></Textarea>
+        <Controller
+          name="description"
+          control={control}
+          defaultValue={{ type: "doc", content: [] }}
+          render={({ field: { onChange } }) => (
+            <QuestionDescription
+              initialContent={
+                originalQuestion
+                  ? originalQuestion.description
+                  : { type: "doc", content: [] }
+              }
+              onChange={(val) => {
+                setIsEdited(true);
+                onChange(val);
+              }}
+              className="min-h-screen-2/3"
+            ></QuestionDescription>
+          )}
+        />
       </div>
 
       <div>
@@ -169,6 +177,14 @@ export default function QuestionCreationForm({
           {originalQuestion ? "Save changes" : "Submit"}
         </Button>
       )}
+      <Button
+        color="danger"
+        variant="flat"
+        onPress={() => router.push(HOME)}
+        title="Go to question creation page"
+      >
+        Cancel
+      </Button>
     </form>
   );
 }

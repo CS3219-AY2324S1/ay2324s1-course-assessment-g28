@@ -7,12 +7,20 @@ import { v4 as uuidv4 } from "uuid";
 
 dotenv.config();
 const RABBITMQ_URL = process.env.RABBITMQ_URL!;
+const PORT = Number(process.env.PORT!);
 
 function getWsCallback(rmq_conn: amqp.Connection) {
-  return async (ws: WebSocket, req: IncomingMessage) => {
+  async function callback(ws: WebSocket, req: IncomingMessage) {
     let params = url.parse(req.url!, true).query;
-    if (!params.user) {
-      ws.send("Invalid request");
+
+    if (!params.user || Number(params.complexity == null)) {
+      const msg = JSON.stringify({
+        status: 400,
+        data: {
+          message: "Bad request",
+        },
+      });
+      ws.send(msg);
       ws.close();
       return;
     }
@@ -26,19 +34,33 @@ function getWsCallback(rmq_conn: amqp.Connection) {
       channel.assertQueue("", { exclusive: true }),
     ]);
 
-    let correlationId = uuidv4();
+    const correlationId = uuidv4();
 
     function cancelPairing() {
       channel.sendToQueue(cancel_queue.queue, Buffer.from(JSON.stringify({})), {
         correlationId,
       });
+      channel.close();
     }
     ws.on("close", cancelPairing);
 
     await channel.consume(return_queue.queue, async function (msg) {
-      console.log(JSON.parse(msg!.content.toString()));
-      if (msg?.properties.correlationId == correlationId) {
-        ws.send(msg!.content);
+      if (msg?.properties.correlationId === correlationId) {
+        try {
+          let content = JSON.parse(msg.content.toString());
+          ws.send(
+            JSON.stringify({
+              status: 200,
+              data: {
+                url: content.url,
+                questionId: content.questionId,
+              },
+            })
+          );
+        } catch (error) {
+          console.log(`Failed to parse ${msg}. Closing websocket`);
+          ws.close();
+        }
       }
       ws.off("close", cancelPairing);
       ws.close();
@@ -47,7 +69,10 @@ function getWsCallback(rmq_conn: amqp.Connection) {
     console.log(return_queue.queue);
 
     var msg = {
-      match_options: { user: params.user },
+      match_options: {
+        user: params.user,
+        complexity: Number(params.complexity),
+      },
     };
     channel.sendToQueue(request_queue.queue, Buffer.from(JSON.stringify(msg)), {
       correlationId,
@@ -64,6 +89,14 @@ function getWsCallback(rmq_conn: amqp.Connection) {
     ws.send(JSON.stringify(reply));
 
     return;
+  }
+
+  return async (ws: WebSocket, req: IncomingMessage) => {
+    try {
+      callback(ws, req);
+    } catch (e) {
+      console.log(e);
+    }
   };
 }
 
@@ -73,7 +106,7 @@ function startServer() {
     .then((rmq_conn) => {
       console.log(`Connected to ${RABBITMQ_URL}`);
 
-      const wss = new WebSocketServer({ port: 8080, path: "/pairing" });
+      const wss = new WebSocketServer({ port: PORT, path: "/pairing" });
 
       console.log("created wss");
 

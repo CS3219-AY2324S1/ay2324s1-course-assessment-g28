@@ -6,6 +6,8 @@ services:
     build:
       context: ../../frontend
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_PAIRING_API=ws://localhost:4000
     ports:
       - 3000:3000
     environment:
@@ -13,6 +15,10 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - QUESTIONS_API=http://pp-question:1234
+      - USER_API=http://pp-user:1235
+      - NEXT_PUBLIC_PAIRING_API=ws://localhost:4000
+    profiles:
+      - frontend
 
   # Question service
   pp-question:
@@ -22,19 +28,21 @@ services:
       dockerfile: Dockerfile
     environment:
       - PORT=1234
-      - MONGO_URI=mongodb://mongodb:27017
+      - MONGO_URI=mongodb://pp-question-mongodb:27017
     expose:
       - 1234
     ports:
       - 1234:1234
-  mongodb:
+    depends_on:
+      - pp-question-mongodb
+  pp-question-mongodb:
     image: mongo
     environment:
       MONGO_INITDB_DATABASE: questions
     expose:
       - 27017
     ports:
-      - 27017:27017
+      - 27018:27017
     volumes:
       - dev-mongodb:/data/db
 
@@ -49,6 +57,7 @@ services:
       - POSTGRES_USER=dev
       - POSTGRES_PASSWORD=dev
       - PG_PORT=5432
+      - POSTGRES_URI=postgres
     expose:
       - 1235
     ports:
@@ -60,7 +69,8 @@ services:
       POSTGRES_PASSWORD: dev
       POSTGRES_DB: user
     volumes:
-      - dev-postgres:/var/lib/postgresql/data
+      # - dev-postgres:/var/lib/postgresql/data
+      - ../../backend/services/user/init.sql:/docker-entrypoint-initdb.d/init.sql
     expose:
       - 5432
     ports:
@@ -78,7 +88,9 @@ services:
       dockerfile: Dockerfile
     environment:
       - RABBITMQ_URL=amqp://rabbitmq:5672
-      - PORT=3000
+      - PORT=4000
+    ports:
+      - 4000:4000
   pp-pairing-back:
     image: peerprep/pairing-back
     build:
@@ -86,10 +98,41 @@ services:
       dockerfile: Dockerfile
     environment:
       - RABBITMQ_URL=amqp://rabbitmq:5672
+      - QUESTION_URL=http://pp-question:1234
+      - EDITOR_SERVICE_URL=http://pp-collab-service:8000
       - MATCHMAKING_MAX_WAIT_SECONDS=100
+      - LOGGING_LEVEL=debug
+  pp-collab-service:
+    image: peerprep/collab-service
+    build:
+      context: ../../backend/services/collab
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+      - 8888:8888
+    expose:
+      - 8000
+      - 8888
+    depends_on:
+      - pp-collab-service-mongodb
+    environment:
+      - MONGO_URI=mongodb://pp-collab-service-mongodb:27017/pairs
+      - WEBSOCKET_URL=ws://localhost
+      - PORT=8000
+      - WEBSOCKET_PORT=8888
+
+  pp-collab-service-mongodb:
+    image: mongo
+    expose:
+      - 27017
+    ports:
+      - 27019:27017
+    environment:
+      MONGO_INITDB_DATABASE: pairs
+
 # Names our volume
 volumes:
-  dev-postgres:
-    driver: local
+  # dev-postgres:
+  #driver: local
   dev-mongodb:
     driver: local

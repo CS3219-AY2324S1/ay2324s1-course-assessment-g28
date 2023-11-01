@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peerprep-collab
+spec:
+  selector:
+    matchLabels:
+      app: peerprep-collab
+  template:
+    metadata:
+      labels:
+        app: peerprep-collab
+    spec:
+      containers:
+        - name: peerprep-frontend
+          image: asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-collab:latest
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          env:
+            - name: PORT
+              value: "8000"
+            - name: WEBSOCKET_URL
+              value: "ws://35.185.188.80"
+            - name: WEBSOCKET_PORT
+              value: "8888"
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: peerprep-secret
+                  key: MONGO_URI
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: peerprep-collab
+  name: peerprep-collab-external
+  namespace: default
+spec:
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - port: 8888
+      protocol: TCP
+      targetPort: 8888
+  selector:
+    app: peerprep-collab
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: peerprep-collab
+  name: peerprep-collab-internal
+  namespace: default
+spec:
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - port: 8000
+      protocol: TCP
+      targetPort: 8000
+  selector:
+    app: peerprep-collab
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: peerprep-collab-autoscaler
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: peerprep-collab-autoscaler
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50

@@ -4,9 +4,6 @@
 
 import QuestionCreationForm from "@/components/QuestionCreationForm";
 
-
-export default function QuestionTestPage() {
-  return (
-    <QuestionCreationForm/>
-  );
+export default function QuestionCreationPage() {
+  return <QuestionCreationForm />;
 }

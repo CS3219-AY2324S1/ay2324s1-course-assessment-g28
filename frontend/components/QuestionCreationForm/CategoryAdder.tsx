@@ -16,15 +16,18 @@ export default function CategoryAdder({
       const s = new Set([...categories, newCategory]);
       onChange(Array.from(s));
       setNewCategory("");
-    } 
+    }
   }, [newCategory, categories, onChange]);
 
-  const addCategoryEnterKeyCallback = useCallback((e: KeyboardEvent) => {
-    if (e.key === "Enter") {
-      addCategory();
-      e.preventDefault()
-    }
-  }, [addCategory])
+  const addCategoryEnterKeyCallback = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        addCategory();
+        e.preventDefault();
+      }
+    },
+    [addCategory],
+  );
 
   return (
     <div className="flex flex-col gap-y-2">
@@ -32,24 +35,18 @@ export default function CategoryAdder({
         <Input
           label="Add new category"
           onValueChange={setNewCategory}
-          classNames={{
-            input: "text-black",
-          }}
           onKeyDown={addCategoryEnterKeyCallback}
           size="sm"
         />
-        <Button
-          isIconOnly
-          title="Add Category"
-          onPress={addCategory}
-        >
+        <Button isIconOnly title="Add Category" onPress={addCategory}>
           <Plus />
         </Button>
       </div>
-      <div className="flex flex-row gap-x-1">
+      <div className="flex flex-row gap-1 flex-wrap">
         {categories.map((cat) => (
           <Chip
             key={cat}
+            className="flex-shrink-0"
             onClose={() => {
               const cats = categories.filter((x) => x !== cat);
               onChange(cats);
