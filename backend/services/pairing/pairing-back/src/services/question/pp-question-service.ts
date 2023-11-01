@@ -41,3 +41,8 @@ export function getRandomQuestion(complexity?: Complexity): Question | null {
   const index = Math.floor(Math.random() * questions.length);
   return questions[index];
 }
+
+export function getSpecificQuestion(questionId: number): Question | null {
+  const question = cache.find((q) => q.id === questionId);
+  return question ? question : null;
+}
