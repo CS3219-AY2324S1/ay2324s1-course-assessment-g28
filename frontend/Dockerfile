@@ -1,10 +1,13 @@
 FROM node:20 as BUILDER
 WORKDIR /usr/src/app
 
+ARG NEXT_PUBLIC_PAIRING_API
+ENV NEXT_PUBLIC_PAIRING_API=$NEXT_PUBLIC_PAIRING_API
 COPY package*.json ./
 COPY yarn.lock ./
 RUN yarn
 COPY . .
+RUN echo "NEXT_PUBLIC_PAIRING_API is ${NEXT_PUBLIC_PAIRING_API}"
 RUN yarn run build
 
 FROM node:20-alpine as RUNNER

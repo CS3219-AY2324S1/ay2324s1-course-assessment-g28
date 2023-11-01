@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: peerprep-user
+  name: peerprep-collab
 spec:
   selector:
     matchLabels:
-      app: peerprep-user
+      app: peerprep-collab
   template:
     metadata:
       labels:
-        app: peerprep-user
+        app: peerprep-collab
     spec:
       containers:
-        - name: peerprep-user
-          image: asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-user:latest
-          imagePullPolicy: Always
+        - name: peerprep-collab
+          image: peerprep/collab
+          imagePullPolicy: Never
           resources:
             requests:
               memory: "32Mi"
@@ -24,31 +24,23 @@ spec:
               cpu: "500m"
           env:
             - name: PORT
-              value: "3000"
-            - name: POSTGRES_USER
+              value: "8000"
+            - name: WEBSOCKET_URL
+              value: "ws://localhost"
+            - name: WEBSOCKET_PORT
+              value: "8888"
+            - name: MONGO_URI
               valueFrom:
                 secretKeyRef:
                   name: peerprep-secret
-                  key: POSTGRES_USER
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: peerprep-secret
-                  key: POSTGRES_PASSWORD
-            - name: POSTGRES_URI
-              valueFrom:
-                secretKeyRef:
-                  name: peerprep-secret
-                  key: POSTGRES_URI
-            - name: PG_PORT
-              value: "5432"
+                  key: MONGO_URI
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: peerprep-user
-  name: peerprep-user
+    app: peerprep-collab
+  name: peerprep-collab-external
   namespace: default
 spec:
   internalTrafficPolicy: Cluster
@@ -56,21 +48,41 @@ spec:
     - IPv4
   ipFamilyPolicy: SingleStack
   ports:
-    - port: 1235
+    - port: 8888
       protocol: TCP
-      targetPort: 3000
+      targetPort: 8888
   selector:
-    app: peerprep-user
+    app: peerprep-collab
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: peerprep-collab
+  name: peerprep-collab-internal
+  namespace: default
+spec:
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - port: 8000
+      protocol: TCP
+      targetPort: 8000
+  selector:
+    app: peerprep-collab
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: peerprep-user-autoscaler
+  name: peerprep-collab-autoscaler
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: peerprep-user-autoscaler
+    name: peerprep-collab-autoscaler
   minReplicas: 1
   maxReplicas: 3
   metrics:

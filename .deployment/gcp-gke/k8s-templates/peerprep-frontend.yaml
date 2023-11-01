@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: peerprep-frontend
-          image: asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-frontend
+          image: asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-frontend:latest
           imagePullPolicy: Always
           resources:
             limits:
@@ -21,7 +21,7 @@ spec:
               cpu: "500m"
           env:
             - name: NEXTAUTH_URL
-              value: "http://34.87.100.51.nip.io:3000"
+              value: "http://34.143.142.116.nip.io:3000"
             - name: NEXTAUTH_SECRET
               valueFrom:
                 secretKeyRef:
@@ -42,7 +42,7 @@ spec:
             - name: USER_API
               value: "http://peerprep-user.default.svc.cluster.local:1235"
             - name: NEXT_PUBLIC_PAIRING_API
-              value: "ws://35.240.156.212:4000"
+              value: "ws://34.143.195.2:4000"
 ---
 apiVersion: v1
 kind: Service

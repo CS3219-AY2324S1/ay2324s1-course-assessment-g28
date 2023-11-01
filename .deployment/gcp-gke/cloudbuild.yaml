@@ -2,13 +2,14 @@ steps:
   # Build and push peerprep-frontend image
   - id: "docker build peerprep-frontend"
     name: "gcr.io/cloud-builders/docker"
-    args:
-      [
+    args: [
         "build",
         "-t",
         "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-frontend",
         "--cache-from",
         "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-frontend:latest",
+        "--build-arg",
+        "NEXT_PUBLIC_PAIRING_API=ws://34.143.195.2:4000",
         "./frontend/",
       ]
 
@@ -101,6 +102,27 @@ steps:
       [
         "push",
         "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-back",
+      ]
+
+  # Build and push peerprep-collab images
+  - id: "docker build peerprep-collab"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-collab",
+        "--cache-from",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-collab:latest",
+        "./backend/services/collab",
+      ]
+
+  - id: "docker push peerprep-collab"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-collab",
       ]
 
   # Deploy to GKE

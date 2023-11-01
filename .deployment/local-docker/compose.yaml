@@ -6,6 +6,8 @@ services:
     build:
       context: ../../frontend
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_PAIRING_API=ws://localhost:4000
     ports:
       - 3000:3000
     environment:
@@ -14,7 +16,7 @@ services:
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - QUESTIONS_API=http://pp-question:1234
       - USER_API=http://pp-user:1235
-      - NEXT_PUBLIC_PAIRING_API=ws://pp-pairing-front:4000
+      - NEXT_PUBLIC_PAIRING_API=ws://localhost:4000
     profiles:
       - frontend
 
@@ -121,13 +123,13 @@ services:
 
   pp-collab-service-mongodb:
     image: mongo
-    expose: 
+    expose:
       - 27017
     ports:
       - 27019:27017
     environment:
       MONGO_INITDB_DATABASE: pairs
-  
+
 # Names our volume
 volumes:
   # dev-postgres:
