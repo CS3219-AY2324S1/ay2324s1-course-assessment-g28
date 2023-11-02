@@ -21,9 +21,10 @@ const SuccessCard = () => {
     <>
       <ModalHeader className="flex flex-col gap-1">Success!</ModalHeader>
       <ModalBody>
-        <div>{`Redirecting you in ${Math.floor(secondsLeft)} second${
-          secondsLeft === 1 ? "" : "s"
-        }...`}</div>
+        <div>{`Redirecting you in ${Math.max(
+          0,
+          Math.floor(secondsLeft),
+        )} second${secondsLeft === 1 ? "" : "s"}...`}</div>
       </ModalBody>
     </>
   );
