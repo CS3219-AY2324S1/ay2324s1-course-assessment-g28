@@ -6,9 +6,8 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
-import { ChevronDownIcon } from "@/assets/icons/ChevronDown";
 import { QuestionComplexity } from "@/api/questions/types";
-import { PlusSquare, X } from "lucide-react";
+import { ChevronDown, PlusSquare, X } from "lucide-react";
 import {
   COMPLEXITY_OPTIONS,
   QuestionComplexityConfigsMap,
@@ -68,11 +67,11 @@ const TableSelectors = ({ userIsAdmin }: TableSelectorsProps) => {
         <Dropdown className="p-0" classNames={{}}>
           <DropdownTrigger className="hidden sm:flex">
             <Button
-              endContent={<ChevronDownIcon />}
               variant="bordered"
               title="Difficulty"
-              className="text-foreground-500 !border-purple-600
+              className="!border-purple-600
                hover:!border-purple-500"
+              endContent={<ChevronDown />}
             >
               {selectedComplexity
                 ? QuestionComplexityConfigsMap[selectedComplexity].name
@@ -88,7 +87,7 @@ const TableSelectors = ({ userIsAdmin }: TableSelectorsProps) => {
             }}
           >
             {COMPLEXITY_OPTIONS.map((status) => (
-              <DropdownItem key={status.key} className="text-zinc-600">
+              <DropdownItem key={status.key}>
                 {status.name}
               </DropdownItem>
             ))}
