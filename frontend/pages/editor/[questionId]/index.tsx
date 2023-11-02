@@ -68,15 +68,15 @@ export default function EditorPage({
   }
 
   return (
-    <div className="flex flex-col w-full flex-grow border-8 rounded-xl relative">
+    <div className="flex flex-col w-full h-full mb-[-100px] flex-grow border-8 rounded-xl border-[#d1d5db] bg-[#d1d5db] relative" >
       <PanelGroup direction="horizontal" className="grow">
-        <Panel defaultSize={40}>
+        <Panel defaultSize={40} minSize={25}>
           <PanelGroup direction="vertical">
             <Panel defaultSize={60}>
               <QuestionDetailsCard question={question} />
             </Panel>
             <PanelResizeHandle>{ResizeHandleHorizontal()}</PanelResizeHandle>
-            <Panel>
+            <Panel minSize={15}>
               {websocketUrl && (
                 <MessageWindow websocketUrl={websocketUrl}></MessageWindow>
               )}
@@ -84,7 +84,7 @@ export default function EditorPage({
           </PanelGroup>
         </Panel>
         <PanelResizeHandle>{ResizeHandleVertical()}</PanelResizeHandle>
-        <Panel>
+        <Panel minSize={40}>
           {websocketUrl && (
             <CodeWindow websocketUrl={websocketUrl}></CodeWindow>
           )}
