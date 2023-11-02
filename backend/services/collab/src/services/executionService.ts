@@ -4,6 +4,7 @@ import util from "util";
 import { exec } from "child_process";
 import { fromBase64, toBase64 } from "../utils/formatUtil";
 import { LANGUAGE_IDS } from "../constants";
+// @ts-ignore
 import * as fetch from "node-fetch";
 import { sleep } from "../utils/asyncUtil";
 
