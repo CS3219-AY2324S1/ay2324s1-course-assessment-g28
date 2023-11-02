@@ -7,7 +7,6 @@ import ErrorCard from "../ErrorCard";
 import { MatchStatus, useMatchContext } from "./MatchContext";
 import TimeoutCard from "./cards/TimeoutCard";
 import { CSSProperties } from "react";
-import ButtonPP from "../Button";
 
 export type MatchModalProps = {
   classNames?: string;
@@ -62,7 +61,7 @@ export const MatchModal = (props: MatchModalProps) => {
           {switchContent()}
           {isHideCancelButton ? null : (
             <ModalFooter>
-              <ButtonPP onClick={onClose}>Cancel</ButtonPP>
+              <Button onClick={onClose}>Cancel</Button>
             </ModalFooter>
           )}
         </ModalContent>
