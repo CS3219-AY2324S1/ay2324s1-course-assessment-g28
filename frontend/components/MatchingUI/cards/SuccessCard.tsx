@@ -11,7 +11,10 @@ const SuccessCard = () => {
     if (secondsLeft < 1) {
       router.push(editorUrl);
     }
-    setTimeout(() => setSecondsLeft((currSeconds) => currSeconds - 0.05), 50);
+    setTimeout(
+      () => setSecondsLeft((currSeconds) => Math.min(0, currSeconds - 0.05)),
+      50,
+    );
   }, [secondsLeft, editorUrl, router]);
 
   return (
