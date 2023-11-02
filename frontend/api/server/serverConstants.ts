@@ -1,5 +1,15 @@
 import { HttpStatus } from "@/api/constants";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth";
+
+export async function checkIfUserIsAdmin(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  const session = await getServerSession(req, res, authOptions);
+  return session?.user?.isAdmin ?? false;
+}
 
 /**
  * Forwards the given request to the backend server, and sends that back to the client.

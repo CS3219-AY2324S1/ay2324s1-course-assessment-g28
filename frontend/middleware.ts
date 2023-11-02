@@ -4,6 +4,7 @@ import {
   HOME,
   LOGIN,
   REGISTER,
+  UNAUTHORIZED_PAGE,
   UPDATE_PATH_SEGMENT,
 } from "@/routes";
 import { getFirstPartOfPath } from "@/util/url";
@@ -34,7 +35,7 @@ export default withAuth(
       !isAdmin
     ) {
       // if not admin but try to access create and update question paths, redirect back to home
-      return NextResponse.redirect(new URL(HOME, req.url));
+      return NextResponse.redirect(new URL(UNAUTHORIZED_PAGE, req.url));
     }
   },
   {
