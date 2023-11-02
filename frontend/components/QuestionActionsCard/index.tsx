@@ -1,6 +1,8 @@
 import { deleteQuestion } from "@/api/questions";
 import { Question } from "@/api/questions/types";
 import Card from "@/components/Card";
+import QuestionAttemptButton from "@/components/QuestionAttemptButton";
+import QuestionAttemptButon from "@/components/QuestionAttemptButton";
 import DeleteButton from "@/components/QuestionsCard/QuestionsTable/DeleteButton";
 import useUserInfo from "@/hooks/useUserInfo";
 import { HOME, getUpdateQuestionPath } from "@/routes";
@@ -103,12 +105,7 @@ export default function QuestionActionsCard({
         )}
 
         <div className="flex flex-row gap-2">
-          <Button
-            color="secondary"
-            title="Start a collaborative editor session with another person"
-          >
-            Attempt Question
-          </Button>
+          <QuestionAttemptButton question={question}/>
         </div>
       </div>
     </>
