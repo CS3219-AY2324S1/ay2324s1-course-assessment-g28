@@ -53,3 +53,7 @@ services:
 volumes:
   dev-mongodb: # Named persistent volume here
 ```
+
+## Notes
+
+If you are using a Mac with any of the M series chips, then for the Judge0 service to work, you need to configure your docker setup by following instructions [here](https://stackoverflow.com/questions/75551174/no-such-file-or-directory-rb-sysopen-box-main-c-internal-error).
