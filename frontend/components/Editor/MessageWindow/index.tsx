@@ -104,7 +104,7 @@ export default function MessageWindow(props: MessageWindowProps) {
   }
 
   return (
-    <div className="h-full w-full flex flex-col rounded-xl relative">
+    <div className="h-full w-full flex flex-col bg-content1 rounded-xl relative">
       {(() => {
         if (!isInitialized) {
           return (

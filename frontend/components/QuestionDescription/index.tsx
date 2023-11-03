@@ -22,7 +22,7 @@ export default function QuestionDescription({
   className,
 }: QuestionDescriptionProps) {
   const editor = useEditor({
-    editable: readonly ?? true,
+    editable: !readonly ?? true,
     editorProps: {
       attributes: {
         class:

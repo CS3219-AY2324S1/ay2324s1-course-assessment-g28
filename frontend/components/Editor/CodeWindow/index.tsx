@@ -20,7 +20,7 @@ import {
   getSyncedVersion,
 } from "@codemirror/collab";
 import { basicSetup } from "codemirror";
-import { ChangeSet, EditorState, Text } from "@codemirror/state";
+import { ChangeSet, EditorState, Text, Compartment } from "@codemirror/state";
 import { EditorView, ViewPlugin, ViewUpdate, keymap } from "@codemirror/view";
 import { indentWithTab } from "@codemirror/commands";
 import { v4 as uuidv4 } from "uuid";
@@ -31,6 +31,10 @@ interface CodeWindowProps {
   language?: string;
   websocketUrl: string;
 }
+
+// Used to hold the state of the editor's theme
+// Will be reconfigured when user switches theme
+const editorTheme = new Compartment();
 
 /**
  * TODO: Add typing and clean up the code
@@ -65,6 +69,19 @@ export default function CodeWindow(props: CodeWindowProps) {
     onClose: onClose,
     onError: onError,
   });
+
+  useEffect(() => {
+    // Change editor theme when user changes theme
+    for (const lang in editorsRef.current) {
+      const editorComponent = editorsRef.current[lang];
+
+      editorComponent.dispatch({
+        effects: editorTheme.reconfigure(
+          theme === "dark" ? dracula : tomorrow
+        )
+      })
+    }
+  }, [theme]);
 
   function onMessage(e: any) {
     const data = JSON.parse(e.data);
@@ -340,7 +357,7 @@ export default function CodeWindow(props: CodeWindowProps) {
         LANGUAGE_DATA[lang].codeMirrorExtension,
         peerExtension(version, connection, lang),
         keymap.of([indentWithTab]),
-        theme === "dark" ? dracula : tomorrow,
+        editorTheme.of(theme === "dark" ? dracula : tomorrow)
       ],
     });
     let editorParentDiv = editorsParentRef.current[lang];
@@ -429,7 +446,7 @@ export default function CodeWindow(props: CodeWindowProps) {
       {!isInitialized && (
         <LoadingScreen displayText="Initializing Code Space ..."></LoadingScreen>
       )}
-      <Panel defaultSize={60}>
+      <Panel defaultSize={60} minSize={25}>
         <div className="h-full w-full flex flex-col overflow-auto rounded-xl bg-content1">
           <div className="w-full flex flex-row p-1">
             <div className="flex flex-row w-1/2 gap-2">
@@ -461,6 +478,15 @@ export default function CodeWindow(props: CodeWindowProps) {
                 className="text-white h-8 font-bold px-5"
               >
                 Run Code
+              </Button>
+              <Button
+                disabled={isCodeRunning}
+                onClick={runCode}
+                size="sm"
+                color="secondary"
+                className="text-white h-8 font-bold px-5"
+              >
+                Submit
               </Button>
             </div>
             <div className="w-1/2 grow flex flex-row justify-end gap-2">
