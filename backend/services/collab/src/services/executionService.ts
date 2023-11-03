@@ -17,11 +17,14 @@ export async function runCode(code: string, language: string): Promise<string> {
   //const url = "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*";
   const url = judge0HostnameAndPort + "/submissions?base64_encoded=true&fields=*";
 
+  /* For using the public judge0 only
   const apiKey = process.env.JUDGE0_API_KEY;
+  console.log("API key:", apiKey);
+  */
   const languageId = LANGUAGE_IDS[language];
   const codeBase64 = toBase64(code);
 
-  console.log("API key:", apiKey);
+  
   console.log("Code:", codeBase64);
   console.log("languageId:", languageId);
 
