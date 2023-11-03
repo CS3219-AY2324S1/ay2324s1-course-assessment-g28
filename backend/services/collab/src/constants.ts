@@ -17,7 +17,21 @@ export enum WS_METHODS {
 };
 
 export const LANGUAGE_IDS: { [language: string]: number } = {
-  Java: 91,
-  JavaScript: 93,
-  Python: 92
+  Java: 62,
+  JavaScript: 63,
+  Python: 71
+}
+
+type ProgrammingLanguages = "java" | "python" | "javascript"
+
+// initial documents for each language
+export const initialDocuments:Record<ProgrammingLanguages, string> = {
+  "java": 
+`class Main {
+  public static void main(String[] args) {
+    // Write your code here
+  }
+}`,
+  "python": "# Write your code here",
+  "javascript": "// Write your code here"
 }

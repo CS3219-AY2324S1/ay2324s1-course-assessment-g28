@@ -9,11 +9,13 @@ import * as fetch from "node-fetch";
 import { sleep } from "../utils/asyncUtil";
 
 const execPromise = util.promisify(exec);
+const judge0HostnameAndPort = process.env.JUDGE0_URL;
 
 export async function runCode(code: string, language: string): Promise<string> {
   console.log(`Running ${language} code: `, code);
 
-  const url = "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*";
+  //const url = "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*";
+  const url = judge0HostnameAndPort + "/submissions?base64_encoded=true&fields=*";
 
   const apiKey = process.env.JUDGE0_API_KEY;
   const languageId = LANGUAGE_IDS[language];
@@ -23,6 +25,18 @@ export async function runCode(code: string, language: string): Promise<string> {
   console.log("Code:", codeBase64);
   console.log("languageId:", languageId);
 
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      language_id: languageId,
+      source_code: codeBase64,
+      //stdin: ""
+    }) 
+  }
+  /*
   const options = {
     method: "POST",
     headers: {
@@ -37,7 +51,12 @@ export async function runCode(code: string, language: string): Promise<string> {
       //stdin: ""
     })
   };
+  */
 
+  const getSubmissionOptions = {
+    method: "GET",
+  }
+  /*
   const getSubmissionOptions = {
     method: "GET",
     headers: {
@@ -45,6 +64,7 @@ export async function runCode(code: string, language: string): Promise<string> {
       "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"      
     }
   }
+  */
 
   let result = "";
   let isInQueue = true;
@@ -57,8 +77,8 @@ export async function runCode(code: string, language: string): Promise<string> {
 
     while (isInQueue) {
       sleep(2000);
-
-      const getSubmissionUrl = `https://judge0-ce.p.rapidapi.com/submissions/${submissionToken}?base64_encoded=true&fields=*`;
+      const getSubmissionUrl = `${judge0HostnameAndPort}/submissions/${submissionToken}?base64_encoded=true&fields=*`; 
+      //const getSubmissionUrl = `https://judge0-ce.p.rapidapi.com/submissions/${submissionToken}?base64_encoded=true&fields=*`;
       const submissionResponse: Response = await fetch(getSubmissionUrl, getSubmissionOptions);
       const submissionDetails = await submissionResponse.json();
 

@@ -1,6 +1,6 @@
 import {ChangeSet, Text} from "@codemirror/state"
 import {Update, rebaseUpdates} from "@codemirror/collab"
-import { WS_METHODS } from "../constants"
+import { WS_METHODS, initialDocuments } from "../constants"
 
 // The updates received so far (updates[pairId].length gives the current version)
 let updates: { [pairId: string]: { [lang: string]: Update[] } } = {};
@@ -21,6 +21,7 @@ function resp(connection: WebSocket, requestId: string, value: any) {
   connection.send(message);
 }
 
+
 export function addPair(pairId: string) {
   console.log("ADDING PAIR")
   if (!(pairId in updates)) {
@@ -32,9 +33,9 @@ export function addPair(pairId: string) {
   }
   if (!(pairId in doc)) {
     doc[pairId] = {
-      Java: Text.of(["// Write your code here"]),
-      JavaScript: Text.of(["// Write your code here"]),
-      Python: Text.of(["# Write your code here"])
+      Java: Text.of([initialDocuments.java]),
+      JavaScript: Text.of([initialDocuments.javascript]),
+      Python: Text.of([initialDocuments.python])
     };
   }
   if (!(pairId in pending)) {

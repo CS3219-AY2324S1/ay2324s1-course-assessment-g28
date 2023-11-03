@@ -45,6 +45,7 @@ services:
       - 27018:27017
     volumes:
       - dev-mongodb:/data/db
+    restart: always
 
   # User service
   pp-user:
@@ -75,7 +76,7 @@ services:
       - 5432
     ports:
       - 5432:5432
-
+    restart: always
   # Pairing services
   rabbitmq:
     image: rabbitmq
@@ -91,6 +92,8 @@ services:
       - PORT=4000
     ports:
       - 4000:4000
+    restart: always
+
   pp-pairing-back:
     image: peerprep/pairing-back
     build:
@@ -120,6 +123,7 @@ services:
       - WEBSOCKET_URL=ws://localhost
       - PORT=8000
       - WEBSOCKET_PORT=8888
+      - JUDGE0_URL=http://judge0-server:2358
 
   pp-collab-service-mongodb:
     image: mongo
@@ -129,6 +133,58 @@ services:
       - 27019:27017
     environment:
       MONGO_INITDB_DATABASE: pairs
+    restart: always
+
+  # judge0 containers
+  judge0-server:
+    image: judge0/judge0:1.13.0
+    volumes:
+      - ./judge0.conf:/judge0.conf:ro
+    ports:
+      - 2358:2358
+    expose:
+      - 2358
+    privileged: true
+    restart: always
+    platform: linux/amd64
+    depends_on:
+      - judge0-db
+      - judge0-redis
+
+  judge0-workers:
+    image: judge0/judge0:1.13.0
+    command: ["./scripts/workers"]
+    volumes:
+      - ./judge0.conf:/judge0.conf:ro
+    privileged: true
+    restart: always
+    platform: linux/amd64
+    depends_on:
+      - judge0-db
+      - judge0-redis
+
+  judge0-db:
+    image: postgres:13.0
+    env_file: judge0.conf
+    volumes:
+      - postgres-data:/var/lib/postgresql/data/
+    expose: 
+      - 5433
+    command: -p 5433
+    restart: always
+
+  judge0-redis:
+    image: redis:6.0
+    command: [
+      "bash", "-c",
+      'docker-entrypoint.sh --appendonly yes --requirepass "$$REDIS_PASSWORD"'
+    ]
+    env_file: judge0.conf
+    expose: 
+      - 6379
+    volumes:
+      - redis-data:/data
+    restart: always
 
 # Names our volume
 volumes:
@@ -136,3 +192,5 @@ volumes:
   #driver: local
   dev-mongodb:
     driver: local
+  postgres-data:
+  redis-data:
