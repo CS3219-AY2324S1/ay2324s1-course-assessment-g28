@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { useEffect, useRef, useState } from "react";
 import useWebSocket from "react-use-websocket";
-import { Button, Select, SelectItem } from "@nextui-org/react";
+import { Button, Select, SelectItem, Spinner } from "@nextui-org/react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import ResizeHandleHorizontal from "../ResizeHandleHorizontal";
 import LoadingScreen from "../LoadingScreen";
@@ -76,10 +76,8 @@ export default function CodeWindow(props: CodeWindowProps) {
       const editorComponent = editorsRef.current[lang];
 
       editorComponent.dispatch({
-        effects: editorTheme.reconfigure(
-          theme === "dark" ? dracula : tomorrow
-        )
-      })
+        effects: editorTheme.reconfigure(theme === "dark" ? dracula : tomorrow),
+      });
     }
   }, [theme]);
 
@@ -357,7 +355,7 @@ export default function CodeWindow(props: CodeWindowProps) {
         LANGUAGE_DATA[lang].codeMirrorExtension,
         peerExtension(version, connection, lang),
         keymap.of([indentWithTab]),
-        editorTheme.of(theme === "dark" ? dracula : tomorrow)
+        editorTheme.of(theme === "dark" ? dracula : tomorrow),
       ],
     });
     let editorParentDiv = editorsParentRef.current[lang];
@@ -522,15 +520,20 @@ export default function CodeWindow(props: CodeWindowProps) {
           </div>
         </div>
       </Panel>
-      <PanelResizeHandle><ResizeHandleHorizontal/></PanelResizeHandle>
+      <PanelResizeHandle>
+        <ResizeHandleHorizontal />
+      </PanelResizeHandle>
       <Panel>
         <div className="h-full w-full flex flex-col overflow-auto rounded-xl relative box-border bg-content1">
-          {isCodeRunning && isInitialized && (
-            <LoadingScreen displayText="Waiting for result ..."></LoadingScreen>
+          {isCodeRunning && isInitialized ? (
+            <div className="w-full h-full grid content-center bg-content1 rounded-md">
+              <Spinner label="Executing code..." color="secondary"></Spinner>
+            </div>
+          ) : (
+            <div className="h-full w-full max-w-full p-3 whitespace-pre-wrap break-words bg-content1">
+              {result}
+            </div>
           )}
-          <div className="h-full w-full max-w-full p-3 whitespace-pre-wrap break-words bg-content2">
-            {result}
-          </div>
         </div>
       </Panel>
     </PanelGroup>
