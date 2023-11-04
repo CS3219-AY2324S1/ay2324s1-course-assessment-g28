@@ -8,6 +8,10 @@ import {
 
 import { Question } from "./models/question";
 
+import { config } from "dotenv";
+
+config();
+
 // Create Question Business Logic
 export const createQuestion = async (req: Request, res: Response) => {
   try {
@@ -90,7 +94,32 @@ export const getQuestions = async (req: Request, res: Response) => {
       .skip(offset * size) // skip the first offset * size elements
       .limit(size); // take the first (size) elements
 
-    res.status(200).json({ content: questions, total: total });
+    if (req.query.onlyUnattempted && req.query.user) {
+      const onlyUnattempted = req.query.onlyUnattempted === "true";
+      const resp = await fetch(
+        `${process.env.USER_API}/users/${req.query.user}/question-attempt`
+      );
+      const attemptedQuestionIds = new Set<Number>(await resp.json());
+
+      const modifiedQuestions = [];
+
+      for (const question of questions) {
+        const questionObject = question.toObject();
+        const wasAttempted = attemptedQuestionIds.has(questionObject.id);
+
+        if ((onlyUnattempted && !wasAttempted) || !onlyUnattempted) {
+          modifiedQuestions.push({
+            ...questionObject,
+            wasAttempted: wasAttempted,
+          });
+        }
+      }
+      res
+        .status(200)
+        .json({ content: modifiedQuestions, total: modifiedQuestions.length });
+    } else {
+      res.status(200).json({ content: questions, total: total });
+    }
   } catch (error) {
     if (error instanceof QuestionError) {
       res
