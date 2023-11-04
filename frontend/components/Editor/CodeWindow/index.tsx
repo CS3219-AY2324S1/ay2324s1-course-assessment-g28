@@ -522,7 +522,7 @@ export default function CodeWindow(props: CodeWindowProps) {
           </div>
         </div>
       </Panel>
-      <PanelResizeHandle>{ResizeHandleHorizontal()}</PanelResizeHandle>
+      <PanelResizeHandle><ResizeHandleHorizontal/></PanelResizeHandle>
       <Panel>
         <div className="h-full w-full flex flex-col overflow-auto rounded-xl relative box-border bg-content1">
           {isCodeRunning && isInitialized && (
