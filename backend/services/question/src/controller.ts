@@ -133,6 +133,55 @@ export const getQuestions = async (req: Request, res: Response) => {
   }
 };
 
+export const getRandomQuestionId = async (req: Request, res: Response) => {
+  try {
+    const { user1, user2, complexity } = req.query;
+
+    const questions = await Question.find({
+      complexity: complexity,
+    });
+
+    const questionIds = new Set<Number>(
+      questions.map((question) => question.toObject().id)
+    );
+
+    const user1Resp = await fetch(
+      `${process.env.USER_API}/users/${user1}/question-attempt`
+    );
+    const user1AttemptedIds = new Set<Number>(await user1Resp.json());
+
+    const user2Resp = await fetch(
+      `${process.env.USER_API}/users/${user2}/question-attempt`
+    );
+    const user2AttemptedIds = new Set<Number>(await user2Resp.json());
+
+    for (const id of user1AttemptedIds) {
+      questionIds.delete(id);
+    }
+
+    for (const id of user2AttemptedIds) {
+      questionIds.delete(id);
+    }
+
+    const questionIdArray = Array.from(questionIds);
+
+    res.status(200).json({
+      questionId:
+        questionIdArray[Math.floor(Math.random() * questionIdArray.length)],
+    });
+  } catch (error) {
+    if (error instanceof QuestionError) {
+      res
+        .status(500)
+        .json({ errorCode: error.errorCode, message: error.message });
+    } else if (error instanceof Error) {
+      res
+        .status(500)
+        .json({ errorCode: UNKNOWN_ERROR_CODE, message: error.message });
+    }
+  }
+};
+
 // Update Question Business Logic
 export const updateQuestionById = async (req: Request, res: Response) => {
   try {

@@ -29,6 +29,7 @@ services:
     environment:
       - PORT=1234
       - MONGO_URI=mongodb://pp-question-mongodb:27017
+      - USER_API=http://pp-user:1235
     expose:
       - 1234
     ports:
@@ -168,19 +169,21 @@ services:
     env_file: judge0.conf
     volumes:
       - postgres-data:/var/lib/postgresql/data/
-    expose: 
+    expose:
       - 5433
     command: -p 5433
     restart: always
 
   judge0-redis:
     image: redis:6.0
-    command: [
-      "bash", "-c",
-      'docker-entrypoint.sh --appendonly yes --requirepass "$$REDIS_PASSWORD"'
-    ]
+    command:
+      [
+        "bash",
+        "-c",
+        'docker-entrypoint.sh --appendonly yes --requirepass "$$REDIS_PASSWORD"',
+      ]
     env_file: judge0.conf
-    expose: 
+    expose:
       - 6379
     volumes:
       - redis-data:/data
