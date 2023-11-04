@@ -164,6 +164,24 @@ export const getAttemptById = async (req: Request, res: Response) => {
   }
 };
 
+export const getAttemptedQuestionsByEmail = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { email } = req.params;
+    const query = `SELECT DISTINCT question_id FROM Attempts WHERE email=$1`;
+    const result = await pool.query(query, [email]);
+    res.status(200).json(result.rows.map((entry) => entry["question_id"]));
+  } catch (error) {
+    const errorCode = UNKNOWN_ERROR_CODE;
+    res.status(500).json({
+      errorCode: errorCode,
+      message: `getAttemptsByEmail failed ${error}`,
+    });
+  }
+};
+
 //GET handlers
 export const getIsUsernameExists = async (req: Request, res: Response) => {
   try {
@@ -171,7 +189,7 @@ export const getIsUsernameExists = async (req: Request, res: Response) => {
     const query =
       "SELECT exists (SELECT 1 FROM Users WHERE username = $1 LIMIT 1);";
     const result = await pool.query(query, [username]);
-    res.status(200).json(result?.rows?.[0] ?? { "exists": "false" });
+    res.status(200).json(result?.rows?.[0] ?? { exists: "false" });
   } catch (error) {
     const errorCode = UNKNOWN_ERROR_CODE;
     res.status(500).json({
