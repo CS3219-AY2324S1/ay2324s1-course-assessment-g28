@@ -13,3 +13,25 @@ export interface CodeRunState {
   inProgress: boolean;
   result: string;
 }
+
+export interface ProgrammingLanguageEditorState {
+  editorContent: string;
+}
+
+export type ProgrammingLanguageEditorStates = Record<
+  ProgrammingLanguage,
+  ProgrammingLanguageEditorState
+>;
+
+export const defaultProgrammingLanguageEditorContents: Record<
+  ProgrammingLanguage,
+  string
+> = {
+  Java: `class Main {
+  public static void main(String[] args) {
+    // Write your code here
+  }
+}`,
+  Python: "# Write your code here",
+  Javascript: "// Write your code here",
+};

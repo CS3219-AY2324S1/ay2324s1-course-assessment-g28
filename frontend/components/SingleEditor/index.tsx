@@ -5,6 +5,8 @@ import HorizontalResizeHandle from "@/components/PanelResizeHandles/HorizontalRe
 import {
   CodeRunState,
   ProgrammingLanguage,
+  ProgrammingLanguageEditorStates,
+  defaultProgrammingLanguageEditorContents,
   programmingLanguageMonacoIdentifiers,
 } from "@/components/SingleEditor/constants";
 import { useTheme } from "next-themes";
@@ -18,12 +20,25 @@ export default function SingleEditor() {
     inProgress: false,
   });
   const [language, setLanguage] = useState<ProgrammingLanguage>("Java");
+  const [editorState, setEditorState] =
+    useState<ProgrammingLanguageEditorStates>({
+      Java: {
+        editorContent: defaultProgrammingLanguageEditorContents.Java,
+      },
+      Python: {
+        editorContent: defaultProgrammingLanguageEditorContents.Python,
+      },
+      Javascript: {
+        editorContent: defaultProgrammingLanguageEditorContents.Javascript,
+      },
+    });
 
   function handleEditorDidMount(editor: any, monaco: Monaco) {
     // here is the editor instance
     // you can store it in `useRef` for further usage
     editorRef.current = editor;
   }
+
   return (
     <PanelGroup direction="vertical" className="flex flex-grow">
       <Panel className="flex flex-col" defaultSize={80}>
@@ -31,6 +46,7 @@ export default function SingleEditor() {
           <div className="flex flex-row gap-2 items-center w-full pb-2">
             <Select
               size="sm"
+              className="max-w-sm"
               placeholder="Select Programming Langauge"
               selectedKeys={[language]}
               onChange={(e) => {
@@ -46,7 +62,11 @@ export default function SingleEditor() {
                 </SelectItem>
               ))}
             </Select>
-            <Button disabled={codeRunState.inProgress} color="primary">
+            <Button
+              disabled={codeRunState.inProgress}
+              color="primary"
+              className="ml-auto"
+            >
               Run Code
             </Button>
             <Button disabled={codeRunState.inProgress} color="secondary">
@@ -60,6 +80,15 @@ export default function SingleEditor() {
             defaultValue="// some comment"
             options={{ minimap: { enabled: false }, fontSize: 16 }}
             onMount={handleEditorDidMount}
+            value={editorState[language].editorContent}
+            onChange={(newEditorContent) => {
+              setEditorState((prvState) => ({
+                ...prvState,
+                [language]: {
+                  editorContent: newEditorContent,
+                },
+              }));
+            }}
           />
         </div>
       </Panel>
