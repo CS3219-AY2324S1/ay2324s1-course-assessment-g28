@@ -72,7 +72,6 @@ export default function CodeWindow(props: CodeWindowProps) {
       setIsWebsocketLoaded(true);
     },
     onMessage: onMessage,
-    onClose: onClose,
     onError: onError,
   });
 
@@ -113,11 +112,6 @@ export default function CodeWindow(props: CodeWindowProps) {
         handleExit(data);
         break;
     }
-  }
-
-  function onClose(e: Event) {
-    console.log("Closing ws", e);
-    // TODO
   }
 
   function onError(e: Event) {

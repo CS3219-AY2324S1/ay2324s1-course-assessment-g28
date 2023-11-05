@@ -35,16 +35,10 @@ export default function EditorPage({
     // http://localhost:3000/editor?wsUrl=ws://localhost:8888?pairId=2d902ca5-cba7-4050-a40e-c216d7115002&user=jhghf874
     setWebsocketUrl(wsUrl);
   }, [router]);
-  /**
-   * Called when a user clicks "Next Question" AND the other user approves
-   */
-  function nextQuestion() {
-    // TODO: Get a new random qn id and call getQuestionData
-  }
 
   if (!websocketUrl)
     return (
-      <div className="w-full flex items-center justify-center">
+      <div className="w-full h-full flex items-center justify-center">
         <Spinner color="secondary" />
       </div>
     );
