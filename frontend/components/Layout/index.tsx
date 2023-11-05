@@ -26,12 +26,14 @@ const Layout = ({ children }: PropsWithChildren<unknown>) => {
     >
       <main
         className={cx(
-          "h-full w-full flex flex-col pb-[110px] overflow-y-auto max-h-full",
+          "h-full w-full flex flex-col overflow-y-auto max-h-full",
           POPPINS_CLASS,
         )}
       >
         <Navbar />
-        <div className="px-8 flex flex-col flex flex-col flex-grow overflow-auto">{children}</div>
+        <div className="px-8 flex flex-col pb-[110px] flex-grow overflow-auto">
+          {children}
+        </div>
       </main>
     </div>
   );
