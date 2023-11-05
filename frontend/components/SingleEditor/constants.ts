@@ -1,4 +1,5 @@
-export type ProgrammingLanguage = "Javascript" | "Python" | "Java";
+import { ProgrammingLanguage } from "@/api/codeExecution/type";
+
 
 export const programmingLanguageMonacoIdentifiers: Record<
   ProgrammingLanguage,
@@ -12,6 +13,7 @@ export const programmingLanguageMonacoIdentifiers: Record<
 export interface CodeRunState {
   inProgress: boolean;
   result: string;
+  error: boolean;
 }
 
 export interface ProgrammingLanguageEditorState {
