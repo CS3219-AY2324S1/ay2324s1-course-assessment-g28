@@ -35,7 +35,7 @@ export default function LoginPage({
   return (
     <div className="h-full w-full pt-[80px] pl-[180px]">
       <div
-        className="w-[450px] text-justify"
+        className="w-[450px] "
         style={{ ...useAppearAnimation() }}
       >
         <div
@@ -49,14 +49,10 @@ export default function LoginPage({
         </div>
         <div
           className={cx(
-            "text-[16px]  pb-7",
-            isDark ? "text-brand-white" : "text-purple-800",
+            "text-lg pb-7",
           )}
         >
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat.
+          Solve programming problems with a friend
         </div>
         <div className="flex justify-start">
           {Object.values(providers).map((p) => {

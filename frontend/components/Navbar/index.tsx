@@ -12,6 +12,7 @@ export default function Navbar() {
     <NextNavBar
       maxWidth="full"
       height={isSignedIn ? "70px" : "60px"}
+      position="static"
       classNames={{
         base: cx(
           "bg-gradient-to-b from-purple-700",

@@ -1,6 +1,7 @@
 import { HttpMethod, HttpStatus, jsonRequestHeaders } from "@/api/constants";
 import { RequestError } from "@/api/errors";
 import {
+  QUESTION_ATTEMPT_API,
   USER_API,
   getIsUsernameExistsPath,
   getQuestionAttemptPath,
@@ -9,6 +10,7 @@ import {
 import {
   AttemptedQuestionDetails,
   AttemptedQuestionDetailsZod,
+  CreateQuestionAttemptRequestBody,
   CreateUserRequestBody,
   User,
   UserExists,
@@ -98,4 +100,17 @@ export async function updateUser(userInfo: CreateUserRequestBody) {
   if (res.status !== HttpStatus.OK_NO_CONTENT) {
     throw new RequestError(res);
   }
+}
+
+export async function createQuestionAttempt(
+  attemptedQuestionDetails: CreateQuestionAttemptRequestBody,
+) {
+  const res = await fetch(getRoute(QUESTION_ATTEMPT_API, false), {
+    method: HttpMethod.POST,
+    body: JSON.stringify(attemptedQuestionDetails),
+    headers: jsonRequestHeaders,
+  });
+  if (res.status !== HttpStatus.OK_NO_CONTENT) {
+    throw new RequestError(res);
+  } 
 }

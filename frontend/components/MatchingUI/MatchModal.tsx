@@ -52,7 +52,7 @@ export const MatchModal = (props: MatchModalProps) => {
       <Modal
         hideCloseButton
         isOpen={isModalOpen}
-        className="text-brand-white bg-gradient-to-br h-[370px]
+        className="text-brand-white bg-gradient-to-br 
         from-violet-500 to-fuchsia-500 flex flex-col items-center"
       >
         <ModalContent className="p-4">
