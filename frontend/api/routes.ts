@@ -11,11 +11,13 @@ export const getRoute = (
 export const QUESTION_API = "/questions";
 export const getQuestionByIdPath = (id: number) =>
   `${QUESTION_API}/${id.toString()}`;
+const questionAttemptSubDirectory = "/question-attempt";
 export const getQuestionAttemptPath = (attemptId: number) =>
-  `${USER_API}/question-attempt/${attemptId.toString()}`;
+  `${USER_API}${questionAttemptSubDirectory}/${attemptId.toString()}`;
 
 export const USER_API = "/users";
 export const getIsUsernameExistsPath = (username: string) =>
   `${USER_API}/exists/${username}`;
 
+export const QUESTION_ATTEMPT_API = USER_API + questionAttemptSubDirectory;
 export const EXECUTION_API = "/execution";

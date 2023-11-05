@@ -1,6 +1,5 @@
 import { ProgrammingLanguage } from "@/api/codeExecution/type";
 
-
 export const programmingLanguageMonacoIdentifiers: Record<
   ProgrammingLanguage,
   string
@@ -37,3 +36,4 @@ export const defaultProgrammingLanguageEditorContents: Record<
   Python: "# Write your code here",
   Javascript: "// Write your code here",
 };
+
