@@ -10,6 +10,7 @@ import {
   LANGUAGES,
   LANGUAGE_DATA,
   LANGUAGE_TYPE,
+  WSMessageType,
   WS_METHODS,
 } from "../constants";
 import {
@@ -25,6 +26,12 @@ import { EditorView, ViewPlugin, ViewUpdate, keymap } from "@codemirror/view";
 import { indentWithTab } from "@codemirror/commands";
 import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/router";
+import { HOME } from "@/routes";
+import {
+  SubmissionStatus,
+  useSubmissionContext,
+} from "../Submission/SubmissionContext";
 
 interface CodeWindowProps {
   template?: string;
@@ -52,13 +59,15 @@ export default function CodeWindow(props: CodeWindowProps) {
   const [isCodeMirrorLoaded, setIsCodeMirrorLoaded] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [requestQueue, setRequestQueue] = useState<Record<string, any>>({});
+  const router = useRouter();
+  const { initateExitMyself } = useSubmissionContext();
 
   const editorsParentRef = useRef<{ [lang: string]: HTMLDivElement | null }>(
     {},
   );
   const editorsRef = useRef<{ [lang: string]: EditorView }>({});
 
-  const { sendJsonMessage, readyState } = useWebSocket(props.websocketUrl, {
+  const { sendJsonMessage } = useWebSocket(props.websocketUrl, {
     share: true,
     filter: () => false,
     onOpen: () => {
@@ -76,16 +85,14 @@ export default function CodeWindow(props: CodeWindowProps) {
       const editorComponent = editorsRef.current[lang];
 
       editorComponent.dispatch({
-        effects: editorTheme.reconfigure(
-          theme === "dark" ? dracula : tomorrow
-        )
-      })
+        effects: editorTheme.reconfigure(theme === "dark" ? dracula : tomorrow),
+      });
     }
   }, [theme]);
 
-  function onMessage(e: any) {
+  function onMessage(e: WSMessageType) {
     const data = JSON.parse(e.data);
-    //console.log("CodeWindow received: ", data);
+    console.log("CodeWindow received: ", data);
 
     switch (data.method) {
       case WS_METHODS.READY:
@@ -160,6 +167,7 @@ export default function CodeWindow(props: CodeWindowProps) {
 
   function handleExit(data: any) {
     console.log("EXITING EDITOR ...");
+    router.push(HOME);
   }
 
   /**
@@ -357,7 +365,7 @@ export default function CodeWindow(props: CodeWindowProps) {
         LANGUAGE_DATA[lang].codeMirrorExtension,
         peerExtension(version, connection, lang),
         keymap.of([indentWithTab]),
-        editorTheme.of(theme === "dark" ? dracula : tomorrow)
+        editorTheme.of(theme === "dark" ? dracula : tomorrow),
       ],
     });
     let editorParentDiv = editorsParentRef.current[lang];
@@ -451,6 +459,7 @@ export default function CodeWindow(props: CodeWindowProps) {
           <div className="w-full flex flex-row p-1">
             <div className="flex flex-row w-1/2 gap-2">
               <Select
+                aria-label="select-language"
                 placeholder={language}
                 classNames={{
                   mainWrapper: "h-fit",
@@ -500,7 +509,7 @@ export default function CodeWindow(props: CodeWindowProps) {
                 Next Question
               </Button>
               <Button
-                onClick={exitEditor}
+                onClick={initateExitMyself}
                 size="sm"
                 color="default"
                 className="h-8 font-bold"

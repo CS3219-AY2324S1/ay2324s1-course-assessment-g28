@@ -44,7 +44,7 @@ export default function MessageWindow(props: MessageWindowProps) {
 
   function onMessage(e: any) {
     const data = JSON.parse(e.data);
-    //console.log("MessageWindow received: ", data);
+    console.log("MessageWindow received: ", data);
 
     switch (data.method) {
       case WS_METHODS.READY:

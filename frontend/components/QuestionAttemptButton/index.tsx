@@ -38,7 +38,7 @@ interface QuestionAttemptButtonProps {
 export default function QuestionAttemptButton({
   question,
   size,
-  variant
+  variant,
 }: QuestionAttemptButtonProps) {
   const { email } = useUserInfo();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -103,7 +103,8 @@ export default function QuestionAttemptButton({
               <ModalBody>
                 <div className="flex flex-row gap-x-2">
                   <div
-                    className="flex-1 p-4 cursor-pointer rounded-md bg-black bg-opacity-0 hover:bg-opacity-5"
+                    className="flex-1 p-4 cursor-pointer rounded-md
+                            bg-black bg-opacity-0 hover:bg-opacity-5"
                     onClick={() =>
                       router.push(getSingleEditorPath(question.id))
                     }
@@ -113,7 +114,8 @@ export default function QuestionAttemptButton({
                   </div>
                   <div className="w-[2px] bg-brand-white "></div>
                   <div
-                    className="flex-1 p-4 cursor-pointer rounded-md bg-black bg-opacity-0 hover:bg-opacity-5"
+                    className="flex-1 p-4 cursor-pointer rounded-md
+                              bg-black bg-opacity-0 hover:bg-opacity-5"
                     onClick={startMatching}
                   >
                     <h3 className="text-lg font-bold">Double</h3>
@@ -157,10 +159,8 @@ export default function QuestionAttemptButton({
             <>
               <ModalHeader>Matching peer found!</ModalHeader>
               <ModalBody>
-                <div>
-                  Redirecting you to the collaborative editor page in 3
-                  seconds...
-                </div>
+                <div>Redirecting you to the collaborative editor page...</div>
+                <Spinner color="secondary" />
               </ModalBody>
               <ModalFooter>
                 <Button
@@ -205,8 +205,8 @@ export default function QuestionAttemptButton({
   return (
     <>
       <Button
-      size={size}
-      variant={variant}
+        size={size}
+        variant={variant}
         color="secondary"
         title="Start a collaborative editor session with another person"
         onPress={onOpen}
