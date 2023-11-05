@@ -17,3 +17,5 @@ export const getQuestionAttemptPath = (attemptId: number) =>
 export const USER_API = "/users";
 export const getIsUsernameExistsPath = (username: string) =>
   `${USER_API}/exists/${username}`;
+
+export const EXECUTION_API = "/execution";

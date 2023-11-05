@@ -1,16 +1,17 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import Editor, { Monaco } from "@monaco-editor/react";
 import { PanelGroup, Panel } from "react-resizable-panels";
 import HorizontalResizeHandle from "@/components/PanelResizeHandles/HorizontalResizeHandle";
 import {
   CodeRunState,
-  ProgrammingLanguage,
   ProgrammingLanguageEditorStates,
   defaultProgrammingLanguageEditorContents,
   programmingLanguageMonacoIdentifiers,
 } from "@/components/SingleEditor/constants";
 import { useTheme } from "next-themes";
 import { Button, Select, SelectItem, Spinner } from "@nextui-org/react";
+import { ProgrammingLanguage } from "@/api/codeExecution/type";
+import { sendCodeForExecutionAndFetchResult } from "@/api/codeExecution";
 
 export default function SingleEditor() {
   const editorRef = useRef(null);
@@ -18,6 +19,7 @@ export default function SingleEditor() {
   const [codeRunState, setCodeRunState] = useState<CodeRunState>({
     result: 'Click "Run" to execute your code!',
     inProgress: false,
+    error: false,
   });
   const [language, setLanguage] = useState<ProgrammingLanguage>("Java");
   const [editorState, setEditorState] =
@@ -38,6 +40,34 @@ export default function SingleEditor() {
     // you can store it in `useRef` for further usage
     editorRef.current = editor;
   }
+
+  const handleCodeSubmission = useCallback(async () => {
+    setCodeRunState((prvState) => ({ ...prvState, inProgress: true }));
+    try {
+      const result = await sendCodeForExecutionAndFetchResult(
+        editorState[language].editorContent,
+        language,
+      );
+      let executionResult = "";
+      if (result.compileOutput) {
+        executionResult += result.compileOutput + "\n";
+      }
+      if (result.stdout) {
+        executionResult += result.stdout;
+      }
+      setCodeRunState({
+        result: executionResult,
+        inProgress: false,
+        error: false,
+      });
+    } catch (e) {
+      setCodeRunState({
+        result: "",
+        inProgress: false,
+        error: true,
+      });
+    }
+  }, [editorState, language]);
 
   return (
     <PanelGroup direction="vertical" className="flex flex-grow">
@@ -66,6 +96,7 @@ export default function SingleEditor() {
               disabled={codeRunState.inProgress}
               color="primary"
               className="ml-auto"
+              onPress={handleCodeSubmission}
             >
               Run Code
             </Button>
@@ -94,7 +125,11 @@ export default function SingleEditor() {
       </Panel>
       <HorizontalResizeHandle />
       <Panel>
-        {codeRunState.inProgress ? (
+        {codeRunState.error ? (
+          <div className="h-full w-full bg-content1 rounded-md p-4 text-red-700 dark:text-red-400">
+            There was an error executing your code. Please try again.
+          </div>
+        ) : codeRunState.inProgress ? (
           <div className="w-full h-full grid content-center bg-content1 rounded-md">
             <Spinner label="Executing code..." color="secondary"></Spinner>
           </div>
