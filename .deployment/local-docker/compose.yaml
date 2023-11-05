@@ -17,6 +17,7 @@ services:
       - QUESTIONS_API=http://pp-question:1234
       - USER_API=http://pp-user:1235
       - NEXT_PUBLIC_PAIRING_API=ws://localhost:4000
+      - JUDGE0_URL=http://judge0-server:2358
     profiles:
       - frontend
 
@@ -163,7 +164,6 @@ services:
     depends_on:
       - judge0-db
       - judge0-redis
-
   judge0-db:
     image: postgres:13.0
     env_file: judge0.conf
