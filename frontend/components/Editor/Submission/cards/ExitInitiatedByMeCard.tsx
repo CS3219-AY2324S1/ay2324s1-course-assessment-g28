@@ -1,7 +1,8 @@
-import { Button, ModalBody, ModalHeader, Spinner } from "@nextui-org/react";
+import { ModalBody, ModalHeader, Spinner } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { SubmissionStatus, useSubmissionContext } from "../SubmissionContext";
 import { WS_METHODS } from "../../constants";
+import Button from "@/components/Button";
 
 export const MAX_WAITING_DURATION = 10000;
 
@@ -35,16 +36,11 @@ const ExitInitiatedByMeCard = () => {
           and your peer will be notified.
         </div>
         <div className="flex gap-2 mb-4">
-          <Button
-            color="success"
-            className="text-foreground"
-            onClick={() => stayInSession()}
-          >
+          <Button color="success" onClick={() => stayInSession()}>
             Stay in session
           </Button>
           <Button
             color="danger"
-            className="text-foreground"
             onClick={() => leaveSession(WS_METHODS.PEER_HAS_EXITED)}
           >
             Leave the session

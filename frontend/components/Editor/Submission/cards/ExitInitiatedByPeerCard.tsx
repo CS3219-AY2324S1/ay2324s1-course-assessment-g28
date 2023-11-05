@@ -1,8 +1,9 @@
-import { Button, ModalBody, ModalHeader } from "@nextui-org/react";
+import { ModalBody, ModalHeader } from "@nextui-org/react";
 import { SubmissionStatus, useSubmissionContext } from "../SubmissionContext";
 import { WS_METHODS } from "../../constants";
 import { MAX_WAITING_DURATION } from "./ExitInitiatedByMeCard";
 import { useEffect } from "react";
+import Button from "@/components/Button";
 
 const ExitInitiatedByPeerCard = () => {
   const { setIsModalOpen, setSubmissionStatus, stayInSession, leaveSession } =
@@ -36,14 +37,12 @@ const ExitInitiatedByPeerCard = () => {
         <div className="flex gap-2 mb-4">
           <Button
             color="success"
-            className="text-foreground"
             onClick={() => stayInSession(WS_METHODS.EXIT_REJECT)}
           >
             Stay in session
           </Button>
           <Button
             color="danger"
-            className="text-foreground"
             onClick={() => leaveSession(WS_METHODS.EXIT_CONFIRM)}
           >
             Leave the session

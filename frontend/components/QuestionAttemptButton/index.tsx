@@ -104,7 +104,8 @@ export default function QuestionAttemptButton({
                 <div className="flex flex-row gap-x-2">
                   <div
                     className="flex-1 p-4 cursor-pointer rounded-md
-                            bg-black bg-opacity-0 hover:bg-opacity-5"
+                            bg-black bg-opacity-0 hover:bg-opacity-5
+                            hover:transition-transform hover:scale-110"
                     onClick={() =>
                       router.push(getSingleEditorPath(question.id))
                     }
@@ -115,7 +116,8 @@ export default function QuestionAttemptButton({
                   <div className="w-[2px] bg-brand-white "></div>
                   <div
                     className="flex-1 p-4 cursor-pointer rounded-md
-                              bg-black bg-opacity-0 hover:bg-opacity-5"
+                              bg-black bg-opacity-0 hover:bg-opacity-5
+                               hover:transition-transform hover:scale-110"
                     onClick={startMatching}
                   >
                     <h3 className="text-lg font-bold">Double</h3>
