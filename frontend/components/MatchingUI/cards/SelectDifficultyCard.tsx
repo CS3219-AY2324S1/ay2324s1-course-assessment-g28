@@ -10,7 +10,11 @@ const SelectDifficultyCard = () => {
       <ModalHeader className="flex flex-col gap-1">
         Choose a difficulty!
       </ModalHeader>
-      <ModalBody className="w-full pt-10">
+      <ModalBody className="w-full">
+        <div className="text-lg">
+          Start a collaborative programming session with a random person to a
+          solve a random question with the chosen difficulty.
+        </div>
         {COMPLEXITY_OPTIONS.map((complexity) => (
           <Button
             className={cx(
