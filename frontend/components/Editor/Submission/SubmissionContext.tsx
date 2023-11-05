@@ -26,45 +26,41 @@ export enum SubmissionStatus {
 }
 
 type SubmissionContextType = {
+  isPeerStillHere: boolean;
+  setIsPeerStillHere: Dispatch<SetStateAction<boolean>>;
   isModalOpen: boolean;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
-  isLoading: boolean;
-  setIsLoading: Dispatch<SetStateAction<boolean>>;
   submissionStatus: SubmissionStatus;
   setSubmissionStatus: Dispatch<SetStateAction<SubmissionStatus>>;
   initateExitMyself: () => void;
-  stayInSession: (message?: WS_METHODS) => void;
-  leaveSession: (message?: WS_METHODS) => void;
+  initateNextQnMyself: () => void;
+  stayOnQuestion: (wsMethod?: WS_METHODS) => void;
+  leaveQuestion: (
+    nextState:
+      | SubmissionStatus.SUBMIT_BEFORE_EXIT
+      | SubmissionStatus.SUBMIT_BEFORE_NEXT_QN,
+    wsMethod?: WS_METHODS,
+  ) => void;
   websocketUrl: string;
   sendMessage: (msg: WS_METHODS) => void;
 };
 
+const throwNotInProviderError = () => {
+  throw new Error("Not in provider!");
+};
 const defaultContext: SubmissionContextType = {
+  isPeerStillHere: true,
+  setIsPeerStillHere: throwNotInProviderError,
   isModalOpen: false,
-  setIsModalOpen: () => {
-    throw new Error("Not in provider!");
-  },
-  isLoading: false,
-  setIsLoading: () => {
-    throw new Error("Not in provider!");
-  },
+  setIsModalOpen: throwNotInProviderError,
   submissionStatus: SubmissionStatus.NOT_SUBMITTING,
-  setSubmissionStatus: () => {
-    throw new Error("Not in provider!");
-  },
-  initateExitMyself: () => {
-    throw new Error("Not in provider!");
-  },
-  stayInSession: () => {
-    throw new Error("Not in provider!");
-  },
-  leaveSession: () => {
-    throw new Error("Not in provider!");
-  },
+  setSubmissionStatus: throwNotInProviderError,
+  initateExitMyself: throwNotInProviderError,
+  initateNextQnMyself: throwNotInProviderError,
+  stayOnQuestion: throwNotInProviderError,
+  leaveQuestion: throwNotInProviderError,
   websocketUrl: "",
-  sendMessage: () => {
-    throw new Error("Not in provider!");
-  },
+  sendMessage: throwNotInProviderError,
 };
 
 const SubmissionContext = createContext<SubmissionContextType>(defaultContext);
@@ -76,61 +72,53 @@ export const SubmissionContextProvider = ({
   children,
   websocketUrl,
 }: PropsWithChildren<{ websocketUrl: string }>) => {
+  const [isPeerStillHere, setIsPeerStillHere] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus>(
-    SubmissionStatus.EXIT_INIIATED_BY_ME,
+    SubmissionStatus.NOT_SUBMITTING,
   );
-  console.log(websocketUrl);
   const { sendJsonMessage } = useWebSocket(websocketUrl, {
     share: true,
     filter: () => false,
-    onOpen: () => {
-      console.log("Submission WS connection established");
-    },
     onMessage: onMessage,
   });
 
   function onMessage(e: WSMessageType) {
-    console.log("submission:", e);
     const data = JSON.parse(e.data);
     switch (data.method) {
-      // case WS_METHODS.NEXT_QUESTION_INITATED_BY_PEER:
-      //   break;
-      // case WS_METHODS.NEXT_QUESTION_CONFIRM:
-      //   break;
       case WS_METHODS.EXIT_INITIATED_BY_PEER:
-        handleExitInitiatedByPeer();
-        break;
+        return handleExitInitiatedByPeer();
       case WS_METHODS.EXIT_CONFIRM:
-        setSubmissionStatus(SubmissionStatus.SUBMIT_BEFORE_EXIT);
-        break;
+        return setSubmissionStatus(SubmissionStatus.SUBMIT_BEFORE_EXIT);
       case WS_METHODS.EXIT_REJECT:
-        setSubmissionStatus(SubmissionStatus.EXIT_REJECTED);
-        break;
+        return setSubmissionStatus(SubmissionStatus.EXIT_REJECTED);
       case WS_METHODS.PEER_HAS_EXITED:
-        toast.success(
+        setIsPeerStillHere(false);
+        return toast.success(
           "Your peer has left. You may continue working on the question alone.",
         );
-        break;
+
+      case WS_METHODS.NEXT_QUESTION_INITATED_BY_PEER:
+        return handleNextQnInitiatedByPeer();
+      case WS_METHODS.NEXT_QUESTION_CONFIRM:
+        return setSubmissionStatus(SubmissionStatus.SUBMIT_BEFORE_NEXT_QN);
     }
   }
 
   const sendMessage = (msg: WS_METHODS) => {
-    console.log("sending message", msg);
     sendJsonMessage({
       method: msg,
     });
   };
 
   const initateExitMyself = () => {
-    console.log("leave");
-    sendJsonMessage({
-      method: WS_METHODS.EXIT_INITIATED_BY_PEER,
-    });
-    sendMessage(WS_METHODS.EXIT_INITIATED_BY_PEER);
     setIsModalOpen(true);
-    setSubmissionStatus(SubmissionStatus.EXIT_INIIATED_BY_ME);
+    if (isPeerStillHere) {
+      sendMessage(WS_METHODS.EXIT_INITIATED_BY_PEER);
+      setSubmissionStatus(SubmissionStatus.EXIT_INIIATED_BY_ME);
+    } else {
+      setSubmissionStatus(SubmissionStatus.SUBMIT_BEFORE_EXIT);
+    }
   };
 
   const handleExitInitiatedByPeer = () => {
@@ -138,38 +126,45 @@ export const SubmissionContextProvider = ({
     setSubmissionStatus(SubmissionStatus.EXIT_INITIATED_BY_PEER);
   };
 
-  const stayInSession = (message?: WS_METHODS) => {
-    console.log("staying. message:", message);
-    if (message) {
-      sendJsonMessage({
-        method: message,
-      });
+  const initateNextQnMyself = () => {
+    setIsModalOpen(true);
+    if (isPeerStillHere) {
+      sendMessage(WS_METHODS.NEXT_QUESTION_INITATED_BY_PEER);
+      setSubmissionStatus(SubmissionStatus.NEXT_QN_INITIATED_BY_ME);
+    } else {
+      setSubmissionStatus(SubmissionStatus.SUBMIT_BEFORE_NEXT_QN);
     }
+  };
+
+  const handleNextQnInitiatedByPeer = () => {
+    setIsModalOpen(true);
+    setSubmissionStatus(SubmissionStatus.NEXT_QN_INITIATED_BY_PEER);
+  };
+
+  const stayOnQuestion = (message?: WS_METHODS) => {
+    if (message) sendMessage(message);
     setIsModalOpen(false);
     setSubmissionStatus(SubmissionStatus.NOT_SUBMITTING);
   };
 
-  const leaveSession = (message?: WS_METHODS) => {
-    if (message) {
-      sendJsonMessage({
-        method: message,
-      });
-    }
-    setSubmissionStatus(SubmissionStatus.SUBMIT_BEFORE_EXIT);
+  const leaveQuestion = (nextState: SubmissionStatus, message?: WS_METHODS) => {
+    if (message) sendMessage(message);
+    setSubmissionStatus(nextState);
   };
 
   return (
     <SubmissionContext.Provider
       value={{
+        isPeerStillHere,
+        setIsPeerStillHere,
         isModalOpen,
         setIsModalOpen,
-        isLoading,
-        setIsLoading,
         submissionStatus,
         setSubmissionStatus,
         initateExitMyself,
-        stayInSession,
-        leaveSession,
+        initateNextQnMyself,
+        stayOnQuestion,
+        leaveQuestion,
         websocketUrl,
         sendMessage,
       }}

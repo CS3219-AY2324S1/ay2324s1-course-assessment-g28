@@ -9,7 +9,6 @@ import { dracula, tomorrow } from "thememirror";
 import {
   LANGUAGES,
   LANGUAGE_DATA,
-  LANGUAGE_TYPE,
   WSMessageType,
   WS_METHODS,
 } from "../constants";
@@ -28,10 +27,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/router";
 import { HOME } from "@/routes";
-import {
-  SubmissionStatus,
-  useSubmissionContext,
-} from "../Submission/SubmissionContext";
+import { useSubmissionContext } from "../Submission/SubmissionContext";
 
 interface CodeWindowProps {
   template?: string;
@@ -60,7 +56,8 @@ export default function CodeWindow(props: CodeWindowProps) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [requestQueue, setRequestQueue] = useState<Record<string, any>>({});
   const router = useRouter();
-  const { initateExitMyself } = useSubmissionContext();
+  const { isPeerStillHere, initateExitMyself, initateNextQnMyself } =
+    useSubmissionContext();
 
   const editorsParentRef = useRef<{ [lang: string]: HTMLDivElement | null }>(
     {},
@@ -438,21 +435,10 @@ export default function CodeWindow(props: CodeWindowProps) {
     setIsCodeRunning(true);
   }
 
-  function nextQuestion() {}
-
-  // Called by the partner
-  function confirmNextQuestion() {}
-
-  function exitEditor() {
-    sendJsonMessage({
-      method: WS_METHODS.EXIT,
-    });
-  }
-
   return (
     <PanelGroup direction="vertical" className="relative">
       {!isInitialized && (
-        <LoadingScreen displayText="Initializing Code Space ..."></LoadingScreen>
+        <LoadingScreen displayText="Initializing Code Space ..." />
       )}
       <Panel defaultSize={60} minSize={25}>
         <div className="h-full w-full flex flex-col overflow-auto rounded-xl bg-content1">
@@ -499,15 +485,17 @@ export default function CodeWindow(props: CodeWindowProps) {
               </Button>
             </div>
             <div className="w-1/2 grow flex flex-row justify-end gap-2">
-              <Button
-                disabled={isCodeRunning}
-                onClick={nextQuestion}
-                size="sm"
-                color="warning"
-                className="text-white h-8 font-bold"
-              >
-                Next Question
-              </Button>
+              {isPeerStillHere ? (
+                <Button
+                  disabled={isCodeRunning}
+                  onClick={initateNextQnMyself}
+                  size="sm"
+                  color="warning"
+                  className="text-white h-8 font-bold"
+                >
+                  Next Question
+                </Button>
+              ) : null}
               <Button
                 onClick={initateExitMyself}
                 size="sm"

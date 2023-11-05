@@ -4,31 +4,36 @@ import { SubmissionStatus, useSubmissionContext } from "../SubmissionContext";
 import { WS_METHODS } from "../../constants";
 import Button from "@/components/Button";
 
-export const MAX_WAITING_DURATION = 10000;
+export const MAX_WAITING_DURATION = 20000;
 
-const ExitInitiatedByMeCard = () => {
+/**
+ * This card is only shown when submission status is:
+ *  - EXIT_INIIATED_BY_ME OR
+ *  - NEXT_QN_INITIATED_BY_ME
+ */
+const SubmissionInitiatedByMeCard = () => {
   const [isTimeout, setIsTimeout] = useState(false);
-  // const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
-
-  const { submissionStatus, stayInSession, leaveSession } =
-    useSubmissionContext();
+  const { stayOnQuestion, leaveQuestion } = useSubmissionContext();
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (submissionStatus === SubmissionStatus.EXIT_INIIATED_BY_ME) {
-      timer = setTimeout(() => setIsTimeout(true), MAX_WAITING_DURATION);
-    }
+    const timer = setTimeout(() => setIsTimeout(true), MAX_WAITING_DURATION);
     return () => {
       if (timer) {
         clearTimeout(timer);
       }
     };
-  }, [submissionStatus]);
+  }, []);
+
+  const submitAndExitMyself = () =>
+    leaveQuestion(
+      SubmissionStatus.SUBMIT_BEFORE_EXIT,
+      WS_METHODS.PEER_HAS_EXITED,
+    );
 
   return isTimeout ? (
     <>
       <ModalHeader className="flex flex-col gap-1">
-        {"Your peer did not respond"}
+        Your peer did not respond
       </ModalHeader>
       <ModalBody className="flex flex-col justify-between items-center gap-2">
         <div>
@@ -36,13 +41,10 @@ const ExitInitiatedByMeCard = () => {
           and your peer will be notified.
         </div>
         <div className="flex gap-2 mb-4">
-          <Button color="success" onClick={() => stayInSession()}>
+          <Button color="success" onClick={() => stayOnQuestion()}>
             Stay in session
           </Button>
-          <Button
-            color="danger"
-            onClick={() => leaveSession(WS_METHODS.PEER_HAS_EXITED)}
-          >
+          <Button color="danger" onClick={submitAndExitMyself}>
             Leave the session
           </Button>
         </div>
@@ -54,11 +56,11 @@ const ExitInitiatedByMeCard = () => {
         {"Awaiting peer's confirmation"}
       </ModalHeader>
       <ModalBody className="flex flex-col items-center gap-1">
-        <div>{"Please wait a moment..."}</div>
+        <div>Please wait a moment...</div>
         <Spinner color="secondary" />
       </ModalBody>
     </>
   );
 };
 
-export default ExitInitiatedByMeCard;
+export default SubmissionInitiatedByMeCard;

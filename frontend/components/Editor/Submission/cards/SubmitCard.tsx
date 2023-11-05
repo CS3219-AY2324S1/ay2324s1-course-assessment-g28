@@ -4,6 +4,11 @@ import { SubmissionStatus, useSubmissionContext } from "../SubmissionContext";
 import { useRouter } from "next/router";
 import { HOME } from "@/routes";
 
+/**
+ * This card is only shown when submission status is:
+ *  - SUBMIT_BEFORE_EXIT OR
+ *  - SUBMIT_BEFORE_NEXT_QN
+ */
 const SubmitCard = () => {
   const [secondsLeft, setSecondsLeft] = useState(3);
   const { submissionStatus, setSubmissionStatus, setIsModalOpen } =

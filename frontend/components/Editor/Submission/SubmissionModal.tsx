@@ -1,9 +1,9 @@
 import { Modal, ModalContent } from "@nextui-org/react";
 import { SubmissionStatus, useSubmissionContext } from "./SubmissionContext";
-import ExitInitiatedByMeCard from "./cards/ExitInitiatedByMeCard";
-import ExitInitiatedByPeerCard from "./cards/ExitInitiatedByPeerCard";
+import SubmissionInitiatedByMeCard from "./cards/SubmissionInitiatedByMeCard";
+import SubmissionInitiatedByPeerCard from "./cards/SubmissionInitiatedByPeerCard";
 import SubmitCard from "./cards/SubmitCard";
-import ExitRejected from "./cards/ExitRejectedCard";
+import SubmissionRejectedCard from "./cards/SubmissionRejectedCard";
 
 export const SubmissionModal = () => {
   const { isModalOpen, submissionStatus: submissionStatus } =
@@ -15,21 +15,20 @@ export const SubmissionModal = () => {
         return null;
 
       case SubmissionStatus.EXIT_INIIATED_BY_ME:
-        return <ExitInitiatedByMeCard />;
-      case SubmissionStatus.EXIT_INITIATED_BY_PEER:
-        return <ExitInitiatedByPeerCard />;
-      case SubmissionStatus.EXIT_REJECTED:
-        return <ExitRejected />;
       case SubmissionStatus.NEXT_QN_INITIATED_BY_ME:
-        return; // TODO
+        return <SubmissionInitiatedByMeCard />;
+
+      case SubmissionStatus.EXIT_INITIATED_BY_PEER:
       case SubmissionStatus.NEXT_QN_INITIATED_BY_PEER:
-        return; // TODO
+        return <SubmissionInitiatedByPeerCard />;
+
+      case SubmissionStatus.EXIT_REJECTED:
       case SubmissionStatus.NEXT_QN_REJECTED:
-        return; // TODO
+        return <SubmissionRejectedCard />;
 
       case SubmissionStatus.SUBMIT_BEFORE_EXIT:
-        return <SubmitCard />;
       case SubmissionStatus.SUBMIT_BEFORE_NEXT_QN:
+        return <SubmitCard />;
     }
   };
 
