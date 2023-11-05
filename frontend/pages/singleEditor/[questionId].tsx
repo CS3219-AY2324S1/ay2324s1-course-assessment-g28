@@ -24,7 +24,7 @@ export default function SingleEditorPage({
         </Panel>
         <VerticalResizeHandle/> 
         <Panel>
-          <SingleEditor />
+          <SingleEditor question={question}/>
         </Panel>
       </PanelGroup>
     </div>

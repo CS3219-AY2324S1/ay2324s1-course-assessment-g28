@@ -15,6 +15,18 @@ export const AttemptedQuestionDetailsZod = z.object({
   attemptDetails: z.string(),
 });
 
+export const CreateQuestionAttemptRequestBodyZod = z.object({
+  questionId: z.number().int().nonnegative(),
+  questionTitle: z.string(),
+  questionDifficulty: z.number().min(0).max(2),
+  attemptDate: z.string().datetime(),
+  attemptDetails: z.string(),
+});
+
+export type CreateQuestionAttemptRequestBody = z.infer<
+  typeof CreateQuestionAttemptRequestBodyZod
+>;
+
 export const UserZod = z.object({
   isAdmin: z.boolean(),
   username: z.string(),
