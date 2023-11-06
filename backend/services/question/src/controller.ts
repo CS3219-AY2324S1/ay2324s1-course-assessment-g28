@@ -115,9 +115,7 @@ export const getQuestions = async (req: Request, res: Response) => {
 
     const total = await Question.countDocuments(filter);
 
-    const questions = await Question.find(filter)
-      .skip(offset * size) // skip the first offset * size elements
-      .limit(size); // take the first (size) elements
+    const questions = await Question.find(filter);
 
     const modifiedQuestions = [];
 
@@ -140,12 +138,17 @@ export const getQuestions = async (req: Request, res: Response) => {
       res.status(200).json({
         content: f
           .search(req.query.keyword as string)
-          .map((entry) => entry.item),
+          .map((entry) => entry.item)
+          .slice(offset * size, offset * size + size),
+        total: total,
       });
       return;
     }
 
-    res.status(200).json({ content: modifiedQuestions, total: total });
+    res.status(200).json({
+      content: questions.slice(offset * size, offset * size + size),
+      total: total,
+    });
   } catch (error) {
     if (error instanceof QuestionError) {
       res
