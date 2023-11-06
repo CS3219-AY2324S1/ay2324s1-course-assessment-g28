@@ -24,6 +24,6 @@
     "**/*.tsx",
     "public/js/worker.js",
     "components/Editor/CodeWindow/worker.js"
-  ],
+, "components/ActiveSessions/ActiveEditingSessionContext.tsx"  ],
   "exclude": ["node_modules"]
 }

@@ -37,6 +37,11 @@ export const UserZod = z.object({
   attemptedQuestions: AttemptedQuestionRecordZod.array(),
 });
 
+export const UserPublicZod = z.object({
+  username: z.string(),
+  favouriteProgrammingLanguage: z.string().optional(), 
+})
+
 export const CreateUserRequestBodyZod = z.object({
   username: z.string().min(1, "Username must be provided"),
   favouriteProgrammingLanguage: z.string().optional(),
@@ -55,6 +60,8 @@ export type AttemptedQuestionDetails = z.infer<
 >;
 
 export type User = z.infer<typeof UserZod>;
+
+export type UserPublic = z.infer<typeof UserPublicZod>;
 
 export type UserExists = z.infer<typeof UserExistsZod>;
 
