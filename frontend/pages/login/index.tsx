@@ -34,10 +34,7 @@ export default function LoginPage({
 
   return (
     <div className="h-full w-full pt-[80px] pl-[180px]">
-      <div
-        className="w-[450px] "
-        style={{ ...useAppearAnimation() }}
-      >
+      <div className="w-[450px] " style={{ ...useAppearAnimation() }}>
         <div
           className={cx(
             RACING_SANS_ONE_CLASS,
@@ -47,11 +44,7 @@ export default function LoginPage({
         >
           PeerPrep
         </div>
-        <div
-          className={cx(
-            "text-lg pb-7",
-          )}
-        >
+        <div className={cx("text-lg pb-7")}>
           Solve programming problems with a friend
         </div>
         <div className="flex justify-start">

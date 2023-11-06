@@ -495,11 +495,7 @@ export default function CodeWindow(props: CodeWindowProps) {
               >
                 Next Question
               </Button>
-              <Button
-                onClick={exitEditor}
-                size="sm"
-                color="default"
-              >
+              <Button onClick={exitEditor} size="sm" color="default">
                 Exit
               </Button>
             </div>

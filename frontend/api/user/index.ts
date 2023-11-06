@@ -43,7 +43,7 @@ export async function getOwnUserInfo() {
 export async function getPublicUserInfo(email: string) {
   const res = await fetch(getUserPublicInfoPath(email), {
     method: HttpMethod.GET,
-    headers: jsonRequestHeaders
+    headers: jsonRequestHeaders,
   });
   if (res.status !== HttpStatus.OK) {
     throw new RequestError(res);
@@ -131,5 +131,5 @@ export async function createQuestionAttempt(
   });
   if (res.status !== HttpStatus.OK_NO_CONTENT) {
     throw new RequestError(res);
-  } 
+  }
 }

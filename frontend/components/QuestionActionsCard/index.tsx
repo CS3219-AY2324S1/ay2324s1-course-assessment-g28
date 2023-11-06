@@ -105,7 +105,7 @@ export default function QuestionActionsCard({
         )}
 
         <div className="flex flex-row gap-2">
-          <QuestionAttemptButton question={question}/>
+          <QuestionAttemptButton question={question} />
         </div>
       </div>
     </>

@@ -32,7 +32,7 @@ export default async function handler(
 
     res.status(HttpStatus.OK).json({ compileOutput, stdout, stderr });
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Problem executing code");
   }
 }
