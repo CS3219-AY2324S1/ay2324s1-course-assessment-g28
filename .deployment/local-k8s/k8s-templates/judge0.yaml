@@ -22,6 +22,8 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
+          securityContext:
+            privileged: true
           env:
             - name: POSTGRES_DB
               value: "judge0"
@@ -100,6 +102,8 @@ spec:
               memory: "512Mi"
               cpu: "500m"
           command: ["./scripts/workers"]
+          securityContext:
+            privileged: true
           env:
             - name: POSTGRES_DB
               value: "judge0"
