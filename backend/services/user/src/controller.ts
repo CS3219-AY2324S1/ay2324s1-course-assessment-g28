@@ -102,6 +102,25 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
+export const getPublicInfoByEmail = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.params;
+    const query = `SELECT username,  favourite_programming_language AS "favouriteProgrammingLanguage" FROM Users WHERE email = $1`;
+    const userResult = await pool.query(query, [email]);
+    if (userResult.rows.length === 0) {
+      res.status(404).json({ message: `User with ${email} does not exist.` });
+      return;
+    }
+    res.status(200).json({ ...userResult.rows[0] });
+  } catch (error) {
+    const errorCode = UNKNOWN_ERROR_CODE;
+    res.status(500).json({
+      errorCode: errorCode,
+      message: `getPublicInfoByEmail failed ${error}`,
+    });
+  }
+};
+
 export const getUserByEmail = async (req: Request, res: Response) => {
   try {
     const { email } = req.params;
