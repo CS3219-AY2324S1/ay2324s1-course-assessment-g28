@@ -14,5 +14,6 @@ CREATE TABLE IF NOT EXISTS Attempts (
     question_title TEXT NOT NULL,
     question_difficulty INT NOT NULL,
     attempt_date TIMESTAMP NOT NULL DEFAULT NOW(),
-    attempt_details TEXT NOT NULL
+    attempt_details TEXT NOT NULL,
+    attempt_language TEXT NOT NULL
 );
