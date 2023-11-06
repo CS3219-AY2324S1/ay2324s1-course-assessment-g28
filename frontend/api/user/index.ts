@@ -3,6 +3,7 @@ import { RequestError } from "@/api/errors";
 import {
   QUESTION_ATTEMPT_API,
   USER_API,
+  USER_PUBLIC_API,
   getIsUsernameExistsPath,
   getQuestionAttemptPath,
   getRoute,
