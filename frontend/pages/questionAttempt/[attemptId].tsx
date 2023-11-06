@@ -22,7 +22,6 @@ import { PanelGroup, Panel } from "react-resizable-panels";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import localizedFormat from "dayjs/plugin/localizedFormat";
-import ComplexityChip from "@/components/ComplexityChip";
 
 dayjs.extend(customParseFormat);
 dayjs.extend(localizedFormat);
