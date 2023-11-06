@@ -88,6 +88,22 @@ export const getQuestions = async (req: Request, res: Response) => {
       filter.complexity = req.query.complexity;
     }
 
+    let attemptedQuestionIds: Set<Number> = new Set<Number>();
+
+    if (req.query.onlyUnattempted && req.query.user) {
+      const onlyUnattempted = req.query.onlyUnattempted === "true";
+      const resp = await fetch(
+        `${process.env.USER_API}/users/${req.query.user}/question-attempt`
+      );
+      attemptedQuestionIds = new Set<Number>(await resp.json());
+
+      if (onlyUnattempted) {
+        filter.id = {
+          $nin: [...attemptedQuestionIds],
+        };
+      }
+    }
+
     const total = await Question.countDocuments(filter);
 
     const questions = await Question.find(filter)
@@ -95,28 +111,17 @@ export const getQuestions = async (req: Request, res: Response) => {
       .limit(size); // take the first (size) elements
 
     if (req.query.onlyUnattempted && req.query.user) {
-      const onlyUnattempted = req.query.onlyUnattempted === "true";
-      const resp = await fetch(
-        `${process.env.USER_API}/users/${req.query.user}/question-attempt`
-      );
-      const attemptedQuestionIds = new Set<Number>(await resp.json());
-
       const modifiedQuestions = [];
 
       for (const question of questions) {
         const questionObject = question.toObject();
         const wasAttempted = attemptedQuestionIds.has(questionObject.id);
-
-        if ((onlyUnattempted && !wasAttempted) || !onlyUnattempted) {
-          modifiedQuestions.push({
-            ...questionObject,
-            wasAttempted: wasAttempted,
-          });
-        }
+        modifiedQuestions.push({
+          ...questionObject,
+          wasAttempted: wasAttempted,
+        });
       }
-      res
-        .status(200)
-        .json({ content: modifiedQuestions, total: modifiedQuestions.length });
+      res.status(200).json({ content: modifiedQuestions, total: total });
     } else {
       res.status(200).json({ content: questions, total: total });
     }
