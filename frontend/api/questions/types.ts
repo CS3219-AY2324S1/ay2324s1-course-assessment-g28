@@ -22,6 +22,7 @@ export const QuestionBaseZod = z.object({
   title: z.string().min(1),
   category: z.string().array(),
   complexity: z.nativeEnum(QuestionComplexity),
+  wasAttempted: z.boolean().optional()
 });
 
 export const QuestionCreationZod = z.object({

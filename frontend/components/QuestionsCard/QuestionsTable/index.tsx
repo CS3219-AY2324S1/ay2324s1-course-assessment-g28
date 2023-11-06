@@ -94,6 +94,7 @@ export default function QuestionTable({ userIsAdmin }: QuestionTableProps) {
               column.uid === ColumnKeyAdminOnly.ACTION ? "center" : "start"
             }
             allowsSorting={column.sortable}
+            width={column.width}
           >
             {column.name}
           </TableColumn>

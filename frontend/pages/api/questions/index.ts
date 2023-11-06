@@ -21,18 +21,14 @@ export default async function handler(
     }
   }
 
-  if (req.method === "GET" && req.query && req.query.onlyUnattempted) {
-    // GET of only unattempted questions
-    // get the user email from the session
-    const session = await getServerSession(req, res, authOptions);
-    if (session === null || !session.user?.email) {
-      res.status(HttpStatus.FORBIDDEN).send("");
-      return;
-    }
-
-    // add to query params
-    req.url += `&user=${session.user.email}`
+  const session = await getServerSession(req, res, authOptions);
+  if (session === null || !session.user?.email) {
+    res.status(HttpStatus.FORBIDDEN).send("");
+    return;
   }
+
+  // add to query params
+  req.url += `&user=${session.user.email}`;
 
   await forwardRequestAndGetResponse(
     req,

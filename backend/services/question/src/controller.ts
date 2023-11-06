@@ -88,15 +88,18 @@ export const getQuestions = async (req: Request, res: Response) => {
       filter.complexity = req.query.complexity;
     }
 
-    let attemptedQuestionIds: Set<Number> = new Set<Number>();
+    // get users attempted questions
+    const resp = await fetch(
+      `${process.env.USER_API}/users/${req.query.user}/question-attempt`
+    );
+     
+    const attemptedQuestions = await resp.json();
+    const attemptedQuestionIds = new Set<Number>(attemptedQuestions);
+    
 
     if (req.query.onlyUnattempted && req.query.user) {
       const onlyUnattempted = req.query.onlyUnattempted === "true";
-      const resp = await fetch(
-        `${process.env.USER_API}/users/${req.query.user}/question-attempt`
-      );
-      attemptedQuestionIds = new Set<Number>(await resp.json());
-
+      
       if (onlyUnattempted) {
         filter.id = {
           $nin: [...attemptedQuestionIds],
@@ -110,21 +113,18 @@ export const getQuestions = async (req: Request, res: Response) => {
       .skip(offset * size) // skip the first offset * size elements
       .limit(size); // take the first (size) elements
 
-    if (req.query.onlyUnattempted && req.query.user) {
-      const modifiedQuestions = [];
+    const modifiedQuestions = [];
 
-      for (const question of questions) {
-        const questionObject = question.toObject();
-        const wasAttempted = attemptedQuestionIds.has(questionObject.id);
-        modifiedQuestions.push({
-          ...questionObject,
-          wasAttempted: wasAttempted,
-        });
-      }
-      res.status(200).json({ content: modifiedQuestions, total: total });
-    } else {
-      res.status(200).json({ content: questions, total: total });
+    for (const question of questions) {
+      const questionObject = question.toObject();
+      const wasAttempted = attemptedQuestionIds.has(questionObject.id);
+      modifiedQuestions.push({
+        ...questionObject,
+        wasAttempted,
+      });
     }
+
+    res.status(200).json({ content: modifiedQuestions, total: total });
   } catch (error) {
     if (error instanceof QuestionError) {
       res
