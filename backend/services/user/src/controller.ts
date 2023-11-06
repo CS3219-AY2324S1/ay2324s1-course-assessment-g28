@@ -46,12 +46,13 @@ export const createAttempt = async (req: Request, res: Response) => {
       attemptDetails,
       attemptDate,
       attemptLanguage,
+      otherUser,
     } = req.body;
 
     let query, queryArgs;
 
     if (attemptDate) {
-      query = `INSERT INTO Attempts (email, question_id, question_title, question_difficulty, attempt_date, attempt_details, attempt_language) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING * `;
+      query = `INSERT INTO Attempts (email, question_id, question_title, question_difficulty, attempt_date, attempt_details, attempt_language, other_user) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING * `;
       queryArgs = [
         email,
         questionId,
@@ -60,9 +61,10 @@ export const createAttempt = async (req: Request, res: Response) => {
         attemptDate,
         attemptDetails,
         attemptLanguage,
+        otherUser,
       ];
     } else {
-      query = `INSERT INTO Attempts (email, question_id, question_title, question_difficulty, attempt_details, attempt_language) VALUES ($1, $2, $3, $4, $5, $6) RETURNING * `;
+      query = `INSERT INTO Attempts (email, question_id, question_title, question_difficulty, attempt_details, attempt_language, other_user) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING * `;
       queryArgs = [
         email,
         questionId,
@@ -70,6 +72,7 @@ export const createAttempt = async (req: Request, res: Response) => {
         questionDifficulty,
         attemptDetails,
         attemptLanguage,
+        otherUser,
       ];
     }
 
@@ -113,7 +116,7 @@ export const getUserByEmail = async (req: Request, res: Response) => {
     }
 
     // query to obtain details from attempts table
-    const attemptQuery = `SELECT id AS "attemptId", question_id AS "questionId", question_title AS "questionTitle", question_difficulty AS "questionDifficulty", attempt_date AS "attemptDate", attempt_language AS "attemptLanguage" FROM Attempts WHERE email = $1`;
+    const attemptQuery = `SELECT id AS "attemptId", question_id AS "questionId", question_title AS "questionTitle", question_difficulty AS "questionDifficulty", attempt_date AS "attemptDate", attempt_language AS "attemptLanguage", other_user AS "otherUser" FROM Attempts WHERE email = $1`;
     const attemptResult = await pool.query(attemptQuery, [email]);
 
     // query to obtain details on unique questionids attempted, to get difficulty counts below
@@ -155,7 +158,7 @@ export const getUserByEmail = async (req: Request, res: Response) => {
 export const getAttemptById = async (req: Request, res: Response) => {
   try {
     const { email, attemptId } = req.params;
-    const query = `SELECT id AS "attemptId", question_id AS "questionId", question_title AS "questionTitle", question_difficulty AS "questionDifficulty", attempt_date AS "attemptDate", attempt_details AS "attemptDetails", attempt_language AS "attemptLanguage" FROM Attempts WHERE email = $1 and id = $2`;
+    const query = `SELECT id AS "attemptId", question_id AS "questionId", question_title AS "questionTitle", question_difficulty AS "questionDifficulty", attempt_date AS "attemptDate", attempt_details AS "attemptDetails", attempt_language AS "attemptLanguage", other_user AS "otherUser" FROM Attempts WHERE email = $1 and id = $2`;
     const result = await pool.query(query, [email, attemptId]);
     res.status(200).json(result.rows[0]);
   } catch (error) {
