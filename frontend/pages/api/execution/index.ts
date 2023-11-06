@@ -1,10 +1,9 @@
+import { submissionUrl } from "@/api/codeExecution";
 import { judge0LanguageIds } from "@/api/codeExecution/constants";
 import { ProgrammingLanguage } from "@/api/codeExecution/type";
 import { HttpMethod, HttpStatus, jsonRequestHeaders } from "@/api/constants";
 import { NextApiRequest, NextApiResponse } from "next";
 
-const judge0HostnameAndPort = process.env.JUDGE0_URL;
-const submissionUrl = judge0HostnameAndPort + "/submissions?wait=true";
 
 export default async function handler(
   req: NextApiRequest,

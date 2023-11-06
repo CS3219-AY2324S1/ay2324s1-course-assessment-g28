@@ -1,14 +1,13 @@
 import { User } from "@/api/user/types";
-import { BE_DATE_FORMAT, CHART_DATE_FORMAT, DATETIME_FORMAT } from "../config";
+import { DATETIME_FORMAT } from "../config";
 import Card from "@/components/Card";
-import dayjs from "dayjs";
 import { useMemo } from "react";
 import cx from "classnames";
 import ComplexityChip from "@/components/ComplexityChip";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import localizedFormat from "dayjs/plugin/localizedFormat";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const customParseFormat = require("dayjs/plugin/customParseFormat");
-const localizedFormat = require("dayjs/plugin/localizedFormat")
 dayjs.extend(customParseFormat);
 dayjs.extend(localizedFormat);
 

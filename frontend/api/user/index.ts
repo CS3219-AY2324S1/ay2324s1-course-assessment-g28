@@ -2,8 +2,8 @@ import { HttpMethod, HttpStatus, jsonRequestHeaders } from "@/api/constants";
 import { RequestError } from "@/api/errors";
 import {
   QUESTION_ATTEMPT_API,
+  QUESTION_ATTEMPT_API_DIRECTORY,
   USER_API,
-  USER_PUBLIC_API,
   getIsUsernameExistsPath,
   getQuestionAttemptPath,
   getRoute,
@@ -53,11 +53,30 @@ export async function getPublicUserInfo(email: string) {
   return body as User;
 }
 
-export async function getQuestionAttempt(attemptId: number) {
-  const res = await fetch(getRoute(getQuestionAttemptPath(attemptId), false), {
-    method: HttpMethod.GET,
-    headers: jsonRequestHeaders,
-  });
+export async function getQuestionAttempt(
+  attemptId: number,
+  isServerSide?: boolean,
+  email?: string, // user email for serverside
+) {
+  let res;
+  if (isServerSide) {
+    // get the user email from the session
+    res = await fetch(
+      `${
+        process.env.USER_API
+      }${USER_API}/${email}${QUESTION_ATTEMPT_API_DIRECTORY}/${attemptId.toString()}`,
+      {
+        method: HttpMethod.GET,
+        headers: jsonRequestHeaders,
+      },
+    );
+  } else {
+    res = await fetch(getQuestionAttemptPath(attemptId), {
+      method: HttpMethod.GET,
+      headers: jsonRequestHeaders,
+    });
+  }
+
   if (res.status !== HttpStatus.OK) {
     throw new RequestError(res);
   }

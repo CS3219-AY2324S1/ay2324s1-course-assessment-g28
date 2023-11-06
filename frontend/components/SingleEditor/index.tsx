@@ -20,7 +20,6 @@ interface SingleEditorProps {
 }
 
 export default function SingleEditor({ question }: SingleEditorProps) {
-  const editorRef = useRef(null);
   const { theme } = useTheme();
   const [codeRunState, setCodeRunState] = useState<CodeRunState>({
     result: 'Click "Run" to execute your code!',
