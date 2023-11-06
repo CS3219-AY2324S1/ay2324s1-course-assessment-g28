@@ -45,11 +45,7 @@ export default function EditorPage({
 
   return (
     <SubmissionContextProvider websocketUrl={websocketUrl}>
-      <div
-        className="flex flex-col w-full h-full mb-[-100px]
-                    flex-grow border-8 rounded-xl border-[#d1d5db]
-                    bg-[#d1d5db] relative"
-      >
+      <div className="flex flex-col w-full h-full mb-[-100px] flex-grow border-8 rounded-xl border-[#d1d5db] bg-[#d1d5db] relative">
         <PanelGroup direction="horizontal" className="grow">
           <Panel defaultSize={40} minSize={25}>
             <PanelGroup direction="vertical">

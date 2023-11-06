@@ -17,7 +17,7 @@ export default function QuestionPage({
   return (
     <div>
       <QuestionActionsCard question={question} />
-      <QuestionDetailsCard question={question}  />
+      <QuestionDetailsCard question={question} />
     </div>
   );
 }

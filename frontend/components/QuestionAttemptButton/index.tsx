@@ -1,5 +1,6 @@
 import { getPairingServiceUri } from "@/api/pairing";
 import { Question, QuestionBase } from "@/api/questions/types";
+import { useActiveEditingSessionContext } from "@/components/ActiveSessions/ActiveEditingSessionContext";
 import useUserInfo from "@/hooks/useUserInfo";
 import { getEditorPath, getSingleEditorPath } from "@/routes";
 import {
@@ -46,6 +47,7 @@ export default function QuestionAttemptButton({
     MatchState.NO_ATTEMPT,
   );
   const router = useRouter();
+  const { addEditingSession } = useActiveEditingSessionContext();
   const pairingWebsocket = useRef<WebSocket | null>(null);
   const pairingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const editorPathRef = useRef<string>();
@@ -76,6 +78,14 @@ export default function QuestionAttemptButton({
               parseInt(parsed.data.questionId as string),
               parsed.data.url as string,
             );
+            addEditingSession({
+              sessionUrl: getEditorPath(
+                parseInt(parsed.data.questionId as string),
+                parsed.data.url as string,
+              ),
+              questionId: parseInt(parsed.data.questionId as string),
+              email: parsed.data.otherUser as string,
+            });
             ws.close();
           }
         } else {

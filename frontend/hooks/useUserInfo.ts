@@ -14,5 +14,14 @@ export default function useUserInfo() {
   const isSignedIn = status === UserStatus.AUTHENTICATED;
   const isNotSignedIn = status === UserStatus.UNAUTHENTICATED;
 
-  return { isLoading, isSignedIn, isNotSignedIn, image, name, username, email, isAdmin };
+  return {
+    isLoading,
+    isSignedIn,
+    isNotSignedIn,
+    image,
+    name,
+    username,
+    email,
+    isAdmin,
+  };
 }

@@ -20,11 +20,14 @@ export default function SingleEditorPage({
     <div className="flex flex-grow overflow-auto">
       <PanelGroup direction="horizontal">
         <Panel>
-          <QuestionDetailsCard question={question} className="max-h-full overflow-auto"/>
+          <QuestionDetailsCard
+            question={question}
+            className="max-h-full overflow-auto"
+          />
         </Panel>
-        <VerticalResizeHandle/> 
+        <VerticalResizeHandle />
         <Panel>
-          <SingleEditor question={question}/>
+          <SingleEditor question={question} />
         </Panel>
       </PanelGroup>
     </div>

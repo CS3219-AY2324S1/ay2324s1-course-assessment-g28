@@ -88,7 +88,7 @@ export default function CodeWindow(props: CodeWindowProps) {
 
   function onMessage(e: WSMessageType) {
     const data = JSON.parse(e.data);
-    console.log("CodeWindow received: ", data);
+    // console.log("CodeWindow received: ", data);
 
     switch (data.method) {
       case WS_METHODS.READY:
@@ -463,8 +463,7 @@ export default function CodeWindow(props: CodeWindowProps) {
                 disabled={isCodeRunning}
                 onClick={runCode}
                 size="sm"
-                color="success"
-                className="text-white h-8 font-bold px-5"
+                color="primary"
               >
                 Run Code
               </Button>
@@ -473,7 +472,6 @@ export default function CodeWindow(props: CodeWindowProps) {
                 onClick={runCode}
                 size="sm"
                 color="secondary"
-                className="text-white h-8 font-bold px-5"
               >
                 Submit
               </Button>
@@ -485,7 +483,7 @@ export default function CodeWindow(props: CodeWindowProps) {
                   onClick={initateNextQnMyself}
                   size="sm"
                   color="warning"
-                  className="text-white h-8 font-bold"
+                  className="text-white"
                 >
                   Next Question
                 </Button>
@@ -494,7 +492,6 @@ export default function CodeWindow(props: CodeWindowProps) {
                 onClick={initateExitMyself}
                 size="sm"
                 color="default"
-                className="h-8 font-bold"
               >
                 Exit
               </Button>

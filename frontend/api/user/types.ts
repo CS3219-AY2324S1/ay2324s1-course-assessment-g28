@@ -5,6 +5,7 @@ export const AttemptedQuestionRecordZod = z.object({
   questionId: z.number().int().nonnegative(),
   questionTitle: z.string(),
   attemptDate: z.string().datetime(),
+  attemptLanguage: z.string(),
 });
 
 export const AttemptedQuestionDetailsZod = z.object({
@@ -13,6 +14,8 @@ export const AttemptedQuestionDetailsZod = z.object({
   questionTitle: z.string(),
   attemptDate: z.string().datetime(),
   attemptDetails: z.string(),
+  attemptLanguage: z.string(),
+  otherUser: z.string().email().optional(),
 });
 
 export const CreateQuestionAttemptRequestBodyZod = z.object({
@@ -21,6 +24,8 @@ export const CreateQuestionAttemptRequestBodyZod = z.object({
   questionDifficulty: z.number().min(0).max(2),
   attemptDate: z.string().datetime(),
   attemptDetails: z.string(),
+  attemptLanguage: z.string(),
+  otherUser: z.string().email().optional(),
 });
 
 export type CreateQuestionAttemptRequestBody = z.infer<
@@ -35,6 +40,11 @@ export const UserZod = z.object({
   numMediumQuestionsAttempted: z.number().nonnegative(),
   numHardQuestionsAttempted: z.number().nonnegative(),
   attemptedQuestions: AttemptedQuestionRecordZod.array(),
+});
+
+export const UserPublicZod = z.object({
+  username: z.string(),
+  favouriteProgrammingLanguage: z.string().optional(),
 });
 
 export const CreateUserRequestBodyZod = z.object({
@@ -55,6 +65,8 @@ export type AttemptedQuestionDetails = z.infer<
 >;
 
 export type User = z.infer<typeof UserZod>;
+
+export type UserPublic = z.infer<typeof UserPublicZod>;
 
 export type UserExists = z.infer<typeof UserExistsZod>;
 

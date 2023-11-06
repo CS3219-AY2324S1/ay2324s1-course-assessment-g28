@@ -1,3 +1,4 @@
+import { ProgrammingLanguage } from "@/api/codeExecution/type";
 import { Question } from "@/api/questions/types";
 import { createQuestionAttempt } from "@/api/user";
 import { HOME } from "@/routes";
@@ -25,11 +26,13 @@ export type EditorSubmissionState =
 export interface EditorSubmissionModalButtonProps {
   question: Question;
   editorContent: string;
+  language: ProgrammingLanguage;
 }
 
 export default function EditorSubmissionModalButton({
   question,
   editorContent,
+  language,
 }: EditorSubmissionModalButtonProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const router = useRouter();
@@ -44,11 +47,10 @@ export default function EditorSubmissionModalButton({
         questionDifficulty: question.complexity,
         attemptDate: new Date().toISOString(),
         attemptDetails: editorContent,
+        attemptLanguage: language,
       });
-      toast.success("Question attempt successfully submitted!");
       setSubmissionState("success");
     } catch (e) {
-      toast.error("Something went wrong. Please try again.");
       setSubmissionState("error");
     }
   }, [editorContent, question.complexity, question.id, question.title]);
