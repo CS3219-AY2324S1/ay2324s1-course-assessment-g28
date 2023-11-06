@@ -13,13 +13,12 @@ const SECOND = 1000;
 
 function matchOnQuestion(user1: User, user2: User): Question | null {
   let question = null;
-
   // Cannot match user to themself
-  if (user1.match_options.user == user2.match_options.user) {
+  if (user1.match_options.user === user2.match_options.user) {
     return null;
-  } else if (user1.match_options.complexity && user2.match_options.complexity) {
+  } else if (typeof user1.match_options.complexity === "number" && typeof user2.match_options.complexity === "number") {
     question = matchComplexity(user1, user2);
-  } else if (user1.match_options.question || user2.match_options.question) {
+  } else if (typeof user1.match_options.question === "number" || typeof user2.match_options.question === "number") {
     question = matchSpecificQuestion(user1, user2);
   }
 
