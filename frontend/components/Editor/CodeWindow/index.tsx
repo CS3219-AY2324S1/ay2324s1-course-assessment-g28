@@ -46,11 +46,10 @@ export default function CodeWindow(props: CodeWindowProps) {
   const [result, setResult] = useState(
     'Click "Run Code" to execute your code!',
   );
-  const [isMyTurn, setIsMyTurn] = useState(false);
-  const [isWebsocketLoaded, setIsWebsocketLoaded] = useState(false);
+  const [isWebsocketReady, setIsWebsocketReady] = useState(false);
   const [isCodeRunning, setIsCodeRunning] = useState(false);
   const [isCodeMirrorLoaded, setIsCodeMirrorLoaded] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isPairConnected, setIsPairConnected] = useState(false);
   const [requestQueue, setRequestQueue] = useState<Record<string, any>>({});
 
   const editorsParentRef = useRef<{ [lang: string]: HTMLDivElement | null }>(
@@ -62,8 +61,7 @@ export default function CodeWindow(props: CodeWindowProps) {
     share: true,
     filter: () => false,
     onOpen: () => {
-      console.log("Websocket connection established");
-      setIsWebsocketLoaded(true);
+      console.log("Websocket connection established (not yet ready for messages)");
     },
     onMessage: onMessage,
     onClose: onClose,
@@ -88,8 +86,11 @@ export default function CodeWindow(props: CodeWindowProps) {
     //console.log("CodeWindow received: ", data);
 
     switch (data.method) {
-      case WS_METHODS.READY:
-        handleReady(data);
+      case WS_METHODS.READY_TO_RECEIVE:
+        handleReadyToReceive(data);
+        break;
+      case WS_METHODS.PAIR_CONNECTED:
+        handlePairConnected(data);
         break;
       case WS_METHODS.OP:
         handleOp(data);
@@ -120,9 +121,12 @@ export default function CodeWindow(props: CodeWindowProps) {
     // TODO: Handle error
   }
 
-  function handleReady(data: any) {
-    setIsMyTurn(data.isMyTurn);
-    setIsInitialized(true);
+  function handleReadyToReceive(data: any) {
+    setIsWebsocketReady(true);
+  }
+
+  function handlePairConnected(data: any) {
+    setIsPairConnected(true);
   }
 
   function handleOp(data: any) {
@@ -188,6 +192,8 @@ export default function CodeWindow(props: CodeWindowProps) {
     //   op: val
     // });
   }
+
+  //#region collaborative editing logic
 
   function pause(time: number) {
     return new Promise<void>((resolve) => setTimeout(resolve, time));
@@ -346,7 +352,6 @@ export default function CodeWindow(props: CodeWindowProps) {
     return [collab({ startVersion }), plugin];
   }
 
-  //const worker = new Worker(workerScript)
   async function addPeer(lang: string) {
     let { version, doc } = await getDocument(new Connection(), lang);
     let connection = new Connection();
@@ -362,9 +367,9 @@ export default function CodeWindow(props: CodeWindowProps) {
     });
     let editorParentDiv = editorsParentRef.current[lang];
 
-    // TODO: Add 3 EditorViews one for each language
+    // Adds one editor per language
     // Display only the one for the selected language
-    // This ensures version history is consistent for all languages
+    // Ensures version history is maintained separately for each language
     editorsRef.current[lang] = new EditorView({
       state,
       parent: editorParentDiv!,
@@ -374,7 +379,7 @@ export default function CodeWindow(props: CodeWindowProps) {
   useEffect(() => {
     if (
       editorsParentRef.current !== null &&
-      isWebsocketLoaded &&
+      isWebsocketReady &&
       !isCodeMirrorLoaded
     ) {
       console.log("CodeMirror Ref initialized and WebSocket is loaded");
@@ -386,7 +391,11 @@ export default function CodeWindow(props: CodeWindowProps) {
 
       setIsCodeMirrorLoaded(true);
     }
-  }, [editorsParentRef, isWebsocketLoaded]);
+  }, [editorsParentRef, isWebsocketReady]);
+
+  //#endregion
+
+  //#region UI event handlers
 
   // TODO: add proper typing later
   function onMouseUp(e: any) {
@@ -441,9 +450,11 @@ export default function CodeWindow(props: CodeWindowProps) {
     });
   }
 
+  //#endregion
+
   return (
     <PanelGroup direction="vertical" className="relative">
-      {!isInitialized && (
+      {!isCodeMirrorLoaded && (
         <LoadingScreen displayText="Initializing Code Space ..."></LoadingScreen>
       )}
       <Panel defaultSize={60} minSize={25}>
@@ -525,7 +536,7 @@ export default function CodeWindow(props: CodeWindowProps) {
       <PanelResizeHandle>{ResizeHandleHorizontal()}</PanelResizeHandle>
       <Panel>
         <div className="h-full w-full flex flex-col overflow-auto rounded-xl relative box-border bg-content1">
-          {isCodeRunning && isInitialized && (
+          {isCodeRunning && isWebsocketReady && (
             <LoadingScreen displayText="Waiting for result ..."></LoadingScreen>
           )}
           <div className="h-full w-full max-w-full p-3 whitespace-pre-wrap break-words bg-content2">

@@ -1,7 +1,7 @@
 import express, { Express, Request } from 'express';
 import dotenv from 'dotenv';
 import { getPair } from './services/pairService';
-import { getQueryParams, handleCaretPos, handleExit, handleMessage, handleOp, handleReady, handleRunCode, handleSwitchLang } from './services/wsService';
+import { getQueryParams, handleCaretPos, handleExit, handleMessage, handleOp, handlePairConnected, handleReadyToReceive, handleRunCode, handleSwitchLang } from './services/wsService';
 import { WS_METHODS } from './constants';
 import { addPair, removePair } from './services/otService';
 dotenv.config();
@@ -126,10 +126,13 @@ wsServer.on('connection', function(connection: WebSocket, request: Request) {
       partners[userId] = partnerId;
       clients[userId] = connection;
 
+      // Inform user that WS is ready for messages
+      handleReadyToReceive(connection);
+
       // Check if partner has already connected
       // If so, send READY to the pair
       if (partnerId in clients) {
-        handleReady(connection, clients[partnerId], userId, partnerId, currTurnId);
+        handlePairConnected(connection, clients[partnerId]);
       } 
     } else {
       console.log("Closing connection for user ", userId);
@@ -172,6 +175,7 @@ wsServer.on('connection', function(connection: WebSocket, request: Request) {
     // Order of deletion: partners[userId, partnerId], pairs[pairId], clients[userId]
     // Then partnerConnection is also closed which will only delete clients[userId]
 
+    // TODO: Don't close if partner closes
     // Close partner connection if it exists
     // Also remove the pair from the OT service
     if (userId in partners) {

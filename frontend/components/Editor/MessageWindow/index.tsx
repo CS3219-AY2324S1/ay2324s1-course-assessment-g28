@@ -47,7 +47,7 @@ export default function MessageWindow(props: MessageWindowProps) {
     //console.log("MessageWindow received: ", data);
 
     switch (data.method) {
-      case WS_METHODS.READY:
+      case WS_METHODS.PAIR_CONNECTED:
         handleReady(data);
         break;
       case WS_METHODS.MESSAGE:

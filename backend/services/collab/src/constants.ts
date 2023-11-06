@@ -1,5 +1,6 @@
 export enum WS_METHODS {
-  READY, //
+  READY_TO_RECEIVE, //
+  PAIR_CONNECTED,
   OP, // To indicate I've handled this
   CARET_POS,
   GET_TURN,

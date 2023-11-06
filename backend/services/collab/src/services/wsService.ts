@@ -18,10 +18,13 @@ export function getQueryParams(url: string): { [key: string]: string } {
   return params;
 }
 
-export function handleReady(connection: WebSocket, partnerConnection: WebSocket, userId: string, partnerId: string, currTurnId: string) {
-  const isMyTurn = userId == currTurnId;
-  const messageUser = JSON.stringify({ method: WS_METHODS.READY, isMyTurn: isMyTurn });
-  const messagePartner = JSON.stringify({ method: WS_METHODS.READY, isMyTurn: !isMyTurn });
+export function handleReadyToReceive(connection: WebSocket) {
+  const message = JSON.stringify({ method: WS_METHODS.READY_TO_RECEIVE });
+  connection.send(message);
+}
+export function handlePairConnected(connection: WebSocket, partnerConnection: WebSocket) {
+  const messageUser = JSON.stringify({ method: WS_METHODS.PAIR_CONNECTED });
+  const messagePartner = JSON.stringify({ method: WS_METHODS.PAIR_CONNECTED });
   
   connection.send(messageUser);
   partnerConnection.send(messagePartner);
