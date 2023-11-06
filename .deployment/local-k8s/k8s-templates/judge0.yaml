@@ -30,6 +30,11 @@ spec:
                 secretKeyRef:
                   name: peerprep-secret
                   key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: peerprep-secret
+                  key: REDIS_PORT
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -103,6 +108,11 @@ spec:
                 secretKeyRef:
                   name: peerprep-secret
                   key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: peerprep-secret
+                  key: REDIS_PORT
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
