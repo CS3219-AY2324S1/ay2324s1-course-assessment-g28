@@ -23,3 +23,7 @@ export const SINGLE_EDITOR_DIRECTORY = "/singleEditor";
 export const getSingleEditorPath = (questionId: number) =>
   SINGLE_EDITOR_DIRECTORY + "/" + questionId.toString();
 export const UNAUTHORIZED_PAGE = "/error/unauthorized";
+
+export const QUESTION_ATTEMPT_DIRECTORY = "/questionAttempt";
+export const getQuestionAttemptPath = (attemptId: number) =>
+  `${QUESTION_ATTEMPT_DIRECTORY}/${attemptId.toString()}`;
