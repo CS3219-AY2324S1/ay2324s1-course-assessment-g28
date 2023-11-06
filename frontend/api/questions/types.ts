@@ -48,6 +48,7 @@ export interface GetQuestionRequest {
   offset: number;
   keyword?: string;
   complexity?: QuestionComplexity;
+  onlyUnattempted?: boolean;
 }
 
 export const GetQuestionResponseBodyZod = PagedResponse.extend({

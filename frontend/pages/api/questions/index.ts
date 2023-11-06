@@ -1,34 +1,16 @@
-import { HttpMethod, HttpStatus } from "@/api/constants";
+import { HttpStatus } from "@/api/constants";
 import {
   checkIfUserIsAdmin,
   forwardRequestAndGetResponse,
 } from "@/api/server/serverConstants";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  //TODO: remove this block when not needed for local dev anymore
-  if (process.env.QUESTIONS_BACKEND_MODE === "LOCAL") {
-    // TODO: add actual fetch to backend service here, for now just returning dummy data
-    if (req.method === HttpMethod.GET) {
-      res.status(HttpStatus.OK).json({
-        content: [
-          {
-            id: 1,
-            title: "First Question",
-            category: ["great question", "tag"],
-            complexity: 0,
-          },
-        ],
-        total: 1,
-      });
-    } else if (req.method === HttpMethod.POST) {
-      res.status(HttpStatus.RESOURCE_CREATED);
-    }
-    return;
-  }
   // if edit question or create question, need check for admin
   if (req.method === "POST" || req.method === "PATCH") {
     const isAdmin = await checkIfUserIsAdmin(req, res);
@@ -37,6 +19,19 @@ export default async function handler(
       res.status(HttpStatus.FORBIDDEN).send("");
       return;
     }
+  }
+
+  if (req.method === "GET" && req.query && req.query.onlyUnattempted) {
+    // GET of only unattempted questions
+    // get the user email from the session
+    const session = await getServerSession(req, res, authOptions);
+    if (session === null || !session.user?.email) {
+      res.status(HttpStatus.FORBIDDEN).send("");
+      return;
+    }
+
+    // add to query params
+    req.url += `&user=${session.user.email}`
   }
 
   await forwardRequestAndGetResponse(
