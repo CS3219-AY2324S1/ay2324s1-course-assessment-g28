@@ -1,7 +1,13 @@
 import { getQuestion } from "@/api/questions";
 import { getPublicUserInfo } from "@/api/user";
 import { EditingSessionDetails } from "@/components/ActiveSessions";
-import { PropsWithChildren, createContext, useContext, useState } from "react";
+import {
+  PropsWithChildren,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 interface AddEditingSessionDetails {
   email: string; //email of the user to add
@@ -31,12 +37,34 @@ const ActiveEditingSessionContext =
 export const useActiveEditingSessionContext = () =>
   useContext(ActiveEditingSessionContext);
 
+const activeEditingSessionsLocalStorageKey = "active_editing_sessions";
+
 export const ActiveEditingSessionContextProvider = ({
   children,
 }: PropsWithChildren<unknown>) => {
   const [activeEditingSessions, setActiveEditingSessions] = useState<
     EditingSessionDetails[]
   >([]);
+
+  useEffect(() => {
+    const persisted = localStorage.getItem(activeEditingSessionsLocalStorageKey)
+    if (persisted !== null && persisted !== "undefined") {
+      setActiveEditingSessions(
+        JSON.parse(
+          persisted,
+        ),
+      );
+    }
+  }, []);
+
+  // persist active editing sessions to localstorage whenever it changes
+  useEffect(() => {
+    // save to local storage
+    localStorage.setItem(
+      activeEditingSessionsLocalStorageKey,
+      JSON.stringify(activeEditingSessions),
+    );
+  }, [activeEditingSessions]);
 
   const addEditingSession = async (details: AddEditingSessionDetails) => {
     try {
