@@ -16,7 +16,6 @@ export const QUESTION_ATTEMPT_API_DIRECTORY = "/question-attempt";
 export const getQuestionAttemptPath = (attemptId: number) =>
   `${USER_API}${QUESTION_ATTEMPT_API_DIRECTORY}/${attemptId.toString()}`;
 
-
 export const USER_PUBLIC_API = "/users/public";
 export const getUserPublicInfoPath = (userEmail: string) =>
   `${API_PREFIX}/${USER_PUBLIC_API}/${userEmail}`;

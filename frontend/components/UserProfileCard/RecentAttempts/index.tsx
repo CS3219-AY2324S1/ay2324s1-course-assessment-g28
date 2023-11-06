@@ -17,9 +17,7 @@ const RecentAttempts = ({ data }: { data?: User }) => {
     const formattedDateData = attemptedQuestions?.map((qn) => ({
       ...qn,
       attemptDate: dayjs(qn.attemptDate),
-      attemptDateString: dayjs(qn.attemptDate).format(
-        DATETIME_FORMAT,
-      ),
+      attemptDateString: dayjs(qn.attemptDate).format(DATETIME_FORMAT),
     }));
     formattedDateData?.sort((a, b) => {
       if (a.attemptDate.isSame(b.attemptDateString)) {
@@ -55,9 +53,7 @@ const RecentAttempts = ({ data }: { data?: User }) => {
               <div>
                 <ComplexityChip complexity={qn.questionDifficulty} />
               </div>
-              <div>
-                {qn.attemptLanguage}
-              </div>
+              <div>{qn.attemptLanguage}</div>
               <div
                 className={cx(
                   "text-sm shrink-0",

@@ -7,7 +7,7 @@ export const AttemptedQuestionRecordZod = z.object({
   questionDifficulty: z.number().int().min(0).max(2),
   attemptDate: z.string().datetime(),
   attemptLanguage: z.string(),
-  otherUser: z.string().email().optional().nullable()
+  otherUser: z.string().email().optional().nullable(),
 });
 
 export const AttemptedQuestionDetailsZod = z.object({

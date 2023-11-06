@@ -52,7 +52,13 @@ export default function EditorSubmissionModalButton({
     } catch (e) {
       setSubmissionState("error");
     }
-  }, [editorContent, question.complexity, question.id, question.title, language]);
+  }, [
+    editorContent,
+    question.complexity,
+    question.id,
+    question.title,
+    language,
+  ]);
 
   let modal = null;
   if (submissionState === "confirmation") {

@@ -32,7 +32,9 @@ const defaultContext: QuestionTableContextType = {
     throw new Error("Not in provider!");
   },
   onlyUnattemptedFilter: false,
-  setOnlyUnattemptedFilter: () => {throw new Error("Not in provider!")},
+  setOnlyUnattemptedFilter: () => {
+    throw new Error("Not in provider!");
+  },
   selectedComplexity: undefined,
   setSelectedComplexity: () => {
     throw new Error("Not in provider!");
@@ -64,7 +66,8 @@ export const QuestionTableProvider = ({
     useState<QuestionComplexity>();
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE_SELECTION);
   const [page, setPage] = useState(1);
-  const [onlyUnattemptedFilter, setOnlyUnattemptedFilter] = useState<boolean>(false);
+  const [onlyUnattemptedFilter, setOnlyUnattemptedFilter] =
+    useState<boolean>(false);
 
   const resetQuestionTableOptions = useCallback(() => {
     setFilterValue("");

@@ -47,13 +47,11 @@ export const ActiveEditingSessionContextProvider = ({
   >([]);
 
   useEffect(() => {
-    const persisted = localStorage.getItem(activeEditingSessionsLocalStorageKey)
+    const persisted = localStorage.getItem(
+      activeEditingSessionsLocalStorageKey,
+    );
     if (persisted !== null && persisted !== "undefined") {
-      setActiveEditingSessions(
-        JSON.parse(
-          persisted,
-        ),
-      );
+      setActiveEditingSessions(JSON.parse(persisted));
     }
   }, []);
 

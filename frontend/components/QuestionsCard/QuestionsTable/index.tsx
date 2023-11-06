@@ -40,7 +40,7 @@ export default function QuestionTable({ userIsAdmin }: QuestionTableProps) {
     pageSize,
     page,
     resetQuestionTableOptions,
-    onlyUnattemptedFilter
+    onlyUnattemptedFilter,
   } = useQuestionTableContext();
   const router = useRouter();
 
@@ -49,7 +49,7 @@ export default function QuestionTable({ userIsAdmin }: QuestionTableProps) {
     offset: page - 1,
     complexity: selectedComplexity,
     keyword: filterValue,
-    onlyUnattempted: onlyUnattemptedFilter
+    onlyUnattempted: onlyUnattemptedFilter,
   };
 
   const { data, error, isLoading, mutate } = useSWR(
