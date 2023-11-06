@@ -11,52 +11,30 @@ import { useEffect, useMemo, useState } from "react";
 import { FaUserFriends } from "react-icons/fa";
 import { Badge } from "@nextui-org/react";
 import { useRouter } from "next/router";
+import { useActiveEditingSessionContext } from "@/components/ActiveSessions/ActiveEditingSessionContext";
+import { UserPublic } from "@/api/user/types";
+import { Question } from "@/api/questions/types";
 
-export type SessionItemType = {
-  // TODO: finalise typing
-  otherUserImage: string;
-  otherUsername: string;
-  questionTitle: string;
-  questionId: number;
-  sessionUrl: string;
+export type EditingSessionDetails = {
+  otherUser: UserPublic;
+  question: Question;
+  sessionUrl: string; // add later
 };
 
-// TODO: remove after integration
-const mockData: Array<SessionItemType> = [
-  {
-    otherUserImage:
-      "https://upload.wikimedia.org/wikipedia/commons/b/bb/Kittyply_edit1.jpg",
-    otherUsername: "user 1",
-    questionTitle: "question title 1",
-    questionId: 1,
-    sessionUrl: "someurl1",
-  },
-  {
-    otherUserImage:
-      "https://upload.wikimedia.org/wikipedia/commons/b/bb/Kittyply_edit1.jpg",
-    otherUsername: "user 2",
-    questionTitle: "question title 2 that is very longgggggggggggggggggg",
-    questionId: 2,
-    sessionUrl: "someurl2",
-  },
-];
-
 const ActiveSessions = () => {
-  const [activeSessions, setActiveSessions] = useState<Array<SessionItemType>>(
-    [],
-  );
+  const { activeEditingSessions } = useActiveEditingSessionContext();
   const [isShowing, setIsShowing] = useState(false);
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const router = useRouter();
 
   const hasActiveSessions = useMemo(
-    () => activeSessions.length > 0,
-    [activeSessions],
+    () => activeEditingSessions.length > 0,
+    [activeEditingSessions],
   );
 
   const activeSessionsCount = useMemo(
-    () => activeSessions.length,
-    [activeSessions],
+    () => activeEditingSessions.length,
+    [activeEditingSessions],
   );
 
   const showSessions = () => {
@@ -76,7 +54,6 @@ const ActiveSessions = () => {
 
   useEffect(() => {
     //TODO: fetch active sessionsa
-    setActiveSessions(mockData);
   }, []);
 
   return (
@@ -102,7 +79,11 @@ const ActiveSessions = () => {
           </Badge>
         </div>
       </DropdownTrigger>
-      <DropdownMenu aria-label="active-sessions-list" variant="flat">
+      <DropdownMenu
+        aria-label="active-sessions-list"
+        variant="flat"
+        onAction={(sessionUrl) => router.push(sessionUrl as string)}
+      >
         <DropdownSection showDivider>
           <DropdownItem
             isReadOnly
@@ -118,18 +99,12 @@ const ActiveSessions = () => {
         </DropdownSection>
         <DropdownSection>
           {hasActiveSessions ? (
-            activeSessions?.map((session) => {
-              const {
-                sessionUrl,
-                otherUserImage,
-                otherUsername,
-                questionTitle,
-              } = session;
+            activeEditingSessions?.map((session) => {
+              const { sessionUrl, otherUser, question } = session;
               return (
                 <DropdownItem
                   key={sessionUrl}
                   textValue={sessionUrl}
-                  onClick={() => router.replace(sessionUrl)}
                   className="h-[50px] w-[225px]"
                 >
                   <Tooltip
@@ -141,14 +116,16 @@ const ActiveSessions = () => {
                       <Avatar
                         isBordered
                         color="secondary"
-                        src={otherUserImage}
+                        showFallback
                         size="sm"
                         className="ml-[4px]"
                       />
                       <div>
-                        <div className="text-violet-600">@{otherUsername}</div>
+                        <div className="text-violet-600">
+                          @{otherUser.username}
+                        </div>
                         <div className="w-[150px] truncate">
-                          {questionTitle}
+                          {question.title}
                         </div>
                       </div>
                     </div>

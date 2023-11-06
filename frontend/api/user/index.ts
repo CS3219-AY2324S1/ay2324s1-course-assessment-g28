@@ -3,9 +3,11 @@ import { RequestError } from "@/api/errors";
 import {
   QUESTION_ATTEMPT_API,
   USER_API,
+  USER_PUBLIC_API,
   getIsUsernameExistsPath,
   getQuestionAttemptPath,
   getRoute,
+  getUserPublicInfoPath,
 } from "@/api/routes";
 import {
   AttemptedQuestionDetails,
@@ -15,6 +17,7 @@ import {
   User,
   UserExists,
   UserExistsZod,
+  UserPublicZod,
   UserZod,
 } from "@/api/user/types";
 
@@ -31,6 +34,22 @@ export async function getOwnUserInfo() {
   }
   const body = await res.json();
   UserZod.parse(body);
+  return body as User;
+}
+
+/**
+ * Fetch publicly available info on a user.
+ */
+export async function getPublicUserInfo(email: string) {
+  const res = await fetch(getUserPublicInfoPath(email), {
+    method: HttpMethod.GET,
+    headers: jsonRequestHeaders
+  });
+  if (res.status !== HttpStatus.OK) {
+    throw new RequestError(res);
+  }
+  const body = await res.json();
+  UserPublicZod.parse(body);
   return body as User;
 }
 
