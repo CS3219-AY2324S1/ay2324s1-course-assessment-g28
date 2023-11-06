@@ -1,5 +1,5 @@
 import { HttpMethod, HttpStatus } from "@/api/constants";
-import { QUESTION_ATTEMPT_API, USER_API } from "@/api/routes";
+import { USER_API } from "@/api/routes";
 import { forwardRequestAndGetResponse } from "@/api/server/serverConstants";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { NextApiRequest, NextApiResponse } from "next";

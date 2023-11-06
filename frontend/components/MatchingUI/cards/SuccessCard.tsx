@@ -7,6 +7,7 @@ const SuccessCard = () => {
   const [secondsLeft, setSecondsLeft] = useState(3);
   const { editorUrl } = useMatchContext();
   const router = useRouter();
+
   useEffect(() => {
     if (secondsLeft < 1) {
       router.push(editorUrl);
