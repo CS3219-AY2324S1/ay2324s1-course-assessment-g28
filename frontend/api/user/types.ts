@@ -5,6 +5,7 @@ export const AttemptedQuestionRecordZod = z.object({
   questionId: z.number().int().nonnegative(),
   questionTitle: z.string(),
   attemptDate: z.string().datetime(),
+  attemptLanguage: z.string(),
 });
 
 export const AttemptedQuestionDetailsZod = z.object({
@@ -13,6 +14,8 @@ export const AttemptedQuestionDetailsZod = z.object({
   questionTitle: z.string(),
   attemptDate: z.string().datetime(),
   attemptDetails: z.string(),
+  attemptLanguage: z.string(),
+  otherUser: z.string().email().optional(),
 });
 
 export const CreateQuestionAttemptRequestBodyZod = z.object({
@@ -21,6 +24,8 @@ export const CreateQuestionAttemptRequestBodyZod = z.object({
   questionDifficulty: z.number().min(0).max(2),
   attemptDate: z.string().datetime(),
   attemptDetails: z.string(),
+  attemptLanguage: z.string(),
+  otherUser: z.string().email().optional(),
 });
 
 export type CreateQuestionAttemptRequestBody = z.infer<
@@ -39,8 +44,8 @@ export const UserZod = z.object({
 
 export const UserPublicZod = z.object({
   username: z.string(),
-  favouriteProgrammingLanguage: z.string().optional(), 
-})
+  favouriteProgrammingLanguage: z.string().optional(),
+});
 
 export const CreateUserRequestBodyZod = z.object({
   username: z.string().min(1, "Username must be provided"),

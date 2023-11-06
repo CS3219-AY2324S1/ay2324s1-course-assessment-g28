@@ -38,7 +38,7 @@ interface QuestionAttemptButtonProps {
 export default function QuestionAttemptButton({
   question,
   size,
-  variant
+  variant,
 }: QuestionAttemptButtonProps) {
   const { email } = useUserInfo();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -205,8 +205,8 @@ export default function QuestionAttemptButton({
   return (
     <>
       <Button
-      size={size}
-      variant={variant}
+        size={size}
+        variant={variant}
         color="secondary"
         title="Start a collaborative editor session with another person"
         onPress={onOpen}

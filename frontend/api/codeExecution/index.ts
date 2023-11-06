@@ -1,4 +1,7 @@
-import { CodeSubmissionResult, ProgrammingLanguage } from "@/api/codeExecution/type";
+import {
+  CodeSubmissionResult,
+  ProgrammingLanguage,
+} from "@/api/codeExecution/type";
 import { HttpMethod, jsonRequestHeaders } from "@/api/constants";
 import { RequestError } from "@/api/errors";
 import { EXECUTION_API, getRoute } from "@/api/routes";

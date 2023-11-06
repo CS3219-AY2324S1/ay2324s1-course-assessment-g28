@@ -1,5 +1,8 @@
 import { HttpMethod, HttpStatus } from "@/api/constants";
-import { checkIfUserIsAdmin, forwardRequestAndGetResponse } from "@/api/server/serverConstants";
+import {
+  checkIfUserIsAdmin,
+  forwardRequestAndGetResponse,
+} from "@/api/server/serverConstants";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(

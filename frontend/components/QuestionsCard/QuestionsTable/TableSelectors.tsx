@@ -87,9 +87,7 @@ const TableSelectors = ({ userIsAdmin }: TableSelectorsProps) => {
             }}
           >
             {COMPLEXITY_OPTIONS.map((status) => (
-              <DropdownItem key={status.key}>
-                {status.name}
-              </DropdownItem>
+              <DropdownItem key={status.key}>{status.name}</DropdownItem>
             ))}
           </DropdownMenu>
         </Dropdown>

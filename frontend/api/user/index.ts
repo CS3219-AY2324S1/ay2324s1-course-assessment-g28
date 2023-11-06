@@ -3,7 +3,6 @@ import { RequestError } from "@/api/errors";
 import {
   QUESTION_ATTEMPT_API,
   USER_API,
-  USER_PUBLIC_API,
   getIsUsernameExistsPath,
   getQuestionAttemptPath,
   getRoute,
@@ -43,7 +42,7 @@ export async function getOwnUserInfo() {
 export async function getPublicUserInfo(email: string) {
   const res = await fetch(getUserPublicInfoPath(email), {
     method: HttpMethod.GET,
-    headers: jsonRequestHeaders
+    headers: jsonRequestHeaders,
   });
   if (res.status !== HttpStatus.OK) {
     throw new RequestError(res);
@@ -131,5 +130,5 @@ export async function createQuestionAttempt(
   });
   if (res.status !== HttpStatus.OK_NO_CONTENT) {
     throw new RequestError(res);
-  } 
+  }
 }

@@ -36,4 +36,3 @@ export const defaultProgrammingLanguageEditorContents: Record<
   Python: "# Write your code here",
   Javascript: "// Write your code here",
 };
-

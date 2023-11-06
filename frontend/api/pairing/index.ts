@@ -1,5 +1,5 @@
 import { PairingRequest } from "@/api/pairing/types";
-  
+
 const DEFAULT_PAIRING_DURATION = 30000;
 
 export const MAX_PAIRING_DURATION =

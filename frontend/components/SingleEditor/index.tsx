@@ -9,13 +9,7 @@ import {
   programmingLanguageMonacoIdentifiers,
 } from "@/components/SingleEditor/constants";
 import { useTheme } from "next-themes";
-import {
-  Button,
-  Select,
-  SelectItem,
-  Spinner,
-  useDisclosure,
-} from "@nextui-org/react";
+import { Button, Select, SelectItem, Spinner } from "@nextui-org/react";
 import { ProgrammingLanguage } from "@/api/codeExecution/type";
 import { sendCodeForExecutionAndFetchResult } from "@/api/codeExecution";
 import { Question } from "@/api/questions/types";
@@ -47,12 +41,6 @@ export default function SingleEditor({ question }: SingleEditorProps) {
         editorContent: defaultProgrammingLanguageEditorContents.Javascript,
       },
     });
-
-  function handleEditorDidMount(editor: any, monaco: Monaco) {
-    // here is the editor instance
-    // you can store it in `useRef` for further usage
-    editorRef.current = editor;
-  }
 
   const handleCodeRun = useCallback(async () => {
     setCodeRunState((prvState) => ({ ...prvState, inProgress: true }));
@@ -119,6 +107,7 @@ export default function SingleEditor({ question }: SingleEditorProps) {
               <EditorSubmissionModalButton
                 question={question}
                 editorContent={editorState[language].editorContent}
+                language={language}
               />
             </div>
             <Editor
@@ -127,7 +116,6 @@ export default function SingleEditor({ question }: SingleEditorProps) {
               language={programmingLanguageMonacoIdentifiers[language]}
               defaultValue="// some comment"
               options={{ minimap: { enabled: false }, fontSize: 16 }}
-              onMount={handleEditorDidMount}
               value={editorState[language].editorContent}
               onChange={(newEditorContent) => {
                 setEditorState((prvState) => ({
