@@ -16,5 +16,5 @@ CREATE TABLE IF NOT EXISTS Attempts (
     attempt_date TIMESTAMP NOT NULL DEFAULT NOW(),
     attempt_details TEXT NOT NULL,
     attempt_language TEXT NOT NULL,
-    other_user TEXT,
+    other_user TEXT
 );
