@@ -14,6 +14,8 @@ import { useRouter } from "next/router";
 import { useActiveEditingSessionContext } from "@/components/ActiveSessions/ActiveEditingSessionContext";
 import { UserPublic } from "@/api/user/types";
 import { Question } from "@/api/questions/types";
+import { getActiveSessions } from "@/api/collab";
+import useUserInfo from "@/hooks/useUserInfo";
 
 export type EditingSessionDetails = {
   otherUser: UserPublic;
@@ -22,10 +24,12 @@ export type EditingSessionDetails = {
 };
 
 const ActiveSessions = () => {
-  const { activeEditingSessions } = useActiveEditingSessionContext();
+  const { activeEditingSessions, addEditingSession } = useActiveEditingSessionContext();
   const [isShowing, setIsShowing] = useState(false);
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const router = useRouter();
+
+  const user = useUserInfo();
 
   const hasActiveSessions = useMemo(
     () => activeEditingSessions.length > 0,
@@ -54,7 +58,23 @@ const ActiveSessions = () => {
 
   useEffect(() => {
     //TODO: fetch active sessionsa
-  }, []);
+    if (user.email === undefined) {
+      return;
+    }
+
+    getActiveSessions(user.email!).then((result) => {
+      console.log(result);
+      console.log(result.activeSessions);
+      for (const activeSession of result.activeSessions) {
+        addEditingSession({
+          email: activeSession.otherUser,
+          questionId: activeSession.questionId,
+          sessionUrl: activeSession.wsUrl
+        });
+      }
+    });
+
+  }, [user.email]);
 
   return (
     <Dropdown

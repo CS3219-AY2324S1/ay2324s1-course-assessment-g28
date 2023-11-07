@@ -1,9 +1,21 @@
-import express, { Express, Request } from 'express';
-import dotenv from 'dotenv';
-import { getPair } from './services/pairService';
-import { getQueryParams, handleCaretPos, handleExit, handleMessage, handleOp, handlePairConnected, handleReadyToReceive, handleRunCode, handleSwitchLang } from './services/wsService';
-import { WS_METHODS } from './constants';
-import { addPair, removePair } from './services/otService';
+import express, { Express, Request } from "express";
+import dotenv from "dotenv";
+import { getPairAndStoreQuestionId } from "./services/pairService";
+import {
+  getQueryParams,
+  handleCaretPos,
+  handleDefault,
+  handleExit,
+  handleMessage,
+  handleOp,
+  handlePairConnected,
+  handleReady,
+  handleReadyToReceive,
+  handleRunCode,
+  handleSwitchLang,
+} from "./services/wsService";
+import { WS_METHODS } from "./constants";
+import { addPairToOt, removePairFromOt } from "./services/otService";
 dotenv.config();
 
 const app: Express = express();
@@ -44,40 +56,40 @@ app.use(cors(corsOptions));
  * App will use cookie to obtain player info if player did not login
  */
 
-
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 /**
  * Initialize MongoDB settings
  */
 
-const mongoose = require('mongoose');
-console.log(process.env.MONGO_URI)
+const mongoose = require("mongoose");
+console.log(process.env.MONGO_URI);
 mongoose.connect(process.env.MONGO_URI);
 const db = mongoose.connection;
-db.on('error', (error: Error) => console.error(error));
-db.once('open', () => console.log('Connected to MongoDB'));
+db.on("error", (error: Error) => console.error(error));
+db.once("open", () => console.log("Connected to MongoDB"));
 
 /**
  * Set up the url routes
  */
 
-const pairingRouter = require('./routes/pairing');
-app.use('/pairing', pairingRouter);
-
+const pairingRouter = require("./routes/pairing");
+app.use("/pairing", pairingRouter);
 
 /**
  * Start server on port
  */
-app.listen(process.env.PORT, () => console.log('Server has started on port:', process.env.PORT));
+app.listen(process.env.PORT, () =>
+  console.log("Server has started on port:", process.env.PORT)
+);
 
 /**
  * Setting up WebSocket
  */
 
-const { WebSocketServer } = require('ws');
-const http = require('http');
+const { WebSocketServer } = require("ws");
+const http = require("http");
 
 // Spinning the http server and the WebSocket server.
 const server = http.createServer();
@@ -95,7 +107,8 @@ const clients: { [userId: string]: WebSocket } = {};
 const pairs: { [pairId: string]: string } = {};
 
 // A new client connection request received
-wsServer.on('connection', function(connection: WebSocket, request: Request) {
+// Query params: ?pairId=<pairId>?userId=<userId>?questionId=<questionId>
+wsServer.on("connection", function (connection: WebSocket, request: Request) {
   console.log(`Recieved a new connection.`);
 
   // Store the new connection and handle messages
@@ -106,11 +119,12 @@ wsServer.on('connection', function(connection: WebSocket, request: Request) {
   //console.log("Query params ", params);
   const pairId = params["pairId"];
   const userId = params["userId"];
+  const questionId = Number(params["questionId"]);
 
   //console.log("Pair: ", pairId, "User: ", userId);
 
   // Check pair exists, else close connection
-  getPair(pairId, userId).then(pairDoc => {
+  getPairAndStoreQuestionId(pairId, userId, questionId).then((pairDoc) => {
     if (pairDoc !== null) {
       if (pairDoc.isUser1Turn) {
         pairs[pairId] = pairDoc.user1;
@@ -118,13 +132,17 @@ wsServer.on('connection', function(connection: WebSocket, request: Request) {
         pairs[pairId] = pairDoc.user2;
       }
 
-      addPair(pairId);
+      addPairToOt(pairId);
 
-      const partnerId = userId === pairDoc.user1 ? pairDoc.user2 : pairDoc.user1;
+      const partnerId =
+        userId === pairDoc.user1 ? pairDoc.user2 : pairDoc.user1;
       const currTurnId = pairDoc.currTurn;
 
       partners[userId] = partnerId;
       clients[userId] = connection;
+
+      console.log("User:",userId, ", Partner:", partnerId);
+      console.log("Has partner connected?", partnerId in clients);
 
       // Inform user that WS is ready for messages
       handleReadyToReceive(connection);
@@ -166,8 +184,16 @@ wsServer.on('connection', function(connection: WebSocket, request: Request) {
         console.log("EXIT WS .......");
         handleExit(connection, partnerConnection, data);
         break;
+      case WS_METHODS.NEXT_QUESTION_INITATED_BY_PEER:
+      case WS_METHODS.NEXT_QUESTION_CONFIRM:
+      case WS_METHODS.NEXT_QUESTION_REJECT:
+      case WS_METHODS.EXIT_INITIATED_BY_PEER:
+      case WS_METHODS.EXIT_CONFIRM:
+      case WS_METHODS.EXIT_REJECT:
+      case WS_METHODS.PEER_HAS_EXITED:
+        handleDefault(partnerConnection, data.method);
     }
-  }
+  };
 
   connection.onclose = (message: any) => {
     console.log("Connection closed: ", userId);
@@ -188,9 +214,9 @@ wsServer.on('connection', function(connection: WebSocket, request: Request) {
       delete partners[partnerId];
       delete pairs[pairId];
 
-      removePair(pairId);
+      removePairFromOt(pairId);
     }
 
     delete clients[userId];
-  }
+  };
 });

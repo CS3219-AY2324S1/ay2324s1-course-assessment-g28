@@ -8,14 +8,22 @@ export enum WS_METHODS {
   SWITCH_LANG, //
   RUN_CODE, //
   RUN_CODE_RESULT,
-  NEXT_QUESTION,
+
+  NEXT_QUESTION_INITATED_BY_PEER,
   NEXT_QUESTION_CONFIRM,
+  NEXT_QUESTION_REJECT,
+
+  EXIT_INITIATED_BY_PEER,
+  EXIT_CONFIRM,
+  EXIT_REJECT,
+  PEER_HAS_EXITED,
   EXIT,
+
   MESSAGE,
   TESTCASE_ADD,
   TESTCASE_DELETE,
   TESTCASE_EDIT,
-};
+}
 
 export const LANGUAGE_IDS: { [language: string]: number } = {
   Java: 62,
@@ -26,9 +34,9 @@ export const LANGUAGE_IDS: { [language: string]: number } = {
 type ProgrammingLanguages = "java" | "python" | "javascript"
 
 // initial documents for each language
-export const initialDocuments:Record<ProgrammingLanguages, string> = {
-  "java": 
-`class Main {
+export const initialDocuments: Record<ProgrammingLanguages, string> = {
+  "java":
+    `class Main {
   public static void main(String[] args) {
     // Write your code here
   }

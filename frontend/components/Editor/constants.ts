@@ -13,9 +13,17 @@ export enum WS_METHODS {
   SWITCH_LANG, //
   RUN_CODE, //
   RUN_CODE_RESULT,
-  NEXT_QUESTION,
+
+  NEXT_QUESTION_INITATED_BY_PEER,
   NEXT_QUESTION_CONFIRM,
+  NEXT_QUESTION_REJECT,
+
+  EXIT_INITIATED_BY_PEER,
+  EXIT_CONFIRM,
+  EXIT_REJECT,
+  PEER_HAS_EXITED,
   EXIT,
+
   MESSAGE,
   TESTCASE_ADD,
   TESTCASE_DELETE,
@@ -48,3 +56,7 @@ export const CLASSNAME_MY_MESSAGE =
 
 export const CLASSNAME_PARTNER_MESSAGE =
   "max-w-[90%] self-start bg-gray-200 text-black rounded-r-md rounded-bl-md py-1 px-3";
+
+export type WSMessageType = {
+  data: string,
+}

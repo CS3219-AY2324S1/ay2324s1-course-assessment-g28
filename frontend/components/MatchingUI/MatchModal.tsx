@@ -18,8 +18,6 @@ export const MatchModal = (props: MatchModalProps) => {
   const { isModalOpen, setIsModalOpen, matchStatus, onClose } =
     useMatchContext();
 
-  //todo: connect with service
-
   const switchContent = () => {
     switch (matchStatus) {
       case MatchStatus.SELECT_DIFFICULTY:

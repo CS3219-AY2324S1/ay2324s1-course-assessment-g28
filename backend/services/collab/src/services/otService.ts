@@ -22,7 +22,7 @@ function resp(connection: WebSocket, requestId: string, value: any) {
 }
 
 
-export function addPair(pairId: string) {
+export function addPairToOt(pairId: string) {
   console.log("ADDING PAIR")
   if (!(pairId in updates)) {
     updates[pairId] = {
@@ -48,7 +48,7 @@ export function addPair(pairId: string) {
   console.log(updates, doc, pending);
 }
 
-export function removePair(pairId: string) {
+export function removePairFromOt(pairId: string) {
   if (pairId in updates) {
     delete updates[pairId];
   }
@@ -60,7 +60,7 @@ export function removePair(pairId: string) {
   }
 }
 
-export function handleOperation(connection: WebSocket, pairId: string, requestId: string, lang: string, data: any) {
+export function handleOperationOt(connection: WebSocket, pairId: string, requestId: string, lang: string, data: any) {
   // const pairUpdates = updates[pairId];
   // const pairDoc = doc[pairId];
 
