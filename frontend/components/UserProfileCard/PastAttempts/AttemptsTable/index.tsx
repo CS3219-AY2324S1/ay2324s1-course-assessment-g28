@@ -56,7 +56,7 @@ export default function AttemptsTable() {
       </TableHeader>
       <TableBody
         className="shadow-large"
-        emptyContent={"No questions found"}
+        emptyContent={"No attempts found"}
         items={attempts ?? []}
         loadingContent={<Spinner />}
       >
