@@ -14,7 +14,10 @@ const Card = ({
 }: PropsWithChildren<CardProps>) => {
   return (
     <div
-      className={cx("p-[24px] bg-content1 rounded-xl", classNames)}
+      className={cx(
+        "p-[24px] shadow-lg bg-content3 dark:bg-content1 rounded-xl",
+        classNames,
+      )}
       style={styles}
       {...props}
     >

@@ -221,6 +221,7 @@ export default function QuestionAttemptButton({
         onOpenChange={onOpenChange}
         className="text-brand-white bg-gradient-to-br
         from-violet-500 to-fuchsia-500 flex flex-col items-center"
+        isDismissable={false}
       >
         <ModalContent className="p-2">{getModalContent}</ModalContent>
       </Modal>
