@@ -39,18 +39,19 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
     name: "Qn.",
     uid: ColumnKey.QUESTION_ID,
     align: "center",
-    width: 5,
     render: (attempt: ProcessedAttemptType) => (
-      <div className="text-center">{attempt?.questionId}</div>
+      <div className="pl-[3px] w-[40px]">{attempt?.questionId}</div>
     ),
+    sortable: true,
   },
   [ColumnKey.QUESTION_TITLE]: {
     name: "Title",
     uid: ColumnKey.QUESTION_TITLE,
     render: (attempt: ProcessedAttemptType) => (
-      <div className="w-[120px] truncate">{attempt?.questionTitle}</div>
+      <div className="max-w-[200px] truncate">{attempt?.questionTitle}</div>
     ),
     align: "start",
+    sortable: true,
   },
   [ColumnKey.QUESTION_DIFFICULTY]: {
     name: "Difficuty",
@@ -62,6 +63,7 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
       />
     ),
     align: "center",
+    sortable: true,
   },
   [ColumnKey.ATTEMPT_DATE]: {
     name: "Date",
@@ -82,17 +84,19 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
       );
     },
     align: "start",
+    sortable: true,
   },
   [ColumnKey.ATTEMPT_LANGUAGE]: {
-    name: "Language",
+    name: <span className="text-center">{"Language"}</span>,
     uid: ColumnKey.ATTEMPT_LANGUAGE,
     render: (attempt: ProcessedAttemptType) => (
-      <div className="text-center">{attempt.attemptLanguage}</div>
+      <div>{attempt.attemptLanguage}</div>
     ),
     align: "start",
+    sortable: true,
   },
   [ColumnKey.OTHER_USER]: {
-    name: "Mode",
+    name: <div className="text-center flex">{"Mode"}</div>,
     uid: ColumnKey.OTHER_USER,
     render: (attempt: ProcessedAttemptType) => (
       <Tooltip
@@ -118,7 +122,7 @@ export const DEFAULT_PAGE_SIZE_SELECTION = 10;
 export const questionFilterRegex = /[^0-9a-z\-_]+/i;
 
 export const customClassNames = {
-  base: ["gap-0"],
+  base: ["gap-0 w-full"],
   wrapper: [
     "h-[280px] p-0 my-[12px] rounded-none border-none shadow-none",
     "bg-transparent overflow-y-hidden",

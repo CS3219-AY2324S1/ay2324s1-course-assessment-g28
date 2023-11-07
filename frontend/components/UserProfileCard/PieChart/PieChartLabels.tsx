@@ -2,7 +2,7 @@ import { User } from "@/api/user/types";
 import { UNDEFINED_VALUE } from "../config";
 
 const PieChartLabels = ({ data }: { data?: User }) => (
-  <div className="flex flex-col gap-3 w-full">
+  <div className="flex flex-col gap-3 w-full max-w-[300px]">
     <div className="flex justify-between text-xs">
       <div className="flex gap-2 items-center">
         <div className="w-[8px] h-[8px] rounded-full bg-lime-500" />

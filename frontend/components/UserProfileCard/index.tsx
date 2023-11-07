@@ -38,7 +38,7 @@ const UserProfileCard = () => {
       </div>
       <div className="w-full flex flex-col gap-4">
         <AttemptsHeatMap data={data} />
-        <div className="w-full flex flex-col md:flex-row gap-4">
+        <div className="w-full flex flex-col lg:flex-row gap-4">
           <PieChart data={data} />
           <PastAttempts data={data} />
         </div>

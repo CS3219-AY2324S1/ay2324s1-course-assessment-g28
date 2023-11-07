@@ -9,17 +9,17 @@ import {
   useMemo,
   useState,
 } from "react";
-import dayjs from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-import localizedFormat from "dayjs/plugin/localizedFormat";
 import { AttemptedQuestionRecord, User } from "@/api/user/types";
-import { DATETIME_FORMAT } from "../../config";
-import { filterByDifficulty as filterData } from "./utils";
-
-dayjs.extend(customParseFormat);
-dayjs.extend(localizedFormat);
-
-export const PAGE_SIZE = 5;
+import {
+  DEFAULT_SORT,
+  PAGE_SIZE,
+  filterByDifficulty as filterData,
+  formatDateData,
+  getPaginatedData,
+  sortData,
+} from "./utils";
+import { SortDescriptor } from "@nextui-org/react";
+import dayjs from "dayjs";
 
 export type ProcessedAttemptType = AttemptedQuestionRecord & {
   attemptDateDayJS: dayjs.Dayjs;
@@ -35,6 +35,8 @@ type AttemptsTableContextType = {
   >;
   page: number;
   setPage: Dispatch<SetStateAction<number>>;
+  sortDescriptor: SortDescriptor;
+  setSortDescriptor: Dispatch<SetStateAction<SortDescriptor>>;
   attempts: Array<ProcessedAttemptType>;
   totalPages: number;
 };
@@ -50,6 +52,10 @@ const defaultContext: AttemptsTableContextType = {
   },
   page: 1,
   setPage: () => {
+    throw new Error("Not in provider!");
+  },
+  sortDescriptor: DEFAULT_SORT,
+  setSortDescriptor: () => {
     throw new Error("Not in provider!");
   },
   attempts: [],
@@ -70,24 +76,15 @@ export const AttemptsTableProvider = ({
   const [selectedComplexity, setSelectedComplexity] =
     useState<QuestionComplexity>();
   const [page, setPage] = useState(1);
+  const [sortDescriptor, setSortDescriptor] =
+    useState<SortDescriptor>(DEFAULT_SORT);
 
-  const processedData = useMemo(() => {
-    const { attemptedQuestions } = data ?? {};
-    const formattedDateData = attemptedQuestions?.map((attempt) => ({
-      ...attempt,
-      attemptDateDayJS: dayjs(attempt.attemptDate),
-      attemptDateString: dayjs(attempt.attemptDate).format(DATETIME_FORMAT),
-    }));
-    return formattedDateData ?? [];
-  }, [data]);
-  const sortedData = useMemo(() => {
-    return [...processedData]?.sort((a, b) => {
-      if (a.attemptDateDayJS.isSame(b.attemptDateString)) {
-        return 0;
-      }
-      return a.attemptDateDayJS.isAfter(b.attemptDateString) ? -1 : 1;
-    });
-  }, [processedData]);
+  const processedData = useMemo(() => formatDateData(data), [data]);
+
+  const sortedData = useMemo(
+    () => sortData([...processedData], sortDescriptor),
+    [processedData, sortDescriptor],
+  );
 
   const filteredData = useMemo(
     () => filterData(sortedData, selectedComplexity, filterValue),
@@ -99,11 +96,10 @@ export const AttemptsTableProvider = ({
     [filteredData],
   );
 
-  const attempts = useMemo(() => {
-    const startIndex = (page - 1) * PAGE_SIZE;
-    const endIndex = startIndex + PAGE_SIZE;
-    return filteredData.slice(startIndex, endIndex);
-  }, [filteredData, page]);
+  const paginatedData = useMemo(
+    () => getPaginatedData(filteredData, page),
+    [filteredData, page],
+  );
 
   useEffect(() => setPage(1), [selectedComplexity, filterValue]);
 
@@ -116,7 +112,9 @@ export const AttemptsTableProvider = ({
         setSelectedComplexity,
         page,
         setPage,
-        attempts,
+        sortDescriptor,
+        setSortDescriptor,
+        attempts: paginatedData,
         totalPages,
       }}
     >

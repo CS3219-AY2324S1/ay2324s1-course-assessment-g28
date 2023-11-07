@@ -42,6 +42,7 @@ const TableSelectors = () => {
     <div className="flex flex-row gap-4 w-full">
       <Input
         isClearable
+        size="sm"
         color="secondary"
         variant="bordered"
         className="w-full sm:max-w-[44%] text-foreground-500 text-xs"
@@ -62,11 +63,12 @@ const TableSelectors = () => {
         <Dropdown className="p-0">
           <DropdownTrigger className="hidden sm:flex">
             <Button
+              size="sm"
               variant="bordered"
               title="Difficulty"
               className="!border-purple-600
                hover:!border-purple-500 text-xs border-[1px]"
-              endContent={<ChevronDown />}
+              endContent={<ChevronDown className="w-[12px]" />}
             >
               {selectedComplexity
                 ? QuestionComplexityConfigsMap[selectedComplexity].name
@@ -94,6 +96,7 @@ const TableSelectors = () => {
         </Dropdown>
         {selectedComplexity && (
           <Button
+            size="sm"
             isIconOnly
             onClick={() => setSelectedComplexity(undefined)}
             variant="flat"

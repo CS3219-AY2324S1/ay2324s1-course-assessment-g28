@@ -7,9 +7,8 @@ const TablePagination = () => {
   return (
     <div className="py-2 px-2 flex items-center justify-between">
       <Pagination
-        isCompact
         showControls
-        showShadow
+        size="sm"
         color="secondary"
         page={page}
         total={totalPages}

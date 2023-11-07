@@ -26,13 +26,15 @@ dayjs.extend(customParseFormat);
 dayjs.extend(localizedFormat);
 
 export default function AttemptsTable() {
-  const { attempts } = useAttemptsTableContext();
-
+  const { attempts, sortDescriptor, setSortDescriptor } =
+    useAttemptsTableContext();
   const router = useRouter();
 
   return (
     <Table
       aria-label="Attempts table"
+      sortDescriptor={sortDescriptor}
+      onSortChange={setSortDescriptor}
       topContent={<TableSelectors />}
       topContentPlacement="outside"
       bottomContent={<TablePagination />}
