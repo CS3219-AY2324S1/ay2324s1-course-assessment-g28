@@ -121,7 +121,7 @@ export const customClassNames = {
   base: ["gap-0"],
   wrapper: [
     "h-[280px] p-0 my-[12px] rounded-none border-none shadow-none",
-    "bg-transparent",
+    "bg-transparent overflow-y-hidden",
   ],
   th: [
     "whitespace-break-spaces bg-transparent text-foreground",
