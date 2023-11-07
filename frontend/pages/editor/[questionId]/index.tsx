@@ -29,11 +29,19 @@ export default function EditorPage({
 
   // Obtain the WebSocket link from query and get the first question
   useEffect(() => {
+    if (question === undefined) {
+      return;
+    }
+    console.log(process.env);
+    console.log(process.env.COLLAB_API);
     // The pairId and userId are already appended into the encoded wsUrl
     // Append questionId into wsUrl for service to store and allow retrieval upon reconnection
-    const wsUrl = `${router.query["wsUrl"] ?? ""}?questionId=${question.id}`;
+    const oldWsUrl = router.query["wsUrl"] as string ?? "";
+    console.log("Old wsUrl:", oldWsUrl);
+    const wsUrl = `${oldWsUrl}&questionId=${question.id}`;
+    console.log("Connecting to WS:", wsUrl);
     setWebsocketUrl(wsUrl);
-  }, [router]);
+  }, [router, question]);
 
   if (!websocketUrl)
     return (

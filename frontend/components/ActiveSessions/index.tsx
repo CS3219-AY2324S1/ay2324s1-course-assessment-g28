@@ -58,7 +58,13 @@ const ActiveSessions = () => {
 
   useEffect(() => {
     //TODO: fetch active sessionsa
+    if (user.email === undefined) {
+      return;
+    }
+
     getActiveSessions(user.email!).then((result) => {
+      console.log(result);
+      console.log(result.activeSessions);
       for (const activeSession of result.activeSessions) {
         addEditingSession({
           email: activeSession.otherUser,
@@ -68,7 +74,7 @@ const ActiveSessions = () => {
       }
     });
 
-  }, []);
+  }, [user.email]);
 
   return (
     <Dropdown

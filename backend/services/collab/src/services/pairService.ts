@@ -9,6 +9,9 @@ export async function getPairAndStoreQuestionId(pairId: string, userId: string, 
   const pairDoc = await Pair.findOne({ id: pairId }).exec();
 
   if (pairDoc?.user1 === userId || pairDoc?.user2 === userId) {
+    console.log("pairDoc:", pairDoc);
+    console.log(pairId, userId, questionId, pairDoc.user1);
+    
     pairDoc.questionId = questionId;
     await pairDoc.save();
 

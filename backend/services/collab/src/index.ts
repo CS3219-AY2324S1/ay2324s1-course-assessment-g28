@@ -139,6 +139,9 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
       partners[userId] = partnerId;
       clients[userId] = connection;
 
+      console.log("User:",userId, ", Partner:", partnerId);
+      console.log("Has partner connected?", partnerId in clients);
+
       // Check if partner has already connected
       // If so, send READY to the pair
       if (partnerId in clients) {
