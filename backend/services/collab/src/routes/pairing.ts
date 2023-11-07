@@ -12,6 +12,7 @@ router.get('/getWebsocketUrl', (req: Request, res: Response) => {
 
   const user1 = req.query.user1;
   const user2 = req.query.user2;
+  const complexity = req.query.complexity;
 
   if (user1 === undefined || user2 === undefined) {
     return res.status(400).send({
@@ -30,7 +31,8 @@ router.get('/getWebsocketUrl', (req: Request, res: Response) => {
     user2: user2,
     currTurn: user1,
     wsUrl1: websocketUrl1,
-    wsUrl2: websocketUrl2
+    wsUrl2: websocketUrl2,
+    complexity: complexity
   });
 
   res.status(200).json({ 

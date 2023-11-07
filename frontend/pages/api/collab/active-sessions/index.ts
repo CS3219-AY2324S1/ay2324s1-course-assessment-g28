@@ -8,21 +8,18 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  console.log("Server side");
-  console.log(req);
-  console.log(req.query);
   if (req.method !== HttpMethod.GET) {
     res.status(HttpStatus.NOT_FOUND).send("Bad request method");
     return;
   }
+
   const options = {
     method: "GET",
-    headers: jsonRequestHeaders
+    headers: jsonRequestHeaders,
   };
+
   try {
     const userId = req.query["userId"];
-    console.log("Server side getting active sessions for userId:", userId);
-    console.log("From server URL:", activeSessionsUrl);
     const response: Response = await fetch(activeSessionsUrl + userId, options);
     const responseJson = await response.json();
 
@@ -31,6 +28,8 @@ export default async function handler(
     res.status(HttpStatus.OK).json({ activeSessions: activeSessions });
   } catch (e) {
     console.log(e);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Error fetching active sessions");
+    res.status(
+      HttpStatus.INTERNAL_SERVER_ERROR
+    ).send("Error fetching active sessions");
   }
 }

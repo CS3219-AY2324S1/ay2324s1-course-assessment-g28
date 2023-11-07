@@ -26,6 +26,7 @@ type MatchContextType = {
   matchStatus: MatchStatus;
   setMatchStatus: Dispatch<SetStateAction<MatchStatus>>;
   editorUrl: string;
+  selectedComplexity: QuestionComplexity | undefined;
   onChangeComplexity: (complexity: QuestionComplexity) => void;
   onRetry: () => void;
   onClose: () => void;
@@ -41,6 +42,7 @@ const defaultContext: MatchContextType = {
   setMatchStatus: () => {
     throw new Error("Not in provider!");
   },
+  selectedComplexity: QuestionComplexity.EASY,
   onChangeComplexity: () => {
     throw new Error("Not in provider!");
   },
@@ -106,14 +108,15 @@ export const MatchContextProvider = ({
               ),
             );
             // add this new session to active editor context
-            addEditingSession({
-              sessionUrl: getEditorPath(
-                parseInt(parsed.data.questionId as string),
-                parsed.data.url as string,
-              ),
-              questionId: parseInt(parsed.data.questionId as string),
-              email: parsed.data.otherUser as string,
-            });
+            addEditingSession(
+              {
+                websocketUrl: parsed.data.url as string,
+                questionId: parseInt(parsed.data.questionId as string),
+                email: parsed.data.otherUser as string,
+                questionComplexity: selectedComplexity!,
+              },
+              true,
+            );
             ws.close();
           }
         } else {
@@ -154,6 +157,7 @@ export const MatchContextProvider = ({
         matchStatus,
         setMatchStatus,
         editorUrl,
+        selectedComplexity,
         onChangeComplexity,
         onRetry,
         onClose,

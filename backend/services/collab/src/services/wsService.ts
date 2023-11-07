@@ -22,6 +22,7 @@ export function handleReadyToReceive(connection: WebSocket) {
   const message = JSON.stringify({ method: WS_METHODS.READY_TO_RECEIVE });
   connection.send(message);
 }
+
 export function handlePairConnected(connection: WebSocket, partnerConnection: WebSocket) {
   const messageUser = JSON.stringify({ method: WS_METHODS.PAIR_CONNECTED });
   const messagePartner = JSON.stringify({ method: WS_METHODS.PAIR_CONNECTED });

@@ -78,14 +78,18 @@ export default function QuestionAttemptButton({
               parseInt(parsed.data.questionId as string),
               parsed.data.url as string,
             );
-            addEditingSession({
-              sessionUrl: getEditorPath(
-                parseInt(parsed.data.questionId as string),
-                parsed.data.url as string,
-              ),
-              questionId: parseInt(parsed.data.questionId as string),
-              email: parsed.data.otherUser as string,
-            });
+            addEditingSession(
+              {
+                websocketUrl: getEditorPath(
+                  parseInt(parsed.data.questionId as string),
+                  parsed.data.url as string,
+                ),
+                questionId: parseInt(parsed.data.questionId as string),
+                email: parsed.data.otherUser as string,
+                questionComplexity: question.complexity,
+              },
+              true,
+            );
             ws.close();
           }
         } else {

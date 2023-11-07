@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS Users (
     email TEXT PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
     favourite_programming_language TEXT,
-    is_admin BOOLEAN NOT NULL DEFAULT FALSE
+    is_admin BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS Attempts (

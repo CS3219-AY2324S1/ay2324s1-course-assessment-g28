@@ -9,7 +9,6 @@ import {
   handleMessage,
   handleOp,
   handlePairConnected,
-  handleReady,
   handleReadyToReceive,
   handleRunCode,
   handleSwitchLang,

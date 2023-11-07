@@ -32,14 +32,13 @@ export default function EditorPage({
     if (question === undefined) {
       return;
     }
-    console.log(process.env);
-    console.log(process.env.COLLAB_API);
+    console.log("Question:", question);
+    console.log(question.id);
     // The pairId and userId are already appended into the encoded wsUrl
-    // Append questionId into wsUrl for service to store and allow retrieval upon reconnection
+    // Append questionId into wsUrl for service to store
+    // and allow retrieval upon reconnection
     const oldWsUrl = router.query["wsUrl"] as string ?? "";
-    console.log("Old wsUrl:", oldWsUrl);
     const wsUrl = `${oldWsUrl}&questionId=${question.id}`;
-    console.log("Connecting to WS:", wsUrl);
     setWebsocketUrl(wsUrl);
   }, [router, question]);
 
@@ -52,7 +51,8 @@ export default function EditorPage({
 
   return (
     <SubmissionContextProvider websocketUrl={websocketUrl}>
-      <div className="flex flex-col w-full h-full mb-[-100px] flex-grow border-8 rounded-xl border-[#d1d5db] bg-[#d1d5db] relative">
+      <div className="flex flex-col w-full h-full mb-[-100px] flex-grow border-8 
+                      rounded-xl border-[#d1d5db] bg-[#d1d5db] relative">
         <PanelGroup direction="horizontal" className="grow">
           <Panel defaultSize={40} minSize={25}>
             <PanelGroup direction="vertical">

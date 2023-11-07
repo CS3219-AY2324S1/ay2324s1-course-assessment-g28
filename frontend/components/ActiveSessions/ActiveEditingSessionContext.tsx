@@ -1,4 +1,5 @@
 import { getQuestion } from "@/api/questions";
+import { QuestionComplexity } from "@/api/questions/types";
 import { getPublicUserInfo } from "@/api/user";
 import { EditingSessionDetails } from "@/components/ActiveSessions";
 import {
@@ -11,14 +12,23 @@ import {
 
 interface AddEditingSessionDetails {
   email: string; //email of the user to add
-  sessionUrl: string;
+  websocketUrl: string;
   questionId: number;
+  questionComplexity: QuestionComplexity;
 }
 
 export interface ActiveEditingSessionContextType {
   activeEditingSessions: EditingSessionDetails[];
-  addEditingSession: (details: AddEditingSessionDetails) => Promise<void>;
-  deleteEditingSession: (sessionUrl: string) => void;
+  addEditingSession: (
+    details: AddEditingSessionDetails,
+    isCurrentSession: boolean,
+  ) => Promise<void>;
+  updateEditingSession: (
+    details: AddEditingSessionDetails,
+    isCurrentSession: boolean,
+  ) => Promise<void>;
+  deleteEditingSession: (websocketUrl: string) => void;
+  currentEditingSession: EditingSessionDetails | undefined;
 }
 
 const defaultContext: ActiveEditingSessionContextType = {
@@ -26,9 +36,13 @@ const defaultContext: ActiveEditingSessionContextType = {
   addEditingSession: async () => {
     throw new Error("Not in provider");
   },
+  updateEditingSession: async () => {
+    throw new Error("Not in provider");
+  },
   deleteEditingSession: () => {
     throw new Error("Not in provider");
   },
+  currentEditingSession: undefined,
 };
 
 const ActiveEditingSessionContext =
@@ -45,6 +59,8 @@ export const ActiveEditingSessionContextProvider = ({
   const [activeEditingSessions, setActiveEditingSessions] = useState<
     EditingSessionDetails[]
   >([]);
+  const [currentEditingSession, setCurrentEditingSession] =
+    useState<EditingSessionDetails>();
 
   useEffect(() => {
     const persisted = localStorage.getItem(
@@ -64,30 +80,70 @@ export const ActiveEditingSessionContextProvider = ({
     );
   }, [activeEditingSessions]);
 
-  const addEditingSession = async (details: AddEditingSessionDetails) => {
+  const addEditingSession = async (
+    details: AddEditingSessionDetails,
+    isCurrentSession: boolean,
+  ) => {
     try {
       const userDetails = await getPublicUserInfo(details.email);
       const questionDetails = await getQuestion(details.questionId, false);
       const sessionDetails: EditingSessionDetails = {
         otherUser: userDetails,
+        email: details.email,
         question: questionDetails,
-        sessionUrl: details.sessionUrl,
+        websocketUrl: details.websocketUrl,
+        questionComplexity: details.questionComplexity,
       };
       setActiveEditingSessions((prv) => [...prv, sessionDetails]);
+      if (isCurrentSession) {
+        setCurrentEditingSession(sessionDetails);
+      }
     } catch (e) {
       console.log("Error adding editing session: ", e);
     }
   };
 
-  const deleteEditingSession = (sessionUrl: string) => {
+  const updateEditingSession = async (
+    details: AddEditingSessionDetails,
+    isCurrentSession: boolean,
+  ) => {
+    const sessionToUpdate = activeEditingSessions.find(
+      (session) => session.websocketUrl === details.websocketUrl,
+    );
+    if (sessionToUpdate === undefined) {
+      return;
+    }
+    try {
+      const userDetails = await getPublicUserInfo(details.email);
+      const questionDetails = await getQuestion(details.questionId, false);
+      sessionToUpdate.otherUser = userDetails;
+      sessionToUpdate.email = details.email;
+      sessionToUpdate.question = questionDetails;
+      sessionToUpdate.questionComplexity = details.questionComplexity;
+
+      if (isCurrentSession) {
+        setCurrentEditingSession(sessionToUpdate);
+      }
+    } catch (e) {
+      console.log("Error updating editing session: ", e);
+    }
+  };
+
+  const deleteEditingSession = (websocketUrl: string) => {
     setActiveEditingSessions((prv) =>
-      prv.filter((detail) => detail.sessionUrl !== sessionUrl),
+      prv.filter((detail) => detail.websocketUrl !== websocketUrl),
     );
   };
 
   return (
     <ActiveEditingSessionContext.Provider
-      value={{ activeEditingSessions, addEditingSession, deleteEditingSession }}
+      value={{
+        activeEditingSessions,
+        addEditingSession,
+        updateEditingSession,
+        deleteEditingSession,
+        currentEditingSession,
+      }}
     >
       {children}
     </ActiveEditingSessionContext.Provider>

@@ -13,18 +13,21 @@ import { Badge } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import { useActiveEditingSessionContext } from "@/components/ActiveSessions/ActiveEditingSessionContext";
 import { UserPublic } from "@/api/user/types";
-import { Question } from "@/api/questions/types";
+import { Question, QuestionComplexity } from "@/api/questions/types";
 import { getActiveSessions } from "@/api/collab";
 import useUserInfo from "@/hooks/useUserInfo";
 
 export type EditingSessionDetails = {
   otherUser: UserPublic;
+  email: string;
   question: Question;
-  sessionUrl: string; // add later
+  websocketUrl: string; // add later
+  questionComplexity: QuestionComplexity;
 };
 
 const ActiveSessions = () => {
-  const { activeEditingSessions, addEditingSession } = useActiveEditingSessionContext();
+  const { activeEditingSessions, addEditingSession } =
+    useActiveEditingSessionContext();
   const [isShowing, setIsShowing] = useState(false);
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const router = useRouter();
@@ -66,14 +69,17 @@ const ActiveSessions = () => {
       console.log(result);
       console.log(result.activeSessions);
       for (const activeSession of result.activeSessions) {
-        addEditingSession({
-          email: activeSession.otherUser,
-          questionId: activeSession.questionId,
-          sessionUrl: activeSession.wsUrl
-        });
+        addEditingSession(
+          {
+            email: activeSession.otherUser,
+            questionId: activeSession.questionId,
+            websocketUrl: activeSession.wsUrl,
+            questionComplexity: activeSession.questionComplexity,
+          },
+          false,
+        );
       }
     });
-
   }, [user.email]);
 
   return (
@@ -102,7 +108,7 @@ const ActiveSessions = () => {
       <DropdownMenu
         aria-label="active-sessions-list"
         variant="flat"
-        onAction={(sessionUrl) => router.push(sessionUrl as string)}
+        onAction={(websocketUrl) => router.push(websocketUrl as string)}
       >
         <DropdownSection showDivider>
           <DropdownItem
@@ -120,11 +126,12 @@ const ActiveSessions = () => {
         <DropdownSection>
           {hasActiveSessions ? (
             activeEditingSessions?.map((session) => {
-              const { sessionUrl, otherUser, question } = session;
+              // TODO: Need to create the full url here
+              const { websocketUrl, otherUser, question } = session;
               return (
                 <DropdownItem
-                  key={sessionUrl}
-                  textValue={sessionUrl}
+                  key={websocketUrl}
+                  textValue={websocketUrl}
                   className="h-[50px] w-[225px]"
                 >
                   <Tooltip

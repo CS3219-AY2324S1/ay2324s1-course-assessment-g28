@@ -2,7 +2,10 @@ import { ModalBody, ModalHeader, Spinner } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { SubmissionStatus, useSubmissionContext } from "../SubmissionContext";
 import { useRouter } from "next/router";
-import { HOME } from "@/routes";
+import { EDITOR_DIRECTORY, HOME } from "@/routes";
+import { getQuestions } from "@/api/questions";
+import { useActiveEditingSessionContext } from "@/components/ActiveSessions/ActiveEditingSessionContext";
+import { QuestionComplexity } from "@/api/questions/types";
 
 /**
  * This card is only shown when submission status is:
@@ -13,6 +16,8 @@ const SubmitCard = () => {
   const [secondsLeft, setSecondsLeft] = useState(3);
   const { submissionStatus, setSubmissionStatus, setIsModalOpen } =
     useSubmissionContext();
+  const { updateEditingSession, currentEditingSession } =
+    useActiveEditingSessionContext();
   const [isSubmitting, setIsSubmitting] = useState(true);
   const router = useRouter();
 
@@ -25,12 +30,37 @@ const SubmitCard = () => {
     if (isSubmitting) return;
     if (secondsLeft < 1) {
       // TODO: link to next question
-      const nextQnUrl = "";
-      if (submissionStatus === SubmissionStatus.SUBMIT_BEFORE_EXIT) {
-        router.replace(HOME);
-      } else {
-        router.replace(nextQnUrl);
-      }
+      getQuestions({
+        size: 1,
+        offset: 0,
+        keyword: "",
+        complexity: currentEditingSession?.questionComplexity,
+        onlyUnattempted: true,
+      }).then((result) => {
+        const questionId = result.content[0]?.id;
+        const nextQnUrl = `${EDITOR_DIRECTORY}/${questionId}?wsUrl=${currentEditingSession?.websocketUrl}`;
+
+        updateEditingSession(
+          {
+            websocketUrl: currentEditingSession?.websocketUrl ?? "",
+            email: currentEditingSession?.email ?? "",
+            questionId: questionId,
+            questionComplexity:
+              currentEditingSession?.questionComplexity ??
+              QuestionComplexity.EASY,
+          },
+          true,
+        );
+
+        console.log("Next qn url:", nextQnUrl);
+
+        if (submissionStatus === SubmissionStatus.SUBMIT_BEFORE_EXIT) {
+          router.push(HOME);
+        } else {
+          router.push(nextQnUrl);
+        }
+      });
+
       return () => {
         setSubmissionStatus(SubmissionStatus.NOT_SUBMITTING);
         setIsModalOpen(false);

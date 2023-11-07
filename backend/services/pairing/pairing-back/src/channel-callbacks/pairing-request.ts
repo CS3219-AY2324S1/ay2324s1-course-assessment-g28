@@ -4,6 +4,7 @@ import { User } from "../models/user";
 import logger from "../utils/logger";
 import { matchUser } from "../controllers/user-pairing";
 import { getRandomQuestion } from "../services/question/pp-question-service";
+import { Complexity } from "../models/question";
 
 export interface EditorWebSocketUrls {
   user1: string;
@@ -12,10 +13,11 @@ export interface EditorWebSocketUrls {
 
 const editorServiceApiPath = "/pairing/getWebSocketUrl";
 
-async function postPair(_user1: string, _user2: string): Promise<EditorWebSocketUrls> {
+async function postPair(_user1: string, _user2: string, _complexity: Complexity): Promise<EditorWebSocketUrls> {
   const queryParams = new URLSearchParams({
     user1: _user1,
     user2: _user2,
+    complexity: _complexity.toString()
   });
 
   const reqUrl =
@@ -60,7 +62,8 @@ export default function getPairingRequestCallback(
     if (match) {
       const {user1, user2} = await postPair(
         match.user1.match_options.user,
-        match.user2.match_options.user
+        match.user2.match_options.user,
+        match.question.complexity
       );
       // Reply to user 1
       const reply1 = {
