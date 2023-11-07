@@ -146,7 +146,7 @@ export const getQuestions = async (req: Request, res: Response) => {
     }
 
     res.status(200).json({
-      content: questions.slice(offset * size, offset * size + size),
+      content: modifiedQuestions.slice(offset * size, offset * size + size),
       total: total,
     });
   } catch (error) {
