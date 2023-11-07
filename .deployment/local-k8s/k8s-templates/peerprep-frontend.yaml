@@ -21,7 +21,7 @@ spec:
               cpu: "500m"
           env:
             - name: JUDGE0_URL
-              value: "http://judge0-server.default.svc.cluster.local:2358"
+              value: "http://34.126.172.186:2358"
             - name: NEXTAUTH_SECRET
               valueFrom:
                 secretKeyRef:
