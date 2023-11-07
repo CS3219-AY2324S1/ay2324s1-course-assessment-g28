@@ -28,6 +28,7 @@ import { useTheme } from "next-themes";
 import { useRouter } from "next/router";
 import { HOME } from "@/routes";
 import { useSubmissionContext } from "../Submission/SubmissionContext";
+import HorizontalResizeHandle from "@/components/PanelResizeHandles/HorizontalResizeHandle";
 
 interface CodeWindowProps {
   template?: string;
@@ -434,7 +435,7 @@ export default function CodeWindow(props: CodeWindowProps) {
       {!isInitialized && (
         <LoadingScreen displayText="Initializing Code Space ..." />
       )}
-      <Panel defaultSize={60} minSize={25}>
+      <Panel defaultSize={80}>
         <div className="h-full w-full flex flex-col overflow-auto rounded-xl bg-content1">
           <div className="w-full flex flex-row p-1">
             <div className="flex flex-row w-1/2 gap-2">
@@ -510,9 +511,7 @@ export default function CodeWindow(props: CodeWindowProps) {
           </div>
         </div>
       </Panel>
-      <PanelResizeHandle>
-        <ResizeHandleHorizontal />
-      </PanelResizeHandle>
+      <HorizontalResizeHandle />
       <Panel>
         <div className="h-full w-full flex flex-col overflow-auto rounded-xl relative box-border bg-content1">
           {isCodeRunning && isInitialized ? (
