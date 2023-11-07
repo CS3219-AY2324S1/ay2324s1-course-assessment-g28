@@ -1,4 +1,4 @@
-import { ModalBody, ModalHeader } from "@nextui-org/react";
+import { ModalBody, ModalHeader, Spinner } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { useMatchContext } from "../MatchContext";
 import { useRouter } from "next/router";
@@ -12,16 +12,26 @@ const SuccessCard = () => {
     if (secondsLeft < 1) {
       router.push(editorUrl);
     }
-    setTimeout(() => setSecondsLeft((currSeconds) => currSeconds - 0.05), 50);
+    setTimeout(
+      () => setSecondsLeft((currSeconds) => Math.max(0, currSeconds - 0.05)),
+      50,
+    );
   }, [secondsLeft, editorUrl, router]);
 
   return (
     <>
       <ModalHeader className="flex flex-col gap-1">Success!</ModalHeader>
       <ModalBody>
-        <div>{`Redirecting you in ${Math.floor(secondsLeft)} second${
-          secondsLeft === 1 ? "" : "s"
-        }...`}</div>
+        {secondsLeft > 0 ? (
+          <div>{`Redirecting you in ${Math.floor(secondsLeft)} second${
+            secondsLeft === 1 ? "" : "s"
+          }...`}</div>
+        ) : (
+          <>
+            <div>Redirecting</div>
+            <Spinner color="secondary" />
+          </>
+        )}
       </ModalBody>
     </>
   );

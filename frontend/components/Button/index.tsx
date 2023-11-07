@@ -1,25 +1,33 @@
-import { Button as NextButton } from "@nextui-org/react";
+import {
+  Button as NextButton,
+  ButtonProps as NextButtonProps,
+} from "@nextui-org/react";
 import { CSSProperties, PropsWithChildren } from "react";
 import cx from "classnames";
 
-interface ButtonProps {
+type ButtonProps = {
   onClick?: () => void;
   className?: string;
   styles?: CSSProperties;
-}
+} & NextButtonProps;
 
 const Button = (props: PropsWithChildren<ButtonProps>) => {
-  const { onClick, className: classnames, styles, children } = props ?? {};
+  const {
+    onClick,
+    className: classnames,
+    styles,
+    children,
+    ...rest
+  } = props ?? {};
   return (
     <NextButton
       onClick={onClick}
       className={cx(
-        "text-[#8657A6] rounded-full bg-opacity-80",
-        "transition hover:bg-white hover:transition-colors-opacity",
+        "text-foreground hover:scale-110 hover:transition-transform mx-2",
         classnames,
       )}
       style={styles}
-      {...props}
+      {...rest}
     >
       {children}
     </NextButton>
