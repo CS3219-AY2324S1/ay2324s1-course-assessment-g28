@@ -3,7 +3,6 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  cn,
 } from "@nextui-org/react";
 import { Editor } from "@tiptap/react";
 import { ImagePlus } from "lucide-react";

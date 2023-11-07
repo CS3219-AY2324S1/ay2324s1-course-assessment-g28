@@ -8,8 +8,17 @@ export const MAX_PAIRING_DURATION =
     : parseInt(process.env.MAX_PAIRING_DURATION);
 
 export function getPairingServiceUri(pairingRequest: PairingRequest) {
-  //TODO: check that we can get NEXT_PUBLIC_PAIRING_API correctly for non-local setups, as client needs direct access to pairing front
-  return `${process.env.NEXT_PUBLIC_PAIRING_API}/pairing?user=${
-    pairingRequest.userId
-  }&complexity=${pairingRequest.complexity.toString()}`;
+  if (typeof pairingRequest.complexity !== "undefined") {
+    return `${process.env.NEXT_PUBLIC_PAIRING_API}/pairing?user=${
+      pairingRequest.userId
+    }&complexity=${pairingRequest.complexity.toString()}`;
+  } else if (typeof pairingRequest.question !== "undefined") {
+    return `${process.env.NEXT_PUBLIC_PAIRING_API}/pairing?user=${
+      pairingRequest.userId
+    }&question=${pairingRequest.question.toString()}`;
+  } else {
+    throw new Error(
+      "PAIRING REQUEST ERROR: Neither complexity or question provided in pairing request.",
+    );
+  }
 }

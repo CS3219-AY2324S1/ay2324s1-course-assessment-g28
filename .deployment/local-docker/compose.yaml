@@ -17,6 +17,8 @@ services:
       - QUESTIONS_API=http://pp-question:1234
       - USER_API=http://pp-user:1235
       - NEXT_PUBLIC_PAIRING_API=ws://localhost:4000
+      - COLLAB_API=http://pp-collab-service:8000
+      - JUDGE0_URL=http://judge0-server:2358
     profiles:
       - frontend
 
@@ -29,6 +31,7 @@ services:
     environment:
       - PORT=1234
       - MONGO_URI=mongodb://pp-question-mongodb:27017
+      - USER_API=http://pp-user:1235
     expose:
       - 1234
     ports:
@@ -162,25 +165,26 @@ services:
     depends_on:
       - judge0-db
       - judge0-redis
-
   judge0-db:
     image: postgres:13.0
     env_file: judge0.conf
     volumes:
       - postgres-data:/var/lib/postgresql/data/
-    expose: 
+    expose:
       - 5433
     command: -p 5433
     restart: always
 
   judge0-redis:
     image: redis:6.0
-    command: [
-      "bash", "-c",
-      'docker-entrypoint.sh --appendonly yes --requirepass "$$REDIS_PASSWORD"'
-    ]
+    command:
+      [
+        "bash",
+        "-c",
+        'docker-entrypoint.sh --appendonly yes --requirepass "$$REDIS_PASSWORD"',
+      ]
     env_file: judge0.conf
-    expose: 
+    expose:
       - 6379
     volumes:
       - redis-data:/data

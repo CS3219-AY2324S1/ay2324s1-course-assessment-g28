@@ -7,7 +7,6 @@ import ErrorCard from "../ErrorCard";
 import { MatchStatus, useMatchContext } from "./MatchContext";
 import TimeoutCard from "./cards/TimeoutCard";
 import { CSSProperties } from "react";
-import ButtonPP from "../Button";
 
 export type MatchModalProps = {
   classNames?: string;
@@ -18,8 +17,6 @@ export const MatchModal = (props: MatchModalProps) => {
   const { classNames, style } = props ?? {};
   const { isModalOpen, setIsModalOpen, matchStatus, onClose } =
     useMatchContext();
-
-  //todo: connect with service
 
   const switchContent = () => {
     switch (matchStatus) {
@@ -55,14 +52,14 @@ export const MatchModal = (props: MatchModalProps) => {
       <Modal
         hideCloseButton
         isOpen={isModalOpen}
-        className="text-brand-white bg-gradient-to-br h-[370px]
+        className="text-brand-white bg-gradient-to-br
         from-violet-500 to-fuchsia-500 flex flex-col items-center"
       >
         <ModalContent className="p-4">
           {switchContent()}
           {isHideCancelButton ? null : (
             <ModalFooter>
-              <ButtonPP onClick={onClose}>Cancel</ButtonPP>
+              <Button onClick={onClose}>Cancel</Button>
             </ModalFooter>
           )}
         </ModalContent>

@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { useEffect, useRef, useState } from "react";
 import useWebSocket from "react-use-websocket";
-import { Button, Select, SelectItem } from "@nextui-org/react";
+import { Button, Select, SelectItem, Spinner } from "@nextui-org/react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import ResizeHandleHorizontal from "../ResizeHandleHorizontal";
 import LoadingScreen from "../LoadingScreen";
@@ -9,7 +9,7 @@ import { dracula, tomorrow } from "thememirror";
 import {
   LANGUAGES,
   LANGUAGE_DATA,
-  LANGUAGE_TYPE,
+  WSMessageType,
   WS_METHODS,
 } from "../constants";
 import {
@@ -25,6 +25,9 @@ import { EditorView, ViewPlugin, ViewUpdate, keymap } from "@codemirror/view";
 import { indentWithTab } from "@codemirror/commands";
 import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/router";
+import { HOME } from "@/routes";
+import { useSubmissionContext } from "../Submission/SubmissionContext";
 
 interface CodeWindowProps {
   template?: string;
@@ -52,13 +55,16 @@ export default function CodeWindow(props: CodeWindowProps) {
   const [isCodeMirrorLoaded, setIsCodeMirrorLoaded] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [requestQueue, setRequestQueue] = useState<Record<string, any>>({});
+  const router = useRouter();
+  const { isPeerStillHere, initateExitMyself, initateNextQnMyself } =
+    useSubmissionContext();
 
   const editorsParentRef = useRef<{ [lang: string]: HTMLDivElement | null }>(
     {},
   );
   const editorsRef = useRef<{ [lang: string]: EditorView }>({});
 
-  const { sendJsonMessage, readyState } = useWebSocket(props.websocketUrl, {
+  const { sendJsonMessage } = useWebSocket(props.websocketUrl, {
     share: true,
     filter: () => false,
     onOpen: () => {
@@ -66,7 +72,6 @@ export default function CodeWindow(props: CodeWindowProps) {
       setIsWebsocketLoaded(true);
     },
     onMessage: onMessage,
-    onClose: onClose,
     onError: onError,
   });
 
@@ -76,16 +81,14 @@ export default function CodeWindow(props: CodeWindowProps) {
       const editorComponent = editorsRef.current[lang];
 
       editorComponent.dispatch({
-        effects: editorTheme.reconfigure(
-          theme === "dark" ? dracula : tomorrow
-        )
-      })
+        effects: editorTheme.reconfigure(theme === "dark" ? dracula : tomorrow),
+      });
     }
   }, [theme]);
 
-  function onMessage(e: any) {
+  function onMessage(e: WSMessageType) {
     const data = JSON.parse(e.data);
-    //console.log("CodeWindow received: ", data);
+    console.log("CodeWindow received: ", data);
 
     switch (data.method) {
       case WS_METHODS.READY:
@@ -109,11 +112,6 @@ export default function CodeWindow(props: CodeWindowProps) {
         handleExit(data);
         break;
     }
-  }
-
-  function onClose(e: Event) {
-    console.log("Closing ws", e);
-    // TODO
   }
 
   function onError(e: Event) {
@@ -160,6 +158,7 @@ export default function CodeWindow(props: CodeWindowProps) {
 
   function handleExit(data: any) {
     console.log("EXITING EDITOR ...");
+    router.push(HOME);
   }
 
   /**
@@ -357,7 +356,7 @@ export default function CodeWindow(props: CodeWindowProps) {
         LANGUAGE_DATA[lang].codeMirrorExtension,
         peerExtension(version, connection, lang),
         keymap.of([indentWithTab]),
-        editorTheme.of(theme === "dark" ? dracula : tomorrow)
+        editorTheme.of(theme === "dark" ? dracula : tomorrow),
       ],
     });
     let editorParentDiv = editorsParentRef.current[lang];
@@ -430,27 +429,17 @@ export default function CodeWindow(props: CodeWindowProps) {
     setIsCodeRunning(true);
   }
 
-  function nextQuestion() {}
-
-  // Called by the partner
-  function confirmNextQuestion() {}
-
-  function exitEditor() {
-    sendJsonMessage({
-      method: WS_METHODS.EXIT,
-    });
-  }
-
   return (
     <PanelGroup direction="vertical" className="relative">
       {!isInitialized && (
-        <LoadingScreen displayText="Initializing Code Space ..."></LoadingScreen>
+        <LoadingScreen displayText="Initializing Code Space ..." />
       )}
       <Panel defaultSize={60} minSize={25}>
         <div className="h-full w-full flex flex-col overflow-auto rounded-xl bg-content1">
           <div className="w-full flex flex-row p-1">
             <div className="flex flex-row w-1/2 gap-2">
               <Select
+                aria-label="select-language"
                 placeholder={language}
                 classNames={{
                   mainWrapper: "h-fit",
@@ -474,36 +463,35 @@ export default function CodeWindow(props: CodeWindowProps) {
                 disabled={isCodeRunning}
                 onClick={runCode}
                 size="sm"
-                color="success"
-                className="text-white h-8 font-bold px-5"
+                color="primary"
               >
                 Run Code
               </Button>
               <Button
                 disabled={isCodeRunning}
-                onClick={runCode}
+                onClick={runCode} // TODO: Change this to submit
                 size="sm"
                 color="secondary"
-                className="text-white h-8 font-bold px-5"
               >
                 Submit
               </Button>
             </div>
             <div className="w-1/2 grow flex flex-row justify-end gap-2">
+              {isPeerStillHere ? (
+                <Button
+                  disabled={isCodeRunning}
+                  onClick={initateNextQnMyself}
+                  size="sm"
+                  color="warning"
+                  className="text-white"
+                >
+                  Next Question
+                </Button>
+              ) : null}
               <Button
-                disabled={isCodeRunning}
-                onClick={nextQuestion}
-                size="sm"
-                color="warning"
-                className="text-white h-8 font-bold"
-              >
-                Next Question
-              </Button>
-              <Button
-                onClick={exitEditor}
+                onClick={initateExitMyself}
                 size="sm"
                 color="default"
-                className="h-8 font-bold"
               >
                 Exit
               </Button>
@@ -522,15 +510,20 @@ export default function CodeWindow(props: CodeWindowProps) {
           </div>
         </div>
       </Panel>
-      <PanelResizeHandle>{ResizeHandleHorizontal()}</PanelResizeHandle>
+      <PanelResizeHandle>
+        <ResizeHandleHorizontal />
+      </PanelResizeHandle>
       <Panel>
         <div className="h-full w-full flex flex-col overflow-auto rounded-xl relative box-border bg-content1">
-          {isCodeRunning && isInitialized && (
-            <LoadingScreen displayText="Waiting for result ..."></LoadingScreen>
+          {isCodeRunning && isInitialized ? (
+            <div className="w-full h-full grid content-center bg-content1 rounded-md">
+              <Spinner label="Executing code..." color="secondary"></Spinner>
+            </div>
+          ) : (
+            <div className="h-full w-full max-w-full p-3 whitespace-pre-wrap break-words bg-content1">
+              {result}
+            </div>
           )}
-          <div className="h-full w-full max-w-full p-3 whitespace-pre-wrap break-words bg-content2">
-            {result}
-          </div>
         </div>
       </Panel>
     </PanelGroup>

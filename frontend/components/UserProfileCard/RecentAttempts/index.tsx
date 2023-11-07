@@ -1,25 +1,23 @@
 import { User } from "@/api/user/types";
-import { BE_DATE_FORMAT, CHART_DATE_FORMAT } from "../config";
+import { DATETIME_FORMAT } from "../config";
 import Card from "@/components/Card";
-import dayjs from "dayjs";
 import { useMemo } from "react";
 import cx from "classnames";
-import { useTheme } from "next-themes";
+import ComplexityChip from "@/components/ComplexityChip";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import localizedFormat from "dayjs/plugin/localizedFormat";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
+dayjs.extend(localizedFormat);
 
 const RecentAttempts = ({ data }: { data?: User }) => {
-  const { theme } = useTheme();
   const processedData = useMemo(() => {
     const { attemptedQuestions } = data ?? {};
     const formattedDateData = attemptedQuestions?.map((qn) => ({
       ...qn,
-      attemptDate: dayjs(qn.attemptDate, BE_DATE_FORMAT),
-      attemptDateString: dayjs(qn.attemptDate, BE_DATE_FORMAT).format(
-        CHART_DATE_FORMAT,
-      ),
+      attemptDate: dayjs(qn.attemptDate),
+      attemptDateString: dayjs(qn.attemptDate).format(DATETIME_FORMAT),
     }));
     formattedDateData?.sort((a, b) => {
       if (a.attemptDate.isSame(b.attemptDateString)) {
@@ -52,6 +50,10 @@ const RecentAttempts = ({ data }: { data?: User }) => {
               >
                 {questionTitle}
               </div>
+              <div>
+                <ComplexityChip complexity={qn.questionDifficulty} />
+              </div>
+              <div>{qn.attemptLanguage}</div>
               <div
                 className={cx(
                   "text-sm shrink-0",

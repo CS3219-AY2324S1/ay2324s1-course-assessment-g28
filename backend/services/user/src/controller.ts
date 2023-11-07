@@ -45,12 +45,14 @@ export const createAttempt = async (req: Request, res: Response) => {
       questionDifficulty,
       attemptDetails,
       attemptDate,
+      attemptLanguage,
+      otherUser,
     } = req.body;
 
     let query, queryArgs;
 
     if (attemptDate) {
-      query = `INSERT INTO Attempts (email, question_id, question_title, question_difficulty, attempt_date, attempt_details) VALUES ($1, $2, $3, $4, $5, $6) RETURNING * `;
+      query = `INSERT INTO Attempts (email, question_id, question_title, question_difficulty, attempt_date, attempt_details, attempt_language, other_user) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING * `;
       queryArgs = [
         email,
         questionId,
@@ -58,15 +60,19 @@ export const createAttempt = async (req: Request, res: Response) => {
         questionDifficulty,
         attemptDate,
         attemptDetails,
+        attemptLanguage,
+        otherUser,
       ];
     } else {
-      query = `INSERT INTO Attempts (email, question_id, question_title, question_difficulty, attempt_details) VALUES ($1, $2, $3, $4, $5) RETURNING * `;
+      query = `INSERT INTO Attempts (email, question_id, question_title, question_difficulty, attempt_details, attempt_language, other_user) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING * `;
       queryArgs = [
         email,
         questionId,
         questionTitle,
         questionDifficulty,
         attemptDetails,
+        attemptLanguage,
+        otherUser,
       ];
     }
 
@@ -96,6 +102,25 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
+export const getPublicInfoByEmail = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.params;
+    const query = `SELECT username,  favourite_programming_language AS "favouriteProgrammingLanguage" FROM Users WHERE email = $1`;
+    const userResult = await pool.query(query, [email]);
+    if (userResult.rows.length === 0) {
+      res.status(404).json({ message: `User with ${email} does not exist.` });
+      return;
+    }
+    res.status(200).json({ ...userResult.rows[0] });
+  } catch (error) {
+    const errorCode = UNKNOWN_ERROR_CODE;
+    res.status(500).json({
+      errorCode: errorCode,
+      message: `getPublicInfoByEmail failed ${error}`,
+    });
+  }
+};
+
 export const getUserByEmail = async (req: Request, res: Response) => {
   try {
     const { email } = req.params;
@@ -110,7 +135,7 @@ export const getUserByEmail = async (req: Request, res: Response) => {
     }
 
     // query to obtain details from attempts table
-    const attemptQuery = `SELECT id AS "attemptId", question_id AS "questionId", question_title AS "questionTitle", question_difficulty AS "questionDifficulty", attempt_date AS "attemptDate" FROM Attempts WHERE email = $1`;
+    const attemptQuery = `SELECT id AS "attemptId", question_id AS "questionId", question_title AS "questionTitle", question_difficulty AS "questionDifficulty", attempt_date AS "attemptDate", attempt_language AS "attemptLanguage", other_user AS "otherUser" FROM Attempts WHERE email = $1`;
     const attemptResult = await pool.query(attemptQuery, [email]);
 
     // query to obtain details on unique questionids attempted, to get difficulty counts below
@@ -152,7 +177,7 @@ export const getUserByEmail = async (req: Request, res: Response) => {
 export const getAttemptById = async (req: Request, res: Response) => {
   try {
     const { email, attemptId } = req.params;
-    const query = `SELECT id AS "attemptId", question_id AS "questionId", question_title AS "questionTitle", question_difficulty AS "questionDifficulty", attempt_date AS "attemptDate", attempt_details AS "attemptDetails" FROM Attempts WHERE email = $1 and id = $2`;
+    const query = `SELECT id AS "attemptId", question_id AS "questionId", question_title AS "questionTitle", question_difficulty AS "questionDifficulty", attempt_date AS "attemptDate", attempt_details AS "attemptDetails", attempt_language AS "attemptLanguage", other_user AS "otherUser" FROM Attempts WHERE email = $1 and id = $2`;
     const result = await pool.query(query, [email, attemptId]);
     res.status(200).json(result.rows[0]);
   } catch (error) {
@@ -164,6 +189,24 @@ export const getAttemptById = async (req: Request, res: Response) => {
   }
 };
 
+export const getAttemptedQuestionsByEmail = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { email } = req.params;
+    const query = `SELECT DISTINCT question_id FROM Attempts WHERE email=$1`;
+    const result = await pool.query(query, [email]);
+    res.status(200).json(result.rows.map((entry) => entry["question_id"]));
+  } catch (error) {
+    const errorCode = UNKNOWN_ERROR_CODE;
+    res.status(500).json({
+      errorCode: errorCode,
+      message: `getAttemptsByEmail failed ${error}`,
+    });
+  }
+};
+
 //GET handlers
 export const getIsUsernameExists = async (req: Request, res: Response) => {
   try {
@@ -171,7 +214,7 @@ export const getIsUsernameExists = async (req: Request, res: Response) => {
     const query =
       "SELECT exists (SELECT 1 FROM Users WHERE username = $1 LIMIT 1);";
     const result = await pool.query(query, [username]);
-    res.status(200).json(result?.rows?.[0] ?? { "exists": "false" });
+    res.status(200).json(result?.rows?.[0] ?? { exists: "false" });
   } catch (error) {
     const errorCode = UNKNOWN_ERROR_CODE;
     res.status(500).json({

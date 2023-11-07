@@ -12,7 +12,6 @@ import {
   QuestionCreation,
   QuestionCreationZod,
 } from "@/api/questions/types";
-import { ChevronDownIcon } from "@/assets/icons/ChevronDown";
 import CategoryAdder from "@/components/QuestionCreationForm/CategoryAdder";
 import QuestionDescription from "@/components/QuestionDescription";
 import { HOME } from "@/routes";
@@ -25,6 +24,7 @@ import {
   DropdownTrigger,
   Input,
 } from "@nextui-org/react";
+import { ChevronDown } from "lucide-react";
 import router from "next/router";
 import { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
@@ -104,7 +104,7 @@ export default function QuestionCreationForm({
               <Dropdown className="p-0">
                 <DropdownTrigger className="flex">
                   <Button
-                    endContent={<ChevronDownIcon />}
+                    endContent={<ChevronDown />}
                     variant="flat"
                     title="Difficulty"
                   >
@@ -172,14 +172,18 @@ export default function QuestionCreationForm({
         />
       </div>
 
-      {(!originalQuestion || isEdited) && (
-        <Button isLoading={isLoading} type="submit" color="secondary">
-          {originalQuestion ? "Save changes" : "Submit"}
-        </Button>
-      )}
+      <Button
+        isLoading={isLoading}
+        type="submit"
+        color="secondary"
+        variant={!originalQuestion || isEdited ? "solid" : "faded"}
+      >
+        {originalQuestion ? "Save changes" : "Submit"}
+      </Button>
+
       <Button
         color="danger"
-        variant="flat"
+        variant="solid"
         onPress={() => router.push(HOME)}
         title="Go to question creation page"
       >

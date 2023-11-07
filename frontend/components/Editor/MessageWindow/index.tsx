@@ -26,7 +26,6 @@ export default function MessageWindow(props: MessageWindowProps) {
 
   useEffect(() => {
     // TODO: Fix this
-    // @ts-ignore
     messageScrollDiv.current?.scrollIntoView({ behavior: "smooth" });
   }, [messageList]);
 
@@ -38,13 +37,12 @@ export default function MessageWindow(props: MessageWindowProps) {
       setIsWebsocketLoaded(true);
     },
     onMessage: onMessage,
-    onClose: onClose,
     onError: onError,
   });
 
   function onMessage(e: any) {
     const data = JSON.parse(e.data);
-    //console.log("MessageWindow received: ", data);
+    console.log("MessageWindow received: ", data);
 
     switch (data.method) {
       case WS_METHODS.READY:
@@ -54,11 +52,6 @@ export default function MessageWindow(props: MessageWindowProps) {
         handleMessage(data);
         break;
     }
-  }
-
-  function onClose(e: Event) {
-    console.log("CLOSING WS IN CHATBOX", e);
-    // TODO
   }
 
   function onError(e: Event) {

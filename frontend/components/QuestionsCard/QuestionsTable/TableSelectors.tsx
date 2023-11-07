@@ -5,10 +5,10 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Checkbox,
 } from "@nextui-org/react";
-import { ChevronDownIcon } from "@/assets/icons/ChevronDown";
 import { QuestionComplexity } from "@/api/questions/types";
-import { PlusSquare, X } from "lucide-react";
+import { ChevronDown, PlusSquare, X } from "lucide-react";
 import {
   COMPLEXITY_OPTIONS,
   QuestionComplexityConfigsMap,
@@ -29,6 +29,8 @@ const TableSelectors = ({ userIsAdmin }: TableSelectorsProps) => {
     selectedComplexity,
     setSelectedComplexity,
     setPage,
+    onlyUnattemptedFilter,
+    setOnlyUnattemptedFilter,
   } = useQuestionTableContext();
   const router = useRouter();
 
@@ -68,11 +70,11 @@ const TableSelectors = ({ userIsAdmin }: TableSelectorsProps) => {
         <Dropdown className="p-0" classNames={{}}>
           <DropdownTrigger className="hidden sm:flex">
             <Button
-              endContent={<ChevronDownIcon />}
               variant="bordered"
               title="Difficulty"
-              className="text-foreground-500 !border-purple-600
+              className="!border-purple-600
                hover:!border-purple-500"
+              endContent={<ChevronDown />}
             >
               {selectedComplexity
                 ? QuestionComplexityConfigsMap[selectedComplexity].name
@@ -88,9 +90,7 @@ const TableSelectors = ({ userIsAdmin }: TableSelectorsProps) => {
             }}
           >
             {COMPLEXITY_OPTIONS.map((status) => (
-              <DropdownItem key={status.key} className="text-zinc-600">
-                {status.name}
-              </DropdownItem>
+              <DropdownItem key={status.key}>{status.name}</DropdownItem>
             ))}
           </DropdownMenu>
         </Dropdown>
@@ -105,6 +105,13 @@ const TableSelectors = ({ userIsAdmin }: TableSelectorsProps) => {
           </Button>
         )}
       </div>
+      <Checkbox
+        isSelected={onlyUnattemptedFilter}
+        onValueChange={setOnlyUnattemptedFilter}
+        color="secondary"
+      >
+        Unattempted only
+      </Checkbox>
       {userIsAdmin && (
         <Button
           className="ml-auto"

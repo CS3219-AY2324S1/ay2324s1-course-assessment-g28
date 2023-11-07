@@ -15,6 +15,7 @@ export async function getQuestions({
   offset,
   keyword,
   complexity,
+  onlyUnattempted,
 }: GetQuestionRequest) {
   const params = new URLSearchParams({
     size: size.toString(),
@@ -25,6 +26,9 @@ export async function getQuestions({
   }
   if (complexity) {
     params.append("complexity", complexity.toString());
+  }
+  if (onlyUnattempted) {
+    params.append("onlyUnattempted", onlyUnattempted.toString());
   }
   const res = await fetch(
     getRoute(`${QUESTION_API}?${params.toString()}`, false),

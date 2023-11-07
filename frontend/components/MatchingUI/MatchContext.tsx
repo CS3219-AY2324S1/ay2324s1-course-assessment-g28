@@ -1,5 +1,6 @@
 import { MAX_PAIRING_DURATION, getPairingServiceUri } from "@/api/pairing";
 import { QuestionComplexity } from "@/api/questions/types";
+import { useActiveEditingSessionContext } from "@/components/ActiveSessions/ActiveEditingSessionContext";
 import useUserInfo from "@/hooks/useUserInfo";
 import { getEditorPath } from "@/routes";
 import {
@@ -61,6 +62,7 @@ export const MatchContextProvider = ({
   children,
 }: PropsWithChildren<unknown>) => {
   const [editorUrl, setEditorUrl] = useState("");
+  const { addEditingSession } = useActiveEditingSessionContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pairingWebsocket, setPairingWebsocket] = useState<WebSocket | null>(
     null,
@@ -77,7 +79,6 @@ export const MatchContextProvider = ({
   const onChangeComplexity = async (complexity: QuestionComplexity) => {
     setSelectComplexity(complexity);
     setMatchStatus(MatchStatus.MATCHING);
-    //TODO: adjust this
     const ws = new WebSocket(
       getPairingServiceUri({
         userId: user.email!,
@@ -95,18 +96,26 @@ export const MatchContextProvider = ({
     ws.onmessage = (msg) => {
       try {
         const parsed = JSON.parse(msg.data);
-        if (parsed.data.url) {
-          setMatchStatus(MatchStatus.MATCH_SUCCESS);
-          setEditorUrl(
-            getEditorPath(
-              parseInt(parsed.data.questionId as string),
-              parsed.data.url as string,
-            ),
-          );
-          // TODO: replace toast with actual usage of returned details
-          ws.close();
-        } else if (parsed.status == 200) {
-          //TODO: Should this if block even exist?
+        if (parsed.status === 200) {
+          if (typeof parsed.data.url !== "undefined") {
+            setMatchStatus(MatchStatus.MATCH_SUCCESS);
+            setEditorUrl(
+              getEditorPath(
+                parseInt(parsed.data.questionId as string),
+                parsed.data.url as string,
+              ),
+            );
+            // add this new session to active editor context
+            addEditingSession({
+              sessionUrl: getEditorPath(
+                parseInt(parsed.data.questionId as string),
+                parsed.data.url as string,
+              ),
+              questionId: parseInt(parsed.data.questionId as string),
+              email: parsed.data.otherUser as string,
+            });
+            ws.close();
+          }
         } else {
           setMatchStatus(MatchStatus.MATCH_ERROR);
           ws.close();

@@ -2,22 +2,25 @@ import { List } from "../models/linked-list";
 import Match from "../models/match";
 import { Question } from "../models/question";
 import { User } from "../models/user";
-import { getRandomQuestion } from "../services/question/pp-question-service";
+import {
+  getRandomQuestion,
+  getSpecificQuestion,
+} from "../services/question/pp-question-service";
 import config from "../utils/config";
 import logger from "../utils/logger";
 
 const SECOND = 1000;
 
 function matchOnQuestion(user1: User, user2: User): Question | null {
-  // not implemented yet
-  if (user1.match_options.user == user2.match_options.user) {
+  let question = null;
+  // Cannot match user to themself
+  if (user1.match_options.user === user2.match_options.user) {
     return null;
+  } else if (typeof user1.match_options.complexity === "number" && typeof user2.match_options.complexity === "number") {
+    question = matchComplexity(user1, user2);
+  } else if (typeof user1.match_options.question === "number" || typeof user2.match_options.question === "number") {
+    question = matchSpecificQuestion(user1, user2);
   }
-  if (user1.match_options.complexity !== user2.match_options.complexity) {
-    return null;
-  }
-
-  let question = getRandomQuestion(user1.match_options.complexity);
 
   if (!question) {
     logger.info(
@@ -26,6 +29,22 @@ function matchOnQuestion(user1: User, user2: User): Question | null {
   }
 
   return question;
+}
+
+function matchComplexity(user1: User, user2: User): Question | null {
+  if (user1.match_options.complexity !== user2.match_options.complexity) {
+    return null;
+  }
+
+  return getRandomQuestion(user1.match_options.complexity);
+}
+
+function matchSpecificQuestion(user1: User, user2: User): Question | null {
+  if (user1.match_options.question != user2.match_options.question) {
+    return null;
+  }
+
+  return getSpecificQuestion(user1.match_options.question);
 }
 
 function matchUser(userList: List<User>, user: User): Match | null {

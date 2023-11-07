@@ -1,3 +1,4 @@
+import ActiveSessions from "@/components/ActiveSessions";
 import MatchingUI from "@/components/MatchingUI";
 import QuestionsCard from "@/components/QuestionsCard";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
@@ -19,6 +20,7 @@ export default function Home({
     <div className="w-full">
       <MatchingUI />
       <QuestionsCard userIsAdmin={userIsAdmin} />
+      <ActiveSessions />
     </div>
   );
 }

@@ -10,6 +10,8 @@ import {
   createAttempt,
   deleteAttemptById,
   getIsUsernameExists,
+  getAttemptedQuestionsByEmail,
+  getPublicInfoByEmail,
 } from "./controller";
 
 async function createEndpoints(router: express.Router) {
@@ -22,6 +24,8 @@ async function createEndpoints(router: express.Router) {
   router.get("/users/exists/:username", getIsUsernameExists);
   router.get("/users/:email", getUserByEmail);
   router.get("/users/:email/question-attempt/:attemptId", getAttemptById);
+  router.get("/users/:email/question-attempt", getAttemptedQuestionsByEmail);
+  router.get("/users/public/:email", getPublicInfoByEmail);
 
   // PUT/PATCH endpoints
   router.put("/users/:email", updateUserByEmail);
