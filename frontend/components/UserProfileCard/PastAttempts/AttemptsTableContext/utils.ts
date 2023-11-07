@@ -44,7 +44,7 @@ export const filterByDifficulty = (
       attempt?.questionDifficulty.toString() !== difficulty.toString();
     const isNotIncludesFilterVal =
       filterValue !== undefined &&
-      !attempt?.questionTitle?.includes(filterValue);
+      !attempt?.questionTitle?.toLowerCase().includes(filterValue);
     const isFilteredOut = isNotSelectedDifficulty || isNotIncludesFilterVal;
     return !isFilteredOut;
   });

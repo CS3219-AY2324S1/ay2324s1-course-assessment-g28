@@ -101,7 +101,7 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
     render: (attempt: ProcessedAttemptType) => (
       <Tooltip
         content={
-          attempt?.otherUser ? "Attempted with a peer" : "Attempted by youself"
+          attempt?.otherUser ? "Attempted with a peer" : "Attempted by yourself"
         }
       >
         <div className="relative flex justify-center">
