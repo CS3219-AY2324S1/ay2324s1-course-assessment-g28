@@ -24,3 +24,7 @@ export const getIsUsernameExistsPath = (username: string) =>
 
 export const QUESTION_ATTEMPT_API = USER_API + questionAttemptSubDirectory;
 export const EXECUTION_API = "/execution";
+
+export const COLLAB_PATH = "/collab";
+export const getActiveSessionsPath = (userId: string) =>
+  `${COLLAB_PATH}/pairing/getActiveConnections?userId=${userId}`;
