@@ -4,7 +4,7 @@ import useSWR from "swr";
 import AttemptsHeatMap from "./AttemptsHeatMap";
 import UserInfo from "./UserInfo";
 import PieChart from "./PieChart";
-import RecentAttempts from "./RecentAttempts";
+import PastAttempts from "./PastAttempts";
 import ErrorCard from "../ErrorCard";
 
 const UserProfileCard = () => {
@@ -21,7 +21,7 @@ const UserProfileCard = () => {
     );
   }
 
-  if (error) {
+  if (error || !data) {
     return (
       <ErrorCard
         onRetry={() => {
@@ -40,7 +40,7 @@ const UserProfileCard = () => {
         <AttemptsHeatMap data={data} />
         <div className="w-full flex flex-col md:flex-row gap-4">
           <PieChart data={data} />
-          <RecentAttempts data={data} />
+          <PastAttempts data={data} />
         </div>
       </div>
     </div>
