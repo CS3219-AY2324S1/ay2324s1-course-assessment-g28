@@ -1,6 +1,6 @@
 import express, { Express, Request } from "express";
 import dotenv from "dotenv";
-import { getPair } from "./services/pairService";
+import { getPairAndStoreQuestionId } from "./services/pairService";
 import {
   getQueryParams,
   handleCaretPos,
@@ -13,7 +13,7 @@ import {
   handleSwitchLang,
 } from "./services/wsService";
 import { WS_METHODS } from "./constants";
-import { addPair, removePair } from "./services/otService";
+import { addPairToOt, removePairFromOt } from "./services/otService";
 dotenv.config();
 
 const app: Express = express();
@@ -105,6 +105,7 @@ const clients: { [userId: string]: WebSocket } = {};
 const pairs: { [pairId: string]: string } = {};
 
 // A new client connection request received
+// Query params: ?pairId=<pairId>?userId=<userId>?questionId=<questionId>
 wsServer.on("connection", function (connection: WebSocket, request: Request) {
   console.log(`Recieved a new connection.`);
 
@@ -116,11 +117,12 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
   //console.log("Query params ", params);
   const pairId = params["pairId"];
   const userId = params["userId"];
+  const questionId = Number(params["questionId"]);
 
   //console.log("Pair: ", pairId, "User: ", userId);
 
   // Check pair exists, else close connection
-  getPair(pairId, userId).then((pairDoc) => {
+  getPairAndStoreQuestionId(pairId, userId, questionId).then((pairDoc) => {
     if (pairDoc !== null) {
       if (pairDoc.isUser1Turn) {
         pairs[pairId] = pairDoc.user1;
@@ -128,7 +130,7 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
         pairs[pairId] = pairDoc.user2;
       }
 
-      addPair(pairId);
+      addPairToOt(pairId);
 
       const partnerId =
         userId === pairDoc.user1 ? pairDoc.user2 : pairDoc.user1;
@@ -209,7 +211,7 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
       delete partners[partnerId];
       delete pairs[pairId];
 
-      removePair(pairId);
+      removePairFromOt(pairId);
     }
 
     delete clients[userId];

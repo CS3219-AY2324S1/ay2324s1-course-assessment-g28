@@ -21,24 +21,43 @@ router.get('/getWebsocketUrl', (req: Request, res: Response) => {
 
   const pairId = uuidv4();
 
+  const websocketUrl1 = process.env.WEBSOCKET_URL + ":" + process.env.WEBSOCKET_PORT + "?pairId=" + pairId + "&userId=" + user1;
+  const websocketUrl2 = process.env.WEBSOCKET_URL + ":" + process.env.WEBSOCKET_PORT + "?pairId=" + pairId + "&userId=" + user2;
+
   Pair.create({ 
     id: pairId,
     user1: user1,
     user2: user2,
-    currTurn: user1
+    currTurn: user1,
+    wsUrl1: websocketUrl1,
+    wsUrl2: websocketUrl2
   });
 
-  // Will be appended with userId as query param in paring service
-  // const websocketUrl = process.env.WEBSOCKET_URL + ":" + process.env.WEBSOCKET_PORT + "?pairId=" + pairId;
-
-  // res.status(200).json({ websocketUrl: websocketUrl }); 
-
-  const websocketUrl1 = process.env.WEBSOCKET_URL + ":" + process.env.WEBSOCKET_PORT + "?pairId=" + pairId + "&userId=" + user1;
-  const websocketUrl2 = process.env.WEBSOCKET_URL + ":" + process.env.WEBSOCKET_PORT + "?pairId=" + pairId + "&userId=" + user2;
-
   res.status(200).json({ 
-    user1: encodeURIComponent(websocketUrl1), 
-    user2: encodeURIComponent(websocketUrl2) 
+    user1: websocketUrl1, 
+    user2: websocketUrl2
+  });
+});
+
+/**
+ * Query String: ?userId=<userId>
+ */
+router.get('/getActiveConnections', async (req: Request, res: Response) => {
+  const userId = req.query.userId;
+  const pairDetails1 = await Pair.find({ user1: userId }, { user2: 1, wsUrl1: 1, questionId: 1 }).exec();
+  const pairDetails2 = await Pair.find({ user2: userId }, { user1: 1, wsUrl2: 1, questionId: 1 }).exec();
+
+  const activeConnections: { wsUrl: string, otherUser: string, questionId: number }[] = [];
+
+  pairDetails1.forEach(pair => {
+    activeConnections.push({ wsUrl: pair.wsUrl1!, otherUser: pair.user2!, questionId: pair.questionId! });
+  });
+  pairDetails2.forEach(pair => {
+    activeConnections.push({ wsUrl: pair.wsUrl2!, otherUser: pair.user1!, questionId: pair.questionId! });
+  });
+
+  res.status(200).json({
+    activeConnections: activeConnections
   });
 });
 

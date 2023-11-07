@@ -469,7 +469,7 @@ export default function CodeWindow(props: CodeWindowProps) {
               </Button>
               <Button
                 disabled={isCodeRunning}
-                onClick={runCode}
+                onClick={runCode} // TODO: Change this to submit
                 size="sm"
                 color="secondary"
               >

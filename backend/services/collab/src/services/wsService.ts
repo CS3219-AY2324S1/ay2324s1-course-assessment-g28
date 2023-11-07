@@ -1,6 +1,6 @@
 import { WS_METHODS } from "../constants";
 import { runCode } from "./executionService";
-import { handleOperation } from "./otService";
+import { handleOperationOt } from "./otService";
 
 export function getQueryParams(url: string): { [key: string]: string } {
   const queryIdx = url.indexOf("?");
@@ -47,7 +47,7 @@ export function handleOp(
 ) {
   const requestId = data.requestId;
   const lang = data.lang;
-  handleOperation(connection, pairId, requestId, lang, data);
+  handleOperationOt(connection, pairId, requestId, lang, data);
 }
 
 export function handleCaretPos(
