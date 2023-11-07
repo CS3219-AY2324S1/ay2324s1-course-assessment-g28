@@ -1,9 +1,10 @@
 import { QuestionBase, QuestionComplexity } from "@/api/questions/types";
 import ComplexityChip from "@/components/ComplexityChip";
+import QuestionAttemptButton from "@/components/QuestionAttemptButton";
 import DeleteButton from "@/components/QuestionsCard/QuestionsTable/DeleteButton";
 import { getUpdateQuestionPath } from "@/routes";
 import { Button, Chip } from "@nextui-org/react";
-import { Pencil } from "lucide-react";
+import { CheckCircle, Pencil } from "lucide-react";
 import Link from "next/link";
 
 export enum ColumnKey {
@@ -11,10 +12,12 @@ export enum ColumnKey {
   TITLE = "title",
   CATEGORY = "category",
   DIFFCULTY = "complexity",
+  ACTION = "action",
+  STATUS = "wasAttempted",
 }
 
 export enum ColumnKeyAdminOnly {
-  ACTION = "action",
+  ACTION = "adminAction",
 }
 
 export type ColumnKeyAdmin = ColumnKey | ColumnKeyAdminOnly;
@@ -25,18 +28,32 @@ interface ColumnConfig {
   sortable?: boolean;
   render?: (rowData: QuestionBase) => React.ReactNode;
   align: "start" | "center" | "end";
+  width?: number;
 }
 
 export const COLUMNS = [
+  ColumnKey.STATUS,
   ColumnKey.ID,
   ColumnKey.TITLE,
   ColumnKey.CATEGORY,
   ColumnKey.DIFFCULTY,
+  ColumnKey.ACTION,
 ];
 
 export const COLUMNS_ADMIN = [...COLUMNS, ColumnKeyAdminOnly.ACTION];
 
 export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
+  [ColumnKey.STATUS]: {
+    name: "Status",
+    uid: ColumnKey.STATUS,
+    align: "start",
+    width: 10,
+    render: (question: QuestionBase) => (
+      <div>
+        {question.wasAttempted && <CheckCircle color="green" size={20} />}
+      </div>
+    ),
+  },
   [ColumnKey.ID]: {
     name: "ID",
     uid: ColumnKey.ID,
@@ -73,6 +90,14 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
     ),
     align: "start",
   },
+  [ColumnKey.ACTION]: {
+    name: "Action",
+    uid: ColumnKey.ACTION,
+    render: (question: QuestionBase) => (
+      <QuestionAttemptButton question={question} size="sm" variant="flat" />
+    ),
+    align: "center",
+  },
 };
 
 /**
@@ -81,7 +106,7 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
 export const COLUMN_CONFIGS_ADMIN: Record<ColumnKeyAdmin, ColumnConfig> = {
   ...COLUMN_CONFIGS,
   [ColumnKeyAdminOnly.ACTION]: {
-    name: "ACTIONS",
+    name: "Admin Actions",
     uid: ColumnKeyAdminOnly.ACTION,
     render: (question: QuestionBase) => {
       return (

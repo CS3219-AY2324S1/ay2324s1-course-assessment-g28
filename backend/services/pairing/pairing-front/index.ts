@@ -9,18 +9,36 @@ dotenv.config();
 const RABBITMQ_URL = process.env.RABBITMQ_URL!;
 const PORT = Number(process.env.PORT!);
 
+function getErrorResponse(req: IncomingMessage) {
+  let params = url.parse(req.url!, true).query;
+
+  const is_user_specified = params.user;
+  const is_complexity_specified = Number(params.complexity) != null;
+  const is_question_specified = Number(params.question) != null;
+
+  if (
+    !is_user_specified ||
+    (!is_complexity_specified && !is_question_specified)
+  ) {
+    const msg = JSON.stringify({
+      status: 400,
+      data: {
+        message: "Bad request",
+      },
+    });
+    return msg;
+  }
+
+  return null;
+}
+
 function getWsCallback(rmq_conn: amqp.Connection) {
   async function callback(ws: WebSocket, req: IncomingMessage) {
     let params = url.parse(req.url!, true).query;
 
-    if (!params.user || Number(params.complexity == null)) {
-      const msg = JSON.stringify({
-        status: 400,
-        data: {
-          message: "Bad request",
-        },
-      });
-      ws.send(msg);
+    const errorResponse = getErrorResponse(req);
+    if (errorResponse) {
+      ws.send(errorResponse);
       ws.close();
       return;
     }
@@ -53,6 +71,7 @@ function getWsCallback(rmq_conn: amqp.Connection) {
               status: 200,
               data: {
                 url: content.url,
+                otherUser: content.otherUser,
                 questionId: content.questionId,
               },
             })
@@ -72,6 +91,7 @@ function getWsCallback(rmq_conn: amqp.Connection) {
       match_options: {
         user: params.user,
         complexity: Number(params.complexity),
+        question: Number(params.question),
       },
     };
     channel.sendToQueue(request_queue.queue, Buffer.from(JSON.stringify(msg)), {

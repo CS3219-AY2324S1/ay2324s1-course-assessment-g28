@@ -5,6 +5,7 @@ import { NextUIProvider } from "@nextui-org/react";
 import Layout from "@/components/Layout";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "next-themes";
+import { ActiveEditingSessionContextProvider } from "@/components/ActiveSessions/ActiveEditingSessionContext";
 
 export default function App({
   Component,
@@ -16,7 +17,9 @@ export default function App({
         <ThemeProvider attribute="class" defaultTheme="dark">
           <Toaster />
           <Layout>
-            <Component {...pageProps} />
+            <ActiveEditingSessionContextProvider>
+              <Component {...pageProps} />
+            </ActiveEditingSessionContextProvider>
           </Layout>
         </ThemeProvider>
       </SessionProvider>

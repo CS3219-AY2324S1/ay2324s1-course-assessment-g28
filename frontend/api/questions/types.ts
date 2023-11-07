@@ -22,6 +22,7 @@ export const QuestionBaseZod = z.object({
   title: z.string().min(1),
   category: z.string().array(),
   complexity: z.nativeEnum(QuestionComplexity),
+  wasAttempted: z.boolean().optional(),
 });
 
 export const QuestionCreationZod = z.object({
@@ -48,6 +49,7 @@ export interface GetQuestionRequest {
   offset: number;
   keyword?: string;
   complexity?: QuestionComplexity;
+  onlyUnattempted?: boolean;
 }
 
 export const GetQuestionResponseBodyZod = PagedResponse.extend({

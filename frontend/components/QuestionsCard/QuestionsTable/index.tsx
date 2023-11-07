@@ -40,6 +40,7 @@ export default function QuestionTable({ userIsAdmin }: QuestionTableProps) {
     pageSize,
     page,
     resetQuestionTableOptions,
+    onlyUnattemptedFilter,
   } = useQuestionTableContext();
   const router = useRouter();
 
@@ -48,6 +49,7 @@ export default function QuestionTable({ userIsAdmin }: QuestionTableProps) {
     offset: page - 1,
     complexity: selectedComplexity,
     keyword: filterValue,
+    onlyUnattempted: onlyUnattemptedFilter,
   };
 
   const { data, error, isLoading, mutate } = useSWR(
@@ -92,6 +94,7 @@ export default function QuestionTable({ userIsAdmin }: QuestionTableProps) {
               column.uid === ColumnKeyAdminOnly.ACTION ? "center" : "start"
             }
             allowsSorting={column.sortable}
+            width={column.width}
           >
             {column.name}
           </TableColumn>
