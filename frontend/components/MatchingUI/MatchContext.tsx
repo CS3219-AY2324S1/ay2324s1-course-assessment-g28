@@ -1,6 +1,5 @@
 import { MAX_PAIRING_DURATION, getPairingServiceUri } from "@/api/pairing";
 import { QuestionComplexity } from "@/api/questions/types";
-import { useActiveEditingSessionContext } from "@/components/ActiveSessions/ActiveEditingSessionContext";
 import useUserInfo from "@/hooks/useUserInfo";
 import { getEditorPath } from "@/routes";
 import {
@@ -62,7 +61,6 @@ export const MatchContextProvider = ({
   children,
 }: PropsWithChildren<unknown>) => {
   const [editorUrl, setEditorUrl] = useState("");
-  const { addEditingSession } = useActiveEditingSessionContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pairingWebsocket, setPairingWebsocket] = useState<WebSocket | null>(
     null,
@@ -105,15 +103,6 @@ export const MatchContextProvider = ({
                 parsed.data.url as string,
               ),
             );
-            // add this new session to active editor context
-            addEditingSession({
-              sessionUrl: getEditorPath(
-                parseInt(parsed.data.questionId as string),
-                parsed.data.url as string,
-              ),
-              questionId: parseInt(parsed.data.questionId as string),
-              email: parsed.data.otherUser as string,
-            });
             ws.close();
           }
         } else {

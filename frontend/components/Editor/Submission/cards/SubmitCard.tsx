@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { SubmissionStatus, useSubmissionContext } from "../SubmissionContext";
 import { useRouter } from "next/router";
 import { HOME } from "@/routes";
+import { createQuestionAttempt } from "@/api/user";
+
+// TODO: Pass question from collab editor to this card. use question details to make submission attempt
 
 /**
  * This card is only shown when submission status is:
@@ -18,7 +21,20 @@ const SubmitCard = () => {
 
   useEffect(() => {
     // todo: submission logic
-    setTimeout(() => setIsSubmitting(false), 5000);
+    (async () => {
+      /*
+       await createQuestionAttempt({
+        questionId: question.id,
+        questionTitle: question.title,
+        questionDifficulty: question.complexity,
+        attemptDate: new Date().toISOString(),
+        attemptDetails: editorContent,
+        attemptLanguage: language,
+      });
+       */
+      
+      setIsSubmitting(false);
+    })();
   }, []);
 
   useEffect(() => {
