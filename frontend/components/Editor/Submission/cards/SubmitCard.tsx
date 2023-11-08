@@ -40,6 +40,9 @@ const SubmitCard = () => {
         const questionId = result.content[0]?.id;
         const nextQnUrl = `${EDITOR_DIRECTORY}/${questionId}?wsUrl=${currentEditingSession?.websocketUrl}`;
 
+        console.log(currentEditingSession);
+        console.log("wsUrl: ", currentEditingSession?.websocketUrl);
+
         updateEditingSession(
           {
             websocketUrl: currentEditingSession?.websocketUrl ?? "",
@@ -57,7 +60,9 @@ const SubmitCard = () => {
         if (submissionStatus === SubmissionStatus.SUBMIT_BEFORE_EXIT) {
           router.push(HOME);
         } else {
-          router.push(nextQnUrl);
+          router
+            .push(nextQnUrl, undefined, { shallow: false })
+            .then((res) => setTimeout(() => router.reload(), 3000));
         }
       });
 

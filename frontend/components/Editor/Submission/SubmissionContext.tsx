@@ -92,6 +92,7 @@ export const SubmissionContextProvider = ({
         return setSubmissionStatus(SubmissionStatus.SUBMIT_BEFORE_EXIT);
       case WS_METHODS.EXIT_REJECT:
         return setSubmissionStatus(SubmissionStatus.EXIT_REJECTED);
+      case WS_METHODS.PARTNER_DISCONNECTED:
       case WS_METHODS.PEER_HAS_EXITED:
         setIsPeerStillHere(false);
         return toast.success(

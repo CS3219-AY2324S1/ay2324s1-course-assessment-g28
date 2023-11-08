@@ -120,6 +120,7 @@ export const ActiveEditingSessionContextProvider = ({
       sessionToUpdate.email = details.email;
       sessionToUpdate.question = questionDetails;
       sessionToUpdate.questionComplexity = details.questionComplexity;
+      sessionToUpdate.websocketUrl = details.websocketUrl;
 
       if (isCurrentSession) {
         setCurrentEditingSession(sessionToUpdate);

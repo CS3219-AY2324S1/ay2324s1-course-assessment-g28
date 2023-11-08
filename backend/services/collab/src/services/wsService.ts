@@ -110,6 +110,14 @@ export function handleExit(
   partnerConnection.send(message);
 }
 
+export function handlePartnerDisconnected(
+  connection: WebSocket,
+  partnerConnection: WebSocket,
+) {
+  const message = JSON.stringify({ method: WS_METHODS.PARTNER_DISCONNECTED });
+  partnerConnection.send(message);
+}
+
 export function handleDefault(
   partnerConnection: WebSocket,
   method: WS_METHODS

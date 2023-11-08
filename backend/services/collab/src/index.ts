@@ -9,6 +9,7 @@ import {
   handleMessage,
   handleOp,
   handlePairConnected,
+  handlePartnerDisconnected,
   handleReadyToReceive,
   handleRunCode,
   handleSwitchLang,
@@ -120,7 +121,7 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
   const userId = params["userId"];
   const questionId = Number(params["questionId"]);
 
-  //console.log("Pair: ", pairId, "User: ", userId);
+  console.log("Pair: ", pairId, "User: ", userId);
 
   // Check pair exists, else close connection
   getPairAndStoreQuestionId(pairId, userId, questionId).then((pairDoc) => {
@@ -159,9 +160,10 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
 
   connection.onmessage = (message: any) => {
     const data = JSON.parse(message.data);
-    //console.log("New Message:::", data);
+    console.log("New Message:::", data);
 
-    const partnerConnection = clients[partners[userId]];
+    const partnerId = partners[userId];
+    const partnerConnection = clients[partnerId];
 
     switch (data.method) {
       case WS_METHODS.OP:
@@ -184,7 +186,12 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
         handleExit(connection, partnerConnection, data);
         break;
       case WS_METHODS.NEXT_QUESTION_INITATED_BY_PEER:
+        handleDefault(partnerConnection, data.method);
+        break;
       case WS_METHODS.NEXT_QUESTION_CONFIRM:
+        handleDefault(partnerConnection, data.method);
+        handleClosePair(connection, partnerConnection, userId, partnerId, pairId);
+        break;
       case WS_METHODS.NEXT_QUESTION_REJECT:
       case WS_METHODS.EXIT_INITIATED_BY_PEER:
       case WS_METHODS.EXIT_CONFIRM:
@@ -197,25 +204,50 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
   connection.onclose = (message: any) => {
     console.log("Connection closed: ", userId);
 
-    // Order of deletion: partners[userId, partnerId], pairs[pairId], clients[userId]
-    // Then partnerConnection is also closed which will only delete clients[userId]
+    const partnerId = partners[userId];
+    const partnerConnection = partnerId === undefined ? undefined : clients[partnerId];
 
-    // TODO: Don't close if partner closes
-    // Close partner connection if it exists
-    // Also remove the pair from the OT service
-    if (userId in partners) {
-      const partnerId = partners[userId];
-      if (partnerId in clients) {
-        const partnerConnection = clients[partnerId];
-        partnerConnection.close();
-      }
-      delete partners[userId];
-      delete partners[partnerId];
-      delete pairs[pairId];
-
-      removePairFromOt(pairId);
+    if (partnerConnection !== undefined && partnerConnection.readyState == partnerConnection.OPEN) {
+      handlePartnerDisconnected(connection, partnerConnection);
     }
-
-    delete clients[userId];
   };
 });
+
+/**
+ * Should effectively delete and close everything to allow start over 
+ * from clean slate upon reconnection
+ * DB entry not deleted but set 1hr expiry as users have not confirm exit yet
+ * 
+ * @param connection 
+ * @param partnerConnection 
+ * @param userId 
+ * @param partnerId 
+ * @param pairId 
+ */
+function handleCloseConnection(connection: WebSocket, partnerConnection: WebSocket, userId: string, partnerId: string, pairId: string) {
+  delete clients[userId];
+  delete partners[userId];
+
+  // Partner has also left
+  if (partnerId !in clients) {
+    // TODO: Add expiry on db entry
+    delete pairs[pairId];
+    removePairFromOt(pairId);
+  }
+
+  connection.close();
+}
+
+function handleClosePair(connection: WebSocket, partnerConnection: WebSocket, userId: string, partnerId: string, pairId: string) {
+  delete clients[userId];
+  delete partners[userId];
+
+  delete clients[partnerId];
+  delete partners[partnerId];
+
+  delete pairs[pairId];
+  removePairFromOt(pairId);
+
+  connection.close();
+  partnerConnection.close();
+}

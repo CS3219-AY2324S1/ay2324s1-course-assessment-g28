@@ -23,12 +23,13 @@ export enum WS_METHODS {
   EXIT_REJECT,
   PEER_HAS_EXITED,
   EXIT,
+  PARTNER_DISCONNECTED,
 
   MESSAGE,
   TESTCASE_ADD,
   TESTCASE_DELETE,
   TESTCASE_EDIT,
-};
+}
 
 export const LANGUAGE_DATA: {
   [key: string]: { codeMirrorExtension: any; templateCode: string };
