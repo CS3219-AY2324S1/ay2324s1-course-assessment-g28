@@ -14,7 +14,6 @@ import {
 } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import { useState, useCallback } from "react";
-import toast from "react-hot-toast";
 
 export type EditorSubmissionState =
   | "unattempted"
@@ -53,7 +52,13 @@ export default function EditorSubmissionModalButton({
     } catch (e) {
       setSubmissionState("error");
     }
-  }, [editorContent, question.complexity, question.id, question.title]);
+  }, [
+    editorContent,
+    question.complexity,
+    question.id,
+    question.title,
+    language,
+  ]);
 
   let modal = null;
   if (submissionState === "confirmation") {

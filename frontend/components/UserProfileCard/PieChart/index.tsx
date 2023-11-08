@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { USER_ATTEMPTS_CONFIGS } from "../config";
 import { User } from "@/api/user/types";
 import PieChartLabels from "./PieChartLabels";
+import { Tooltip } from "@nextui-org/react";
 
 const PieChart = ({ data }: { data?: User }) => {
   const processedPieData = useMemo(() => {
@@ -23,7 +24,8 @@ const PieChart = ({ data }: { data?: User }) => {
         Question complexity breakdown
       </div>
       {attemptCount > 0 ? (
-        <>
+        <div className="flex flex-col sm:flex-row lg:flex-col
+                        items-center justify-center w-full">
           <Pie
             data={processedPieData}
             innerRadius={0.5}
@@ -39,9 +41,27 @@ const PieChart = ({ data }: { data?: User }) => {
               (datum?.value ?? 0) > 0 ? datum.value.toString() : ""
             }
             arcLabelsTextColor="rgb(63, 63, 70)"
+            tooltip={(data) => {
+              const { label, value } = data?.datum ?? {};
+              return (
+                <Tooltip
+                  isOpen
+                  className="rounded-[2px]"
+                  placement="top"
+                  content={
+                    <div className="text-foreground">
+                      <span>{`${label} `}</span>
+                      <span>{value}</span>
+                    </div>
+                  }
+                >
+                  <div className="relative"></div>
+                </Tooltip>
+              );
+            }}
           />
           <PieChartLabels data={data} />
-        </>
+        </div>
       ) : (
         <div className="h-[200px] w-full flex justify-center items-center">
           <span>No attempts yet!</span>

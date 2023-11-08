@@ -1,6 +1,5 @@
 import { getPairingServiceUri } from "@/api/pairing";
 import { Question, QuestionBase } from "@/api/questions/types";
-import { useActiveEditingSessionContext } from "@/components/ActiveSessions/ActiveEditingSessionContext";
 import useUserInfo from "@/hooks/useUserInfo";
 import { getEditorPath, getSingleEditorPath } from "@/routes";
 import {
@@ -47,7 +46,6 @@ export default function QuestionAttemptButton({
     MatchState.NO_ATTEMPT,
   );
   const router = useRouter();
-  const { addEditingSession } = useActiveEditingSessionContext();
   const pairingWebsocket = useRef<WebSocket | null>(null);
   const pairingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const editorPathRef = useRef<string>();
@@ -78,14 +76,6 @@ export default function QuestionAttemptButton({
               parseInt(parsed.data.questionId as string),
               parsed.data.url as string,
             );
-            addEditingSession({
-              sessionUrl: getEditorPath(
-                parseInt(parsed.data.questionId as string),
-                parsed.data.url as string,
-              ),
-              questionId: parseInt(parsed.data.questionId as string),
-              email: parsed.data.otherUser as string,
-            });
             ws.close();
           }
         } else {
@@ -113,7 +103,9 @@ export default function QuestionAttemptButton({
               <ModalBody>
                 <div className="flex flex-row gap-x-2">
                   <div
-                    className="flex-1 p-4 cursor-pointer rounded-md bg-black bg-opacity-0 hover:bg-opacity-5"
+                    className="flex-1 p-4 cursor-pointer rounded-md
+                            bg-black bg-opacity-0 hover:bg-opacity-5
+                            hover:transition-transform hover:scale-110"
                     onClick={() =>
                       router.push(getSingleEditorPath(question.id))
                     }
@@ -123,7 +115,9 @@ export default function QuestionAttemptButton({
                   </div>
                   <div className="w-[2px] bg-brand-white "></div>
                   <div
-                    className="flex-1 p-4 cursor-pointer rounded-md bg-black bg-opacity-0 hover:bg-opacity-5"
+                    className="flex-1 p-4 cursor-pointer rounded-md
+                              bg-black bg-opacity-0 hover:bg-opacity-5
+                               hover:transition-transform hover:scale-110"
                     onClick={startMatching}
                   >
                     <h3 className="text-lg font-bold">Double</h3>
@@ -168,6 +162,7 @@ export default function QuestionAttemptButton({
               <ModalHeader>Matching peer found!</ModalHeader>
               <ModalBody>
                 <div>Redirecting you to the collaborative editor page...</div>
+                <Spinner color="secondary" />
               </ModalBody>
               <ModalFooter>
                 <Button
@@ -226,6 +221,7 @@ export default function QuestionAttemptButton({
         onOpenChange={onOpenChange}
         className="text-brand-white bg-gradient-to-br
         from-violet-500 to-fuchsia-500 flex flex-col items-center"
+        isDismissable={false}
       >
         <ModalContent className="p-2">{getModalContent}</ModalContent>
       </Modal>

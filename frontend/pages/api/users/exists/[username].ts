@@ -1,4 +1,3 @@
-import { HttpMethod, HttpStatus } from "@/api/constants";
 import { forwardRequestAndGetResponse } from "@/api/server/serverConstants";
 import type { NextApiRequest, NextApiResponse } from "next";
 

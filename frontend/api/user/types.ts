@@ -4,18 +4,21 @@ export const AttemptedQuestionRecordZod = z.object({
   attemptId: z.number().int().nonnegative(),
   questionId: z.number().int().nonnegative(),
   questionTitle: z.string(),
+  questionDifficulty: z.number().int().min(0).max(2),
   attemptDate: z.string().datetime(),
   attemptLanguage: z.string(),
+  otherUser: z.string().email().optional().nullable(),
 });
 
 export const AttemptedQuestionDetailsZod = z.object({
   attemptId: z.number().int().nonnegative(),
   questionId: z.number().int().nonnegative(),
   questionTitle: z.string(),
+  questionDifficulty: z.number().int().min(0).max(2),
   attemptDate: z.string().datetime(),
   attemptDetails: z.string(),
   attemptLanguage: z.string(),
-  otherUser: z.string().email().optional(),
+  otherUser: z.string().email().optional().nullable(),
 });
 
 export const CreateQuestionAttemptRequestBodyZod = z.object({
@@ -25,7 +28,7 @@ export const CreateQuestionAttemptRequestBodyZod = z.object({
   attemptDate: z.string().datetime(),
   attemptDetails: z.string(),
   attemptLanguage: z.string(),
-  otherUser: z.string().email().optional(),
+  otherUser: z.string().email().optional().nullable(),
 });
 
 export type CreateQuestionAttemptRequestBody = z.infer<

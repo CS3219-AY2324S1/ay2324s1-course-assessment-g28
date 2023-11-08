@@ -19,7 +19,7 @@ export default function SingleEditorPage({
   return (
     <div className="flex flex-grow overflow-auto">
       <PanelGroup direction="horizontal">
-        <Panel>
+        <Panel defaultSize={40}>
           <QuestionDetailsCard
             question={question}
             className="max-h-full overflow-auto"

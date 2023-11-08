@@ -1,9 +1,6 @@
 import { deleteQuestion } from "@/api/questions";
 import { Question } from "@/api/questions/types";
-import Card from "@/components/Card";
 import QuestionAttemptButton from "@/components/QuestionAttemptButton";
-import QuestionAttemptButon from "@/components/QuestionAttemptButton";
-import DeleteButton from "@/components/QuestionsCard/QuestionsTable/DeleteButton";
 import useUserInfo from "@/hooks/useUserInfo";
 import { HOME, getUpdateQuestionPath } from "@/routes";
 import {

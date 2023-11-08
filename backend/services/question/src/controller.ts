@@ -9,6 +9,7 @@ import {
 import { Question } from "./models/question";
 
 import { config } from "dotenv";
+import fuse from "fuse.js";
 
 config();
 
@@ -78,24 +79,32 @@ export const getQuestions = async (req: Request, res: Response) => {
 
     const filter: { [key: string]: any } = {};
 
+    // return everything that has (even a partial match) in the keyword
     if (req.query.keyword) {
-      filter.title = {
-        $regex: new RegExp(`^${String(req.query.keyword)}`, "i"),
-      };
+      filter.$or = [
+        { title: { $regex: new RegExp(String(req.query.keyword), "i") } },
+        {
+          category: {
+            $elemMatch: { $regex: new RegExp(String(req.query.keyword), "i") },
+          },
+        },
+      ];
     }
 
     if (req.query.complexity) {
       filter.complexity = req.query.complexity;
     }
 
-    let attemptedQuestionIds: Set<Number> = new Set<Number>();
+    // get users attempted questions
+    const resp = await fetch(
+      `${process.env.USER_API}/users/${req.query.user}/question-attempt`
+    );
+
+    const attemptedQuestions = await resp.json();
+    const attemptedQuestionIds = new Set<Number>(attemptedQuestions);
 
     if (req.query.onlyUnattempted && req.query.user) {
       const onlyUnattempted = req.query.onlyUnattempted === "true";
-      const resp = await fetch(
-        `${process.env.USER_API}/users/${req.query.user}/question-attempt`
-      );
-      attemptedQuestionIds = new Set<Number>(await resp.json());
 
       if (onlyUnattempted) {
         filter.id = {
@@ -106,25 +115,44 @@ export const getQuestions = async (req: Request, res: Response) => {
 
     const total = await Question.countDocuments(filter);
 
-    const questions = await Question.find(filter)
-      .skip(offset * size) // skip the first offset * size elements
-      .limit(size); // take the first (size) elements
+    const questions = await Question.find(filter);
 
-    if (req.query.onlyUnattempted && req.query.user) {
-      const modifiedQuestions = [];
+    const modifiedQuestions = [];
 
-      for (const question of questions) {
-        const questionObject = question.toObject();
-        const wasAttempted = attemptedQuestionIds.has(questionObject.id);
-        modifiedQuestions.push({
-          ...questionObject,
-          wasAttempted: wasAttempted,
-        });
-      }
-      res.status(200).json({ content: modifiedQuestions, total: total });
-    } else {
-      res.status(200).json({ content: questions, total: total });
+    for (const question of questions) {
+      const questionObject = question.toObject();
+      const wasAttempted = attemptedQuestionIds.has(questionObject.id);
+      modifiedQuestions.push({
+        ...questionObject,
+        wasAttempted,
+      });
     }
+
+    // use fusejs to give an ordering to modifiedQuestions (threshold is set to 1.0 so that pagination and size is still correct, this is okay as higher matches will be at the front)
+    if (req.query.keyword) {
+      const fuseOptions = {
+        keys: ["title", "category"],
+        threshold: 1.0,
+      };
+      const f = new fuse(modifiedQuestions, fuseOptions);
+      const content = f
+        .search(req.query.keyword as string)
+        .map((entry) => entry.item)
+        .slice(offset * size, offset * size + size);
+
+      content.sort((q1, q2) => q1.id - q2.id);
+      res.status(200).json({
+        content: content,
+        total: total,
+      });
+      return;
+    }
+
+    modifiedQuestions.sort((q1, q2) => q1.id - q2.id);
+    res.status(200).json({
+      content: modifiedQuestions.slice(offset * size, offset * size + size),
+      total: total,
+    });
   } catch (error) {
     if (error instanceof QuestionError) {
       res

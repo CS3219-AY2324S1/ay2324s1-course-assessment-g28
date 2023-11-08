@@ -1,5 +1,5 @@
-import { useCallback, useRef, useState } from "react";
-import Editor, { Monaco } from "@monaco-editor/react";
+import { useCallback, useState } from "react";
+import Editor from "@monaco-editor/react";
 import { PanelGroup, Panel } from "react-resizable-panels";
 import HorizontalResizeHandle from "@/components/PanelResizeHandles/HorizontalResizeHandle";
 import {
@@ -20,7 +20,6 @@ interface SingleEditorProps {
 }
 
 export default function SingleEditor({ question }: SingleEditorProps) {
-  const editorRef = useRef(null);
   const { theme } = useTheme();
   const [codeRunState, setCodeRunState] = useState<CodeRunState>({
     result: 'Click "Run" to execute your code!',

@@ -4,7 +4,7 @@ import QuestionAttemptButton from "@/components/QuestionAttemptButton";
 import DeleteButton from "@/components/QuestionsCard/QuestionsTable/DeleteButton";
 import { getUpdateQuestionPath } from "@/routes";
 import { Button, Chip } from "@nextui-org/react";
-import { Pencil } from "lucide-react";
+import { CheckCircle, Pencil } from "lucide-react";
 import Link from "next/link";
 
 export enum ColumnKey {
@@ -13,6 +13,7 @@ export enum ColumnKey {
   CATEGORY = "category",
   DIFFCULTY = "complexity",
   ACTION = "action",
+  STATUS = "wasAttempted",
 }
 
 export enum ColumnKeyAdminOnly {
@@ -27,9 +28,11 @@ interface ColumnConfig {
   sortable?: boolean;
   render?: (rowData: QuestionBase) => React.ReactNode;
   align: "start" | "center" | "end";
+  width?: number;
 }
 
 export const COLUMNS = [
+  ColumnKey.STATUS,
   ColumnKey.ID,
   ColumnKey.TITLE,
   ColumnKey.CATEGORY,
@@ -40,6 +43,17 @@ export const COLUMNS = [
 export const COLUMNS_ADMIN = [...COLUMNS, ColumnKeyAdminOnly.ACTION];
 
 export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
+  [ColumnKey.STATUS]: {
+    name: "Status",
+    uid: ColumnKey.STATUS,
+    align: "start",
+    width: 10,
+    render: (question: QuestionBase) => (
+      <div>
+        {question.wasAttempted && <CheckCircle color="green" size={20} />}
+      </div>
+    ),
+  },
   [ColumnKey.ID]: {
     name: "ID",
     uid: ColumnKey.ID,

@@ -9,7 +9,7 @@ import {
 } from "../constants";
 import LoadingScreen from "../LoadingScreen";
 import { Input } from "@nextui-org/react";
-import sendIcon from "@/assets/images/chatbox-send-icon.png";
+import { SendHorizontal } from "lucide-react";
 
 interface MessageWindowProps {
   websocketUrl: string;
@@ -26,7 +26,6 @@ export default function MessageWindow(props: MessageWindowProps) {
 
   useEffect(() => {
     // TODO: Fix this
-    // @ts-ignore
     messageScrollDiv.current?.scrollIntoView({ behavior: "smooth" });
   }, [messageList]);
 
@@ -38,13 +37,12 @@ export default function MessageWindow(props: MessageWindowProps) {
       setIsWebsocketLoaded(true);
     },
     onMessage: onMessage,
-    onClose: onClose,
     onError: onError,
   });
 
   function onMessage(e: any) {
     const data = JSON.parse(e.data);
-    //console.log("MessageWindow received: ", data);
+    console.log("MessageWindow received: ", data);
 
     switch (data.method) {
       case WS_METHODS.READY:
@@ -54,11 +52,6 @@ export default function MessageWindow(props: MessageWindowProps) {
         handleMessage(data);
         break;
     }
-  }
-
-  function onClose(e: Event) {
-    console.log("CLOSING WS IN CHATBOX", e);
-    // TODO
   }
 
   function onError(e: Event) {
@@ -104,7 +97,7 @@ export default function MessageWindow(props: MessageWindowProps) {
   }
 
   return (
-    <div className="h-full w-full flex flex-col bg-content1 rounded-xl relative">
+    <div className="flex flex-grow flex-col bg-content1 rounded-xl relative overflow-auto">
       {(() => {
         if (!isInitialized) {
           return (
@@ -130,7 +123,7 @@ export default function MessageWindow(props: MessageWindowProps) {
           placeholder="Send a message..."
           labelPlacement="outside"
           endContent={
-            <img src={sendIcon.src} className="h-4/5" onClick={sendMessage} />
+            <SendHorizontal />
           }
           value={messageValue}
           onInput={(e) => setMessageValue(e.target.value)}

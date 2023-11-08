@@ -93,8 +93,8 @@ const AttemptsHeatMap = ({ data }: { data?: User }) => {
                   placement="top"
                   content={
                     <div
-                      className="text-[18px] text-zinc-600
-                      cursor-default p-2"
+                      className="text-foreground
+                      cursor-default"
                     >
                       <span className="font-semibold">{count ?? 0}</span>
                       <span>{` attempt${
