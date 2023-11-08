@@ -52,6 +52,7 @@ export const useActiveEditingSessionContext = () =>
   useContext(ActiveEditingSessionContext);
 
 const activeEditingSessionsLocalStorageKey = "active_editing_sessions";
+const currentEditingSessionLocalStorageKey = "current_editing_session";
 
 export const ActiveEditingSessionContextProvider = ({
   children,
@@ -69,7 +70,29 @@ export const ActiveEditingSessionContextProvider = ({
     if (persisted !== null && persisted !== "undefined") {
       setActiveEditingSessions(JSON.parse(persisted));
     }
+
+    // Refresh will trigger this to obtain current session
+    // This is needed as we refresh when proceed to next question
+    // Will also be called during initial page load but doesn't matter
+    const currentPersistedSession = localStorage.getItem(
+      currentEditingSessionLocalStorageKey,
+    );
+    if (
+      currentPersistedSession !== null &&
+      currentPersistedSession !== "undefined"
+    ) {
+      setCurrentEditingSession(JSON.parse(currentPersistedSession));
+    }
   }, []);
+
+  // Always persist current session so we know what to load upon refresh
+  useEffect(() => {
+    // save to local storage
+    localStorage.setItem(
+      currentEditingSessionLocalStorageKey,
+      JSON.stringify(currentEditingSession),
+    );
+  }, [currentEditingSession]);
 
   // persist active editing sessions to localstorage whenever it changes
   useEffect(() => {

@@ -55,7 +55,7 @@ const SubmitCard = () => {
         const questionId = result.content[0]?.id;
         const nextQnUrl = `${EDITOR_DIRECTORY}/${questionId}?wsUrl=${currentEditingSession?.websocketUrl}`;
 
-        console.log(currentEditingSession);
+        console.log("Next question:", questionId);
         console.log("wsUrl: ", currentEditingSession?.websocketUrl);
 
         updateEditingSession(

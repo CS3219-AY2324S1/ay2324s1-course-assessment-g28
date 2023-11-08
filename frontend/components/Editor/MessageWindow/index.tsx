@@ -90,7 +90,6 @@ export default function MessageWindow(props: MessageWindowProps) {
   }
 
   function onKeyUp(e) {
-    console.log(e.key);
     if (e.key === "Enter") {
       sendMessage();
     }
@@ -122,9 +121,7 @@ export default function MessageWindow(props: MessageWindowProps) {
         <Input
           placeholder="Send a message..."
           labelPlacement="outside"
-          endContent={
-            <SendHorizontal />
-          }
+          endContent={<SendHorizontal onClick={sendMessage} />}
           value={messageValue}
           onInput={(e) => setMessageValue(e.target.value)}
           onKeyUp={onKeyUp}
