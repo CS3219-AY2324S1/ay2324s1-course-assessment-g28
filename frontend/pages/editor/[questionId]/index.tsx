@@ -1,8 +1,6 @@
 import CodeWindow from "@/components/Editor/CodeWindow";
 import MessageWindow from "@/components/Editor/MessageWindow";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import ResizeHandleHorizontal from "@/components/Editor/ResizeHandleHorizontal";
-import ResizeHandleVertical from "@/components/Editor/ResizeHandleVertical";
+import { Panel, PanelGroup } from "react-resizable-panels";
 import { getQuestion } from "@/api/questions";
 import { useEffect, useState } from "react";
 import { GetServerSideProps, InferGetStaticPropsType } from "next";

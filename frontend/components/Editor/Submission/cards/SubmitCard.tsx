@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { SubmissionStatus, useSubmissionContext } from "../SubmissionContext";
 import { useRouter } from "next/router";
 import { HOME } from "@/routes";
-import { createQuestionAttempt } from "@/api/user";
 
 // TODO: Pass question from collab editor to this card. use question details to make submission attempt
 
@@ -32,7 +31,7 @@ const SubmitCard = () => {
         attemptLanguage: language,
       });
        */
-      
+
       setIsSubmitting(false);
     })();
   }, []);
