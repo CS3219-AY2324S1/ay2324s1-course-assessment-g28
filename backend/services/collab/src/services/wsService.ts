@@ -123,7 +123,7 @@ export function handleExit(
   partnerConnection.send(message);
 }
 
-export async function handleNextQuestionConfirm(
+export async function handleNextQuestionId(
   connection: WebSocket,
   partnerConnection: WebSocket,
   userId: string,

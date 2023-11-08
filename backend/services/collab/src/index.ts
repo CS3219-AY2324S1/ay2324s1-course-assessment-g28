@@ -7,7 +7,7 @@ import {
   handleDefault,
   handleExit,
   handleMessage,
-  handleNextQuestionConfirm,
+  handleNextQuestionId,
   handleOp,
   handlePairConnected,
   handlePartnerDisconnected,
@@ -190,7 +190,9 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
         break;
       case WS_METHODS.NEXT_QUESTION_CONFIRM:
         handleDefault(partnerConnection, data.method);
-        handleNextQuestionConfirm(connection, partnerConnection, userId, partnerId, pairId).then(result => {
+        break;
+      case WS_METHODS.NEXT_QUESTION_ID:
+        handleNextQuestionId(connection, partnerConnection, userId, partnerId, pairId).then(result => {
           handleClosePair(connection, partnerConnection, userId, partnerId, pairId);
         });
         break;

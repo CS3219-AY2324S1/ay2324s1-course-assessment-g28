@@ -4,6 +4,7 @@ import {
   SetStateAction,
   createContext,
   useContext,
+  useEffect,
   useState,
 } from "react";
 import { WSMessageType, WS_METHODS } from "../constants";
@@ -35,6 +36,8 @@ type SubmissionContextType = {
   setSubmissionStatus: Dispatch<SetStateAction<SubmissionStatus>>;
   initateExitMyself: () => void;
   initateNextQnMyself: () => void;
+  isSubmitted: boolean;
+  setIsSubmitted: Dispatch<SetStateAction<boolean>>;
   nextQuestionPath: string;
   stayOnQuestion: (wsMethod?: WS_METHODS) => void;
   leaveQuestion: (
@@ -59,6 +62,8 @@ const defaultContext: SubmissionContextType = {
   setSubmissionStatus: throwNotInProviderError,
   initateExitMyself: throwNotInProviderError,
   initateNextQnMyself: throwNotInProviderError,
+  isSubmitted: false,
+  setIsSubmitted: throwNotInProviderError,
   nextQuestionPath: "",
   stayOnQuestion: throwNotInProviderError,
   leaveQuestion: throwNotInProviderError,
@@ -77,6 +82,7 @@ export const SubmissionContextProvider = ({
 }: PropsWithChildren<{ websocketUrl: string }>) => {
   const [isPeerStillHere, setIsPeerStillHere] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [nextQuestionPath, setNextQuestionPath] = useState("");
   const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus>(
     SubmissionStatus.NOT_SUBMITTING,
@@ -86,6 +92,16 @@ export const SubmissionContextProvider = ({
     filter: () => false,
     onMessage: onMessage,
   });
+
+  useEffect(() => {
+    // User has submitted code, now ask websocket for next qn url
+    if (
+      isSubmitted &&
+      submissionStatus === SubmissionStatus.SUBMIT_BEFORE_NEXT_QN
+    ) {
+      sendMessage(WS_METHODS.NEXT_QUESTION_ID);
+    }
+  }, [isSubmitted, submissionStatus]);
 
   function onMessage(e: WSMessageType) {
     const data = JSON.parse(e.data);
@@ -181,6 +197,8 @@ export const SubmissionContextProvider = ({
         setSubmissionStatus,
         initateExitMyself,
         initateNextQnMyself,
+        isSubmitted: isSubmitted,
+        setIsSubmitted: setIsSubmitted,
         nextQuestionPath,
         stayOnQuestion,
         leaveQuestion,

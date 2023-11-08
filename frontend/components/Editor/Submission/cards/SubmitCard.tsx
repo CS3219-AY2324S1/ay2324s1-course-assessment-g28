@@ -18,27 +18,9 @@ const SubmitCard = () => {
     setSubmissionStatus,
     setIsModalOpen,
     nextQuestionPath,
+    isSubmitted: isSubmissionInProgress,
   } = useSubmissionContext();
-  const [isSubmitting, setIsSubmitting] = useState(true);
   const router = useRouter();
-
-  useEffect(() => {
-    // todo: submission logic
-    (async () => {
-      /*
-       await createQuestionAttempt({
-        questionId: question.id,
-        questionTitle: question.title,
-        questionDifficulty: question.complexity,
-        attemptDate: new Date().toISOString(),
-        attemptDetails: editorContent,
-        attemptLanguage: language,
-      });
-       */
-
-      setIsSubmitting(false);
-    })();
-  }, []);
 
   useEffect(() => {
     if (nextQuestionPath !== "") {
@@ -49,7 +31,6 @@ const SubmitCard = () => {
   }, [nextQuestionPath]);
 
   useEffect(() => {
-    if (isSubmitting) return;
     if (secondsLeft < 1) {
       console.log("Next qn url:", nextQuestionPath);
 
@@ -68,7 +49,6 @@ const SubmitCard = () => {
       );
     }
   }, [
-    isSubmitting,
     secondsLeft,
     router,
     submissionStatus,
@@ -76,7 +56,7 @@ const SubmitCard = () => {
     setIsModalOpen,
   ]);
 
-  return isSubmitting ? (
+  return isSubmissionInProgress ? (
     <>
       <ModalHeader className="flex flex-col gap-1">
         Submitting your attempt

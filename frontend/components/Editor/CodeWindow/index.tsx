@@ -75,6 +75,7 @@ export default function CodeWindow({
     initateExitMyself,
     initateNextQnMyself,
     submissionStatus,
+    setIsSubmitted,
   } = useSubmissionContext();
 
   const editorsParentRef = useRef<{ [lang: string]: HTMLDivElement | null }>(
@@ -110,8 +111,9 @@ export default function CodeWindow({
       submissionStatus === SubmissionStatus.SUBMIT_BEFORE_NEXT_QN ||
       submissionStatus === SubmissionStatus.SUBMIT_BEFORE_EXIT
     ) {
+      setIsSubmitted(false);
       // Next question or exit approved by both users
-      onSubmitCode(null);
+      submitCode(null, true);
     }
   }, [submissionStatus]);
 
@@ -487,7 +489,7 @@ export default function CodeWindow({
     setIsCodeRunning(true);
   }
 
-  function onSubmitCode(e: any) {
+  function submitCode(e: any, toSetIsSubmitted: boolean = false) {
     console.log("Submitting code...");
     const code = editorsRef.current[language].state.doc.toString();
 
@@ -509,6 +511,8 @@ export default function CodeWindow({
     createQuestionAttempt(questionAttempt).then((res) => {
       console.log("After code submission:", res);
       toast.success("Your code has been submitted successfully!");
+
+      if (toSetIsSubmitted) setIsSubmitted(true);
     });
   }
 
@@ -554,7 +558,7 @@ export default function CodeWindow({
               </Button>
               <Button
                 disabled={isCodeRunning}
-                onClick={onSubmitCode} // TODO: Change this to submit
+                onClick={submitCode} // TODO: Change this to submit
                 size="sm"
                 color="secondary"
               >
