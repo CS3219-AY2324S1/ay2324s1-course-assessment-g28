@@ -47,19 +47,11 @@ const getNextSequenceValue = async (sequenceName) => {
   return sequence.sequence_value;
 };
 
-async function saveQuestions() {
+async function getQuestions() {
   try {
     mongoose.connect(MONGO_URI);
-    const questionJson = JSON.parse(
-      fs.readFileSync(__dirname + "/sample_questions.json")
-    );
-    let saved = 1;
-    for (let question of questionJson) {
-      console.log(`attempting to save question ${saved}...`);
-      await new Question(question).save();
-      console.log("Done!");
-      saved++;
-    }
+    const data = await Question.find({})
+    fs.writeFileSync(__dirname + "/sample_questions.json", JSON.stringify(data));
   } catch (error) {
     console.log(`saveQuestions failed: error ${error}`);
   } finally {
@@ -67,4 +59,4 @@ async function saveQuestions() {
   }
 }
 
-saveQuestions();
+getQuestions();
