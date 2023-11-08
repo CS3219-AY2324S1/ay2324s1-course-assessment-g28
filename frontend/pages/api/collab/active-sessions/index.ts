@@ -24,7 +24,6 @@ export default async function handler(
     const responseJson = await response.json();
 
     const activeSessions = responseJson["activeSessions"];
-
     res.status(HttpStatus.OK).json({ activeSessions: activeSessions });
   } catch (e) {
     console.log(e);

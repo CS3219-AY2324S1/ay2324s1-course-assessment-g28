@@ -1,6 +1,5 @@
 import { getPairingServiceUri } from "@/api/pairing";
 import { Question, QuestionBase } from "@/api/questions/types";
-import { useActiveEditingSessionContext } from "@/components/ActiveSessions/ActiveEditingSessionContext";
 import useUserInfo from "@/hooks/useUserInfo";
 import { getEditorPath, getSingleEditorPath } from "@/routes";
 import {
@@ -15,6 +14,7 @@ import {
 } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import { useCallback, useRef, useState } from "react";
+import { useActiveEditingSessionContext } from "../ActiveSessions/ActiveEditingSessionContext";
 
 const DEFAULT_PAIRING_DURATION = 30000;
 
@@ -235,6 +235,7 @@ export default function QuestionAttemptButton({
         onOpenChange={onOpenChange}
         className="text-brand-white bg-gradient-to-br
         from-violet-500 to-fuchsia-500 flex flex-col items-center"
+        isDismissable={false}
       >
         <ModalContent className="p-2">{getModalContent}</ModalContent>
       </Modal>

@@ -1,6 +1,5 @@
 import { MAX_PAIRING_DURATION, getPairingServiceUri } from "@/api/pairing";
 import { QuestionComplexity } from "@/api/questions/types";
-import { useActiveEditingSessionContext } from "@/components/ActiveSessions/ActiveEditingSessionContext";
 import useUserInfo from "@/hooks/useUserInfo";
 import { getEditorPath } from "@/routes";
 import {
@@ -11,6 +10,7 @@ import {
   useContext,
   useState,
 } from "react";
+import { useActiveEditingSessionContext } from "../ActiveSessions/ActiveEditingSessionContext";
 
 export enum MatchStatus {
   SELECT_DIFFICULTY,

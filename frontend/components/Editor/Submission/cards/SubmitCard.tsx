@@ -7,6 +7,8 @@ import { getQuestions } from "@/api/questions";
 import { useActiveEditingSessionContext } from "@/components/ActiveSessions/ActiveEditingSessionContext";
 import { QuestionComplexity } from "@/api/questions/types";
 
+// TODO: Pass question from collab editor to this card. use question details to make submission attempt
+
 /**
  * This card is only shown when submission status is:
  *  - SUBMIT_BEFORE_EXIT OR
@@ -23,7 +25,20 @@ const SubmitCard = () => {
 
   useEffect(() => {
     // todo: submission logic
-    setTimeout(() => setIsSubmitting(false), 5000);
+    (async () => {
+      /*
+       await createQuestionAttempt({
+        questionId: question.id,
+        questionTitle: question.title,
+        questionDifficulty: question.complexity,
+        attemptDate: new Date().toISOString(),
+        attemptDetails: editorContent,
+        attemptLanguage: language,
+      });
+       */
+
+      setIsSubmitting(false);
+    })();
   }, []);
 
   useEffect(() => {

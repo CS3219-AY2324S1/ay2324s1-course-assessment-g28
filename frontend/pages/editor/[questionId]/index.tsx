@@ -1,8 +1,6 @@
 import CodeWindow from "@/components/Editor/CodeWindow";
 import MessageWindow from "@/components/Editor/MessageWindow";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import ResizeHandleHorizontal from "@/components/Editor/ResizeHandleHorizontal";
-import ResizeHandleVertical from "@/components/Editor/ResizeHandleVertical";
+import { Panel, PanelGroup } from "react-resizable-panels";
 import { getQuestion } from "@/api/questions";
 import { useEffect, useState } from "react";
 import { GetServerSideProps, InferGetStaticPropsType } from "next";
@@ -12,6 +10,8 @@ import { useRouter } from "next/router";
 import { SubmissionContextProvider } from "@/components/Editor/Submission/SubmissionContext";
 import { SubmissionModal } from "@/components/Editor/Submission/SubmissionModal";
 import { Spinner } from "@nextui-org/react";
+import VerticalResizeHandle from "@/components/PanelResizeHandles/VerticalResizeHandle";
+import HorizontalResizeHandle from "@/components/PanelResizeHandles/HorizontalResizeHandle";
 
 export const getServerSideProps = (async ({ params }) => {
   const data = await getQuestion(Number(params?.questionId), true);
@@ -32,12 +32,9 @@ export default function EditorPage({
     if (question === undefined) {
       return;
     }
-    console.log("Question:", question);
-    console.log(question.id);
     // The pairId and userId are already appended into the encoded wsUrl
-    // Append questionId into wsUrl for service to store
-    // and allow retrieval upon reconnection
-    const oldWsUrl = router.query["wsUrl"] as string ?? "";
+    // Append questionId into wsUrl for service to store and allow retrieval upon reconnection
+    const oldWsUrl = (router.query["wsUrl"] as string) ?? "";
     const wsUrl = `${oldWsUrl}&questionId=${question.id}`;
     setWebsocketUrl(wsUrl);
   }, [router, question]);
@@ -51,23 +48,30 @@ export default function EditorPage({
 
   return (
     <SubmissionContextProvider websocketUrl={websocketUrl}>
-      <div className="flex flex-col w-full h-full mb-[-100px] flex-grow border-8 
-                      rounded-xl border-[#d1d5db] bg-[#d1d5db] relative">
+      <div
+        className="flex flex-col w-full h-full mb-[-100px] flex-grow border-8 
+                      rounded-xl border-[#d1d5db] bg-[#d1d5db] relative"
+      >
         <PanelGroup direction="horizontal" className="grow">
           <Panel defaultSize={40} minSize={25}>
             <PanelGroup direction="vertical">
-              <Panel defaultSize={60}>
+              <Panel defaultSize={80}>
                 <QuestionDetailsCard question={question} />
               </Panel>
-              <PanelResizeHandle>{ResizeHandleHorizontal()}</PanelResizeHandle>
-              <Panel minSize={15}>
-                {websocketUrl && (
-                  <MessageWindow websocketUrl={websocketUrl}></MessageWindow>
-                )}
+              <HorizontalResizeHandle />
+              <Panel>
+                <div className="h-full w-full flex flex-col">
+                  <div>
+                    <h2 className="text-lg">Chat</h2>
+                  </div>
+                  {websocketUrl && (
+                    <MessageWindow websocketUrl={websocketUrl}></MessageWindow>
+                  )}
+                </div>
               </Panel>
             </PanelGroup>
           </Panel>
-          <PanelResizeHandle>{ResizeHandleVertical()}</PanelResizeHandle>
+          <VerticalResizeHandle />
           <Panel minSize={40}>
             {websocketUrl && (
               <CodeWindow websocketUrl={websocketUrl}></CodeWindow>
