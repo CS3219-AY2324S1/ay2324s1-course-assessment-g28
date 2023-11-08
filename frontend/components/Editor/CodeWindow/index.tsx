@@ -27,8 +27,15 @@ import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/router";
 import { HOME } from "@/routes";
-import { useSubmissionContext } from "../Submission/SubmissionContext";
+import {
+  SubmissionStatus,
+  useSubmissionContext,
+} from "../Submission/SubmissionContext";
 import HorizontalResizeHandle from "@/components/PanelResizeHandles/HorizontalResizeHandle";
+import { createQuestionAttempt } from "@/api/user";
+import { useActiveEditingSessionContext } from "@/components/ActiveSessions/ActiveEditingSessionContext";
+import { QuestionComplexity } from "@/api/questions/types";
+import toast from "react-hot-toast";
 
 interface CodeWindowProps {
   template?: string;
@@ -56,8 +63,13 @@ export default function CodeWindow(props: CodeWindowProps) {
   const [isPairConnected, setIsPairConnected] = useState(false);
   const [requestQueue, setRequestQueue] = useState<Record<string, any>>({});
   const router = useRouter();
-  const { isPeerStillHere, initateExitMyself, initateNextQnMyself } =
-    useSubmissionContext();
+  const {
+    isPeerStillHere,
+    initateExitMyself,
+    initateNextQnMyself,
+    submissionStatus,
+  } = useSubmissionContext();
+  const { currentEditingSession } = useActiveEditingSessionContext();
 
   const editorsParentRef = useRef<{ [lang: string]: HTMLDivElement | null }>(
     {},
@@ -68,7 +80,9 @@ export default function CodeWindow(props: CodeWindowProps) {
     share: true,
     filter: () => false,
     onOpen: () => {
-      console.log("Websocket connection established (not yet ready for messages)");
+      console.log(
+        "Websocket connection established (not yet ready for messages)",
+      );
     },
     onMessage: onMessage,
     onError: onError,
@@ -84,6 +98,15 @@ export default function CodeWindow(props: CodeWindowProps) {
       });
     }
   }, [theme]);
+
+  useEffect(() => {
+    if (
+      submissionStatus === SubmissionStatus.SUBMIT_BEFORE_NEXT_QN ||
+      submissionStatus == SubmissionStatus.SUBMIT_BEFORE_EXIT
+    ) {
+      submitCode(null);
+    }
+  }, [submissionStatus]);
 
   function onMessage(e: WSMessageType) {
     const data = JSON.parse(e.data);
@@ -439,6 +462,24 @@ export default function CodeWindow(props: CodeWindowProps) {
     setIsCodeRunning(true);
   }
 
+  function submitCode(e: any) {
+    console.log("Submitting code...");
+    const code = editorsRef.current[language].state.doc.toString();
+    createQuestionAttempt({
+      questionId: currentEditingSession?.question.id ?? 0,
+      questionTitle: currentEditingSession?.question.title ?? "",
+      questionDifficulty:
+        currentEditingSession?.question.complexity ?? QuestionComplexity.EASY,
+      attemptDate: new Date().toISOString(),
+      attemptDetails: code,
+      attemptLanguage: language,
+      otherUser: currentEditingSession?.email,
+    }).then((res) => {
+      console.log("After code submission:", res);
+      toast.success("Your code has been submitted successfully!");
+    });
+  }
+
   //#endregion
 
   return (
@@ -481,7 +522,7 @@ export default function CodeWindow(props: CodeWindowProps) {
               </Button>
               <Button
                 disabled={isCodeRunning}
-                onClick={runCode} // TODO: Change this to submit
+                onClick={submitCode} // TODO: Change this to submit
                 size="sm"
                 color="secondary"
               >
@@ -500,11 +541,7 @@ export default function CodeWindow(props: CodeWindowProps) {
                   Next Question
                 </Button>
               ) : null}
-              <Button
-                onClick={initateExitMyself}
-                size="sm"
-                color="default"
-              >
+              <Button onClick={initateExitMyself} size="sm" color="default">
                 Exit
               </Button>
             </div>
