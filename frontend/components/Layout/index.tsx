@@ -31,7 +31,7 @@ const Layout = ({ children }: PropsWithChildren<unknown>) => {
         )}
       >
         <Navbar />
-        <div className="px-8 flex flex-col pb-[110px] flex-grow overflow-auto">
+        <div className="px-8 flex flex-col flex-grow overflow-auto">
           {children}
         </div>
       </main>
