@@ -14,7 +14,6 @@ import {
 } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import { useCallback, useRef, useState } from "react";
-import { useActiveEditingSessionContext } from "../ActiveSessions/ActiveEditingSessionContext";
 
 const DEFAULT_PAIRING_DURATION = 30000;
 
@@ -47,7 +46,6 @@ export default function QuestionAttemptButton({
     MatchState.NO_ATTEMPT,
   );
   const router = useRouter();
-  const { addEditingSession } = useActiveEditingSessionContext();
   const pairingWebsocket = useRef<WebSocket | null>(null);
   const pairingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const editorPathRef = useRef<string>();
@@ -77,18 +75,6 @@ export default function QuestionAttemptButton({
             editorPathRef.current = getEditorPath(
               parseInt(parsed.data.questionId as string),
               parsed.data.url as string,
-            );
-            addEditingSession(
-              {
-                websocketUrl: getEditorPath(
-                  parseInt(parsed.data.questionId as string),
-                  parsed.data.url as string,
-                ),
-                questionId: parseInt(parsed.data.questionId as string),
-                email: parsed.data.otherUser as string,
-                questionComplexity: question.complexity,
-              },
-              true,
             );
             ws.close();
           }

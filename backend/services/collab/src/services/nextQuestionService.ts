@@ -1,4 +1,6 @@
 import { QUESTION_API_RANDOM_URL } from "../constants";
+// @ts-ignore
+import * as fetch from "node-fetch";
 
 export async function getNextQuestion(userId: string, partnerId: string, complexity: number) {
   const urlWithParams = new URL(QUESTION_API_RANDOM_URL);

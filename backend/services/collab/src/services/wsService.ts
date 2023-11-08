@@ -25,9 +25,20 @@ export function handleReadyToReceive(connection: WebSocket) {
   connection.send(message);
 }
 
-export function handlePairConnected(connection: WebSocket, partnerConnection: WebSocket) {
-  const messageUser = JSON.stringify({ method: WS_METHODS.PAIR_CONNECTED });
-  const messagePartner = JSON.stringify({ method: WS_METHODS.PAIR_CONNECTED });
+export function handlePairConnected(
+  connection: WebSocket, 
+  partnerConnection: WebSocket, 
+  userId: string,
+  partnerId: string
+) {
+  const messageUser = JSON.stringify({ 
+    method: WS_METHODS.PAIR_CONNECTED, 
+    partnerId: partnerId 
+  });
+  const messagePartner = JSON.stringify({ 
+    method: WS_METHODS.PAIR_CONNECTED, 
+    partnerId: userId 
+  });
   
   connection.send(messageUser);
   partnerConnection.send(messagePartner);
@@ -124,6 +135,8 @@ export async function handleNextQuestionConfirm(
   await updatePairNextQuestion(pairId, questionId);
 
   const message = JSON.stringify({ method: WS_METHODS.NEXT_QUESTION_ID, questionId })
+
+  console.log("Outbound next question message:", message);
 
   connection.send(message);
   partnerConnection.send(message);

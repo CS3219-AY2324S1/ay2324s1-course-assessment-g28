@@ -32,14 +32,14 @@ import {
   useSubmissionContext,
 } from "../Submission/SubmissionContext";
 import HorizontalResizeHandle from "@/components/PanelResizeHandles/HorizontalResizeHandle";
-import { createQuestionAttempt } from "@/api/user";
-import { QuestionComplexity } from "@/api/questions/types";
+import { createQuestionAttempt, getPublicUserInfo } from "@/api/user";
+import { Question, QuestionComplexity } from "@/api/questions/types";
 import toast from "react-hot-toast";
+import { CreateQuestionAttemptRequestBody } from "@/api/user/types";
 
 interface CodeWindowProps {
-  template?: string;
-  language?: string;
   websocketUrl: string;
+  question: Question;
 }
 
 // Used to hold the state of the editor's theme
@@ -50,9 +50,12 @@ const editorTheme = new Compartment();
  * TODO: Add typing and clean up the code
  */
 
-export default function CodeWindow(props: CodeWindowProps) {
+export default function CodeWindow({
+  websocketUrl,
+  question,
+}: CodeWindowProps) {
   const { theme } = useTheme();
-  const [language, setLanguage] = useState<string>(props.language ?? "Java");
+  const [language, setLanguage] = useState<string>("Python");
   const [result, setResult] = useState(
     'Click "Run Code" to execute your code!',
   );
@@ -60,6 +63,11 @@ export default function CodeWindow(props: CodeWindowProps) {
   const [isCodeRunning, setIsCodeRunning] = useState(false);
   const [isCodeMirrorLoaded, setIsCodeMirrorLoaded] = useState(false);
   const [isPairConnected, setIsPairConnected] = useState(false);
+  const [partnerDetails, setPartnerDetails] = useState({
+    email: "",
+    username: "",
+    favouriteProgrammingLanguage: "",
+  });
   const [requestQueue, setRequestQueue] = useState<Record<string, any>>({});
   const router = useRouter();
   const {
@@ -74,7 +82,7 @@ export default function CodeWindow(props: CodeWindowProps) {
   );
   const editorsRef = useRef<{ [lang: string]: EditorView }>({});
 
-  const { sendJsonMessage } = useWebSocket(props.websocketUrl, {
+  const { sendJsonMessage } = useWebSocket(websocketUrl, {
     share: true,
     filter: () => false,
     onOpen: () => {
@@ -103,7 +111,7 @@ export default function CodeWindow(props: CodeWindowProps) {
       submissionStatus === SubmissionStatus.SUBMIT_BEFORE_EXIT
     ) {
       // Next question or exit approved by both users
-      submitCode(null);
+      onSubmitCode(null);
     }
   }, [submissionStatus]);
 
@@ -147,7 +155,25 @@ export default function CodeWindow(props: CodeWindowProps) {
   }
 
   function handlePairConnected(data: any) {
+    const partnerId = data.partnerId;
+    console.log("Your partner is:", partnerId);
     setIsPairConnected(true);
+    setPartnerDetails((prevState) => {
+      return {
+        ...prevState,
+        email: partnerId,
+      };
+    });
+    getPublicUserInfo(partnerId).then((userInfo) => {
+      setPartnerDetails((prevState) => {
+        return {
+          ...prevState,
+          username: userInfo.username,
+          favouriteProgrammingLanguage:
+            userInfo.favouriteProgrammingLanguage ?? "unknown",
+        };
+      });
+    });
   }
 
   function handleOp(data: any) {
@@ -461,19 +487,26 @@ export default function CodeWindow(props: CodeWindowProps) {
     setIsCodeRunning(true);
   }
 
-  function submitCode(e: any) {
+  function onSubmitCode(e: any) {
     console.log("Submitting code...");
     const code = editorsRef.current[language].state.doc.toString();
-    createQuestionAttempt({
-      questionId: currentEditingSession?.question.id ?? 0,
-      questionTitle: currentEditingSession?.question.title ?? "",
-      questionDifficulty:
-        currentEditingSession?.question.complexity ?? QuestionComplexity.EASY,
+
+    let questionAttempt: CreateQuestionAttemptRequestBody = {
+      questionId: question.id ?? 0,
+      questionTitle: question.title ?? "",
+      questionDifficulty: question.complexity ?? QuestionComplexity.EASY,
       attemptDate: new Date().toISOString(),
       attemptDetails: code,
       attemptLanguage: language,
-      otherUser: currentEditingSession?.email,
-    }).then((res) => {
+    };
+
+    const otherUser = partnerDetails.email;
+
+    if (otherUser !== "") {
+      questionAttempt.otherUser = otherUser;
+    }
+
+    createQuestionAttempt(questionAttempt).then((res) => {
       console.log("After code submission:", res);
       toast.success("Your code has been submitted successfully!");
     });
@@ -521,7 +554,7 @@ export default function CodeWindow(props: CodeWindowProps) {
               </Button>
               <Button
                 disabled={isCodeRunning}
-                onClick={submitCode} // TODO: Change this to submit
+                onClick={onSubmitCode} // TODO: Change this to submit
                 size="sm"
                 color="secondary"
               >

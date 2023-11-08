@@ -34,8 +34,7 @@ export default function EditorPage({
     }
     // The pairId and userId are already appended into the encoded wsUrl
     // Append questionId into wsUrl for service to store and allow retrieval upon reconnection
-    const oldWsUrl = (router.query["wsUrl"] as string) ?? "";
-    const wsUrl = `${oldWsUrl}&questionId=${question.id}`;
+    const wsUrl = (router.query["wsUrl"] as string) ?? "";
     setWebsocketUrl(wsUrl);
   }, [router, question]);
 
@@ -71,7 +70,10 @@ export default function EditorPage({
           <VerticalResizeHandle />
           <Panel minSize={40}>
             {websocketUrl && (
-              <CodeWindow websocketUrl={websocketUrl}></CodeWindow>
+              <CodeWindow
+                websocketUrl={websocketUrl}
+                question={question}
+              ></CodeWindow>
             )}
           </Panel>
         </PanelGroup>

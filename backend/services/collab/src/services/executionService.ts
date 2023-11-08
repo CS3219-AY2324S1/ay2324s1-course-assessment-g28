@@ -1,14 +1,9 @@
-import { v4 as uuidv4 } from "uuid";
-import fs from "fs";
-import util from "util";
-import { exec } from "child_process";
 import { fromBase64, toBase64 } from "../utils/formatUtil";
 import { LANGUAGE_IDS } from "../constants";
 // @ts-ignore
 import * as fetch from "node-fetch";
 import { sleep } from "../utils/asyncUtil";
 
-const execPromise = util.promisify(exec);
 const judge0HostnameAndPort = process.env.JUDGE0_URL;
 
 export async function runCode(code: string, language: string): Promise<string> {

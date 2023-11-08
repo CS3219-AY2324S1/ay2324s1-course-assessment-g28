@@ -148,9 +148,13 @@ export const SubmissionContextProvider = ({
     setSubmissionStatus(SubmissionStatus.NEXT_QN_INITIATED_BY_PEER);
   };
 
-  const handleNextQuestionId = (data: any) => {
-    const questionId = data["questionId"];
-    const newPath = getEditorPath(questionId, websocketUrl);
+  const handleNextQuestionId = (data: {
+    method: WS_METHODS;
+    questionId: number;
+  }) => {
+    console.log("Received next qn details:", data);
+    const questionId = data.questionId;
+    const newPath = getEditorPath(questionId, encodeURIComponent(websocketUrl));
     console.log("Next question path:", newPath);
     setNextQuestionPath(newPath);
   };

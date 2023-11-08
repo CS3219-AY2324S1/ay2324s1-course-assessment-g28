@@ -42,6 +42,9 @@ const ActiveSessions = () => {
         const activeSessions = (await getActiveSessions(user.email!))
           .activeSessions;
 
+        console.log(activeSessions);
+        console.log(activeSessions.length);
+
         // fetch all question data
         const questionDetails: Record<number, Question> = {};
         const questionIds: Set<number> = new Set();
@@ -72,7 +75,6 @@ const ActiveSessions = () => {
           otherUser: userDetails[s.otherUser],
           question: questionDetails[s.questionId],
           sessionUrl: getEditorPath(s.questionId, s.wsUrl),
-          hi: "hi",
         }));
         return data;
       }

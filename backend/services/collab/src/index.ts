@@ -1,12 +1,13 @@
 import express, { Express, Request } from "express";
 import dotenv from "dotenv";
-import { getPairAndStoreQuestionId } from "./services/pairService";
+import { getPairByPairId } from "./services/pairService";
 import {
   getQueryParams,
   handleCaretPos,
   handleDefault,
   handleExit,
   handleMessage,
+  handleNextQuestionConfirm,
   handleOp,
   handlePairConnected,
   handlePartnerDisconnected,
@@ -107,7 +108,7 @@ const clients: { [userId: string]: WebSocket } = {};
 const pairs: { [pairId: string]: string } = {};
 
 // A new client connection request received
-// Query params: ?pairId=<pairId>?userId=<userId>?questionId=<questionId>
+// Query params: ?pairId=<pairId>?userId=<userId>
 wsServer.on("connection", function (connection: WebSocket, request: Request) {
   console.log(`Recieved a new connection.`);
 
@@ -119,12 +120,11 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
   //console.log("Query params ", params);
   const pairId = params["pairId"];
   const userId = params["userId"];
-  const questionId = Number(params["questionId"]);
 
   console.log("Pair: ", pairId, "User: ", userId);
 
   // Check pair exists, else close connection
-  getPairAndStoreQuestionId(pairId, userId, questionId).then((pairDoc) => {
+  getPairByPairId(pairId, userId).then((pairDoc) => {
     if (pairDoc !== null) {
       if (pairDoc.isUser1Turn) {
         pairs[pairId] = pairDoc.user1;
@@ -150,7 +150,7 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
       // Check if partner has already connected
       // If so, send READY to the pair
       if (partnerId in clients) {
-        handlePairConnected(connection, clients[partnerId]);
+        handlePairConnected(connection, clients[partnerId], userId, partnerId);
       } 
     } else {
       console.log("Closing connection for user ", userId);
@@ -190,8 +190,9 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
         break;
       case WS_METHODS.NEXT_QUESTION_CONFIRM:
         handleDefault(partnerConnection, data.method);
-        
-        handleClosePair(connection, partnerConnection, userId, partnerId, pairId);
+        handleNextQuestionConfirm(connection, partnerConnection, userId, partnerId, pairId).then(result => {
+          handleClosePair(connection, partnerConnection, userId, partnerId, pairId);
+        });
         break;
       case WS_METHODS.NEXT_QUESTION_REJECT:
       case WS_METHODS.EXIT_INITIATED_BY_PEER:

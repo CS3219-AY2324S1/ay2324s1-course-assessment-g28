@@ -41,19 +41,20 @@ const SubmitCard = () => {
   }, []);
 
   useEffect(() => {
+    if (nextQuestionPath !== "") {
+      router
+        .push(nextQuestionPath, undefined, { shallow: false })
+        .then((res) => setTimeout(() => router.reload(), 3000));
+    }
+  }, [nextQuestionPath]);
+
+  useEffect(() => {
     if (isSubmitting) return;
     if (secondsLeft < 1) {
       console.log("Next qn url:", nextQuestionPath);
 
       if (submissionStatus === SubmissionStatus.SUBMIT_BEFORE_EXIT) {
         router.push(HOME);
-      } else if (nextQuestionPath !== "") {
-        router
-          .push(nextQuestionPath, undefined, { shallow: false })
-          .then((res) => setTimeout(() => router.reload(), 3000));
-      } else {
-        // Should not close modal until at least one above condition met
-        return;
       }
 
       return () => {
@@ -73,7 +74,6 @@ const SubmitCard = () => {
     submissionStatus,
     setSubmissionStatus,
     setIsModalOpen,
-    nextQuestionPath,
   ]);
 
   return isSubmitting ? (

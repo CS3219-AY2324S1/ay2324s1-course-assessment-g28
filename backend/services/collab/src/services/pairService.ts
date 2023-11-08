@@ -5,15 +5,11 @@ import { Pair } from "../schemas/pair";
  * @param pairId 
  * @param userId 
  */
-export async function getPairAndStoreQuestionId(pairId: string, userId: string, questionId: number): Promise<any> {
+export async function getPairByPairId(pairId: string, userId: string): Promise<any> {
   const pairDoc = await Pair.findOne({ id: pairId }).exec();
 
   if (pairDoc?.user1 === userId || pairDoc?.user2 === userId) {
     console.log("pairDoc:", pairDoc);
-    console.log(pairId, userId, questionId, pairDoc.user1);
-    
-    pairDoc.questionId = questionId;
-    await pairDoc.save();
 
     return pairDoc;
   }
