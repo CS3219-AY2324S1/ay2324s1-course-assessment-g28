@@ -20,3 +20,13 @@ export async function getPairAndStoreQuestionId(pairId: string, userId: string, 
 
   return null;
 }
+
+export async function getComplexityByPairId(pairId: string) {
+  const pairDoc = await Pair.findOne({ id: pairId }).exec();
+
+  return pairDoc?.complexity ?? 0;
+}
+
+export async function updatePairNextQuestion(pairId: string, questionId: number) {
+  const pairDoc = await Pair.findOneAndUpdate({ id: pairId }, { $set: { questionId } });
+}

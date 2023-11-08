@@ -190,6 +190,7 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
         break;
       case WS_METHODS.NEXT_QUESTION_CONFIRM:
         handleDefault(partnerConnection, data.method);
+        
         handleClosePair(connection, partnerConnection, userId, partnerId, pairId);
         break;
       case WS_METHODS.NEXT_QUESTION_REJECT:

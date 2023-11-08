@@ -10,7 +10,6 @@ import {
   useContext,
   useState,
 } from "react";
-import { useActiveEditingSessionContext } from "../ActiveSessions/ActiveEditingSessionContext";
 
 export enum MatchStatus {
   SELECT_DIFFICULTY,
@@ -64,7 +63,6 @@ export const MatchContextProvider = ({
   children,
 }: PropsWithChildren<unknown>) => {
   const [editorUrl, setEditorUrl] = useState("");
-  const { addEditingSession } = useActiveEditingSessionContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pairingWebsocket, setPairingWebsocket] = useState<WebSocket | null>(
     null,
@@ -106,16 +104,6 @@ export const MatchContextProvider = ({
                 parseInt(parsed.data.questionId as string),
                 parsed.data.url as string,
               ),
-            );
-            // add this new session to active editor context
-            addEditingSession(
-              {
-                websocketUrl: parsed.data.url as string,
-                questionId: parseInt(parsed.data.questionId as string),
-                email: parsed.data.otherUser as string,
-                questionComplexity: selectedComplexity!,
-              },
-              true,
             );
             ws.close();
           }

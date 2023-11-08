@@ -13,11 +13,18 @@ export interface EditorWebSocketUrls {
 
 const editorServiceApiPath = "/pairing/getWebSocketUrl";
 
-async function postPair(_user1: string, _user2: string, _complexity: Complexity): Promise<EditorWebSocketUrls> {
+async function postPair(
+  _user1: string, 
+  _user2: string, 
+  _complexity: Complexity,
+  _questionId: number
+  
+  ): Promise<EditorWebSocketUrls> {
   const queryParams = new URLSearchParams({
     user1: _user1,
     user2: _user2,
-    complexity: _complexity.toString()
+    complexity: _complexity.toString(),
+    questionId: _questionId.toString()
   });
 
   const reqUrl =
@@ -63,7 +70,8 @@ export default function getPairingRequestCallback(
       const {user1, user2} = await postPair(
         match.user1.match_options.user,
         match.user2.match_options.user,
-        match.question.complexity
+        match.question.complexity,
+        match.question.id
       );
       // Reply to user 1
       const reply1 = {

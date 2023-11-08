@@ -33,7 +33,6 @@ import {
 } from "../Submission/SubmissionContext";
 import HorizontalResizeHandle from "@/components/PanelResizeHandles/HorizontalResizeHandle";
 import { createQuestionAttempt } from "@/api/user";
-import { useActiveEditingSessionContext } from "@/components/ActiveSessions/ActiveEditingSessionContext";
 import { QuestionComplexity } from "@/api/questions/types";
 import toast from "react-hot-toast";
 
@@ -69,7 +68,6 @@ export default function CodeWindow(props: CodeWindowProps) {
     initateNextQnMyself,
     submissionStatus,
   } = useSubmissionContext();
-  const { currentEditingSession } = useActiveEditingSessionContext();
 
   const editorsParentRef = useRef<{ [lang: string]: HTMLDivElement | null }>(
     {},
@@ -102,8 +100,9 @@ export default function CodeWindow(props: CodeWindowProps) {
   useEffect(() => {
     if (
       submissionStatus === SubmissionStatus.SUBMIT_BEFORE_NEXT_QN ||
-      submissionStatus == SubmissionStatus.SUBMIT_BEFORE_EXIT
+      submissionStatus === SubmissionStatus.SUBMIT_BEFORE_EXIT
     ) {
+      // Next question or exit approved by both users
       submitCode(null);
     }
   }, [submissionStatus]);

@@ -127,6 +127,7 @@ services:
       - PORT=8000
       - WEBSOCKET_PORT=8888
       - JUDGE0_URL=http://judge0-server:2358
+      - QUESTION_API=http://pp-question:1234
 
   pp-collab-service-mongodb:
     image: mongo

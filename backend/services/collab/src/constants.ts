@@ -11,6 +11,7 @@ export enum WS_METHODS {
 
   NEXT_QUESTION_INITATED_BY_PEER,
   NEXT_QUESTION_CONFIRM,
+  NEXT_QUESTION_ID,
   NEXT_QUESTION_REJECT,
 
   EXIT_INITIATED_BY_PEER,
@@ -45,3 +46,6 @@ export const initialDocuments: Record<ProgrammingLanguages, string> = {
   "python": "# Write your code here",
   "javascript": "// Write your code here"
 }
+
+export const QUESTION_API_RANDOM_URL = 
+  process.env.QUESTION_API + "/question/unattemptedUsersMatch";

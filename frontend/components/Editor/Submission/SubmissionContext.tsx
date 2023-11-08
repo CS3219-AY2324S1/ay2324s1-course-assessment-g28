@@ -9,6 +9,7 @@ import {
 import { WSMessageType, WS_METHODS } from "../constants";
 import useWebSocket from "react-use-websocket";
 import toast from "react-hot-toast";
+import { getEditorPath } from "@/routes";
 
 export enum SubmissionStatus {
   NOT_SUBMITTING,
@@ -34,6 +35,7 @@ type SubmissionContextType = {
   setSubmissionStatus: Dispatch<SetStateAction<SubmissionStatus>>;
   initateExitMyself: () => void;
   initateNextQnMyself: () => void;
+  nextQuestionPath: string;
   stayOnQuestion: (wsMethod?: WS_METHODS) => void;
   leaveQuestion: (
     nextState:
@@ -57,6 +59,7 @@ const defaultContext: SubmissionContextType = {
   setSubmissionStatus: throwNotInProviderError,
   initateExitMyself: throwNotInProviderError,
   initateNextQnMyself: throwNotInProviderError,
+  nextQuestionPath: "",
   stayOnQuestion: throwNotInProviderError,
   leaveQuestion: throwNotInProviderError,
   websocketUrl: "",
@@ -74,6 +77,7 @@ export const SubmissionContextProvider = ({
 }: PropsWithChildren<{ websocketUrl: string }>) => {
   const [isPeerStillHere, setIsPeerStillHere] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [nextQuestionPath, setNextQuestionPath] = useState("");
   const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus>(
     SubmissionStatus.NOT_SUBMITTING,
   );
@@ -103,6 +107,8 @@ export const SubmissionContextProvider = ({
         return handleNextQnInitiatedByPeer();
       case WS_METHODS.NEXT_QUESTION_CONFIRM:
         return setSubmissionStatus(SubmissionStatus.SUBMIT_BEFORE_NEXT_QN);
+      case WS_METHODS.NEXT_QUESTION_ID:
+        return handleNextQuestionId(data);
     }
   }
 
@@ -142,6 +148,13 @@ export const SubmissionContextProvider = ({
     setSubmissionStatus(SubmissionStatus.NEXT_QN_INITIATED_BY_PEER);
   };
 
+  const handleNextQuestionId = (data: any) => {
+    const questionId = data["questionId"];
+    const newPath = getEditorPath(questionId, websocketUrl);
+    console.log("Next question path:", newPath);
+    setNextQuestionPath(newPath);
+  };
+
   const stayOnQuestion = (message?: WS_METHODS) => {
     if (message) sendMessage(message);
     setIsModalOpen(false);
@@ -164,6 +177,7 @@ export const SubmissionContextProvider = ({
         setSubmissionStatus,
         initateExitMyself,
         initateNextQnMyself,
+        nextQuestionPath,
         stayOnQuestion,
         leaveQuestion,
         websocketUrl,

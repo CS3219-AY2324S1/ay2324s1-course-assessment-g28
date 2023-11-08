@@ -2,10 +2,7 @@ import { ModalBody, ModalHeader, Spinner } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { SubmissionStatus, useSubmissionContext } from "../SubmissionContext";
 import { useRouter } from "next/router";
-import { EDITOR_DIRECTORY, HOME } from "@/routes";
-import { getQuestions } from "@/api/questions";
-import { useActiveEditingSessionContext } from "@/components/ActiveSessions/ActiveEditingSessionContext";
-import { QuestionComplexity } from "@/api/questions/types";
+import { HOME } from "@/routes";
 
 // TODO: Pass question from collab editor to this card. use question details to make submission attempt
 
@@ -16,10 +13,12 @@ import { QuestionComplexity } from "@/api/questions/types";
  */
 const SubmitCard = () => {
   const [secondsLeft, setSecondsLeft] = useState(3);
-  const { submissionStatus, setSubmissionStatus, setIsModalOpen } =
-    useSubmissionContext();
-  const { updateEditingSession, currentEditingSession } =
-    useActiveEditingSessionContext();
+  const {
+    submissionStatus,
+    setSubmissionStatus,
+    setIsModalOpen,
+    nextQuestionPath,
+  } = useSubmissionContext();
   const [isSubmitting, setIsSubmitting] = useState(true);
   const router = useRouter();
 
@@ -44,42 +43,18 @@ const SubmitCard = () => {
   useEffect(() => {
     if (isSubmitting) return;
     if (secondsLeft < 1) {
-      // TODO: link to next question
-      getQuestions({
-        size: 1,
-        offset: 0,
-        keyword: "",
-        complexity: currentEditingSession?.questionComplexity,
-        onlyUnattempted: true,
-      }).then((result) => {
-        const questionId = result.content[0]?.id;
-        const nextQnUrl = `${EDITOR_DIRECTORY}/${questionId}?wsUrl=${currentEditingSession?.websocketUrl}`;
+      console.log("Next qn url:", nextQuestionPath);
 
-        console.log("Next question:", questionId);
-        console.log("wsUrl: ", currentEditingSession?.websocketUrl);
-
-        updateEditingSession(
-          {
-            websocketUrl: currentEditingSession?.websocketUrl ?? "",
-            email: currentEditingSession?.email ?? "",
-            questionId: questionId,
-            questionComplexity:
-              currentEditingSession?.questionComplexity ??
-              QuestionComplexity.EASY,
-          },
-          true,
-        );
-
-        console.log("Next qn url:", nextQnUrl);
-
-        if (submissionStatus === SubmissionStatus.SUBMIT_BEFORE_EXIT) {
-          router.push(HOME);
-        } else {
-          router
-            .push(nextQnUrl, undefined, { shallow: false })
-            .then((res) => setTimeout(() => router.reload(), 3000));
-        }
-      });
+      if (submissionStatus === SubmissionStatus.SUBMIT_BEFORE_EXIT) {
+        router.push(HOME);
+      } else if (nextQuestionPath !== "") {
+        router
+          .push(nextQuestionPath, undefined, { shallow: false })
+          .then((res) => setTimeout(() => router.reload(), 3000));
+      } else {
+        // Should not close modal until at least one above condition met
+        return;
+      }
 
       return () => {
         setSubmissionStatus(SubmissionStatus.NOT_SUBMITTING);
@@ -98,6 +73,7 @@ const SubmitCard = () => {
     submissionStatus,
     setSubmissionStatus,
     setIsModalOpen,
+    nextQuestionPath,
   ]);
 
   return isSubmitting ? (

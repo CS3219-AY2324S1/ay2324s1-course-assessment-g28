@@ -7,15 +7,18 @@ import {
   DropdownTrigger,
   Tooltip,
 } from "@nextui-org/react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { FaUserFriends } from "react-icons/fa";
 import { Badge } from "@nextui-org/react";
 import { useRouter } from "next/router";
-import { useActiveEditingSessionContext } from "@/components/ActiveSessions/ActiveEditingSessionContext";
 import { UserPublic } from "@/api/user/types";
 import { Question, QuestionComplexity } from "@/api/questions/types";
 import { getActiveSessions } from "@/api/collab";
 import useUserInfo from "@/hooks/useUserInfo";
+import useSWR from "swr";
+import { getQuestion } from "@/api/questions";
+import { getPublicUserInfo } from "@/api/user";
+import { getEditorPath } from "@/routes";
 
 export type EditingSessionDetails = {
   otherUser: UserPublic;
@@ -26,21 +29,60 @@ export type EditingSessionDetails = {
 };
 
 const ActiveSessions = () => {
-  const { activeEditingSessions, addEditingSession } =
-    useActiveEditingSessionContext();
   const [isShowing, setIsShowing] = useState(false);
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const router = useRouter();
 
   const user = useUserInfo();
 
-  const hasActiveSessions = useMemo(
-    () => activeEditingSessions.length > 0,
-    [activeEditingSessions],
+  const { data: activeEditingSessions } = useSWR(
+    [getActiveSessions, user.email],
+    async () => {
+      if (user.email) {
+        const activeSessions = (await getActiveSessions(user.email!))
+          .activeSessions;
+
+        // fetch all question data
+        const questionDetails: Record<number, Question> = {};
+        const questionIds: Set<number> = new Set();
+        activeSessions.forEach((s) => questionIds.add(s.questionId));
+        // fetch question deteails for all different questions
+        const questionDetailFetches = Promise.all(
+          Array.from(questionIds).map((qnId) =>
+            getQuestion(qnId, false).then((qn) => (questionDetails[qnId] = qn)),
+          ),
+        );
+
+        // fetch all user data
+        const userDetails: Record<string, UserPublic> = {};
+        const userEmails: Set<string> = new Set();
+        activeSessions.forEach((s) => userEmails.add(s.otherUser));
+
+        const userDetailFetches = Promise.all(
+          Array.from(userEmails).map((email) =>
+            getPublicUserInfo(email).then(
+              (user) => (userDetails[email] = user),
+            ),
+          ),
+        );
+        await questionDetailFetches;
+        await userDetailFetches;
+        // compose all the data together
+        const data = activeSessions.map((s) => ({
+          otherUser: userDetails[s.otherUser],
+          question: questionDetails[s.questionId],
+          sessionUrl: getEditorPath(s.questionId, s.wsUrl),
+          hi: "hi",
+        }));
+        return data;
+      }
+
+      return [];
+    },
   );
 
   const activeSessionsCount = useMemo(
-    () => activeEditingSessions.length,
+    () => (activeEditingSessions ? activeEditingSessions.length : 0),
     [activeEditingSessions],
   );
 
@@ -59,29 +101,6 @@ const ActiveSessions = () => {
     setTimer(setTimeout(() => setIsShowing(false), 400));
   };
 
-  useEffect(() => {
-    //TODO: fetch active sessionsa
-    if (user.email === undefined) {
-      return;
-    }
-
-    getActiveSessions(user.email!).then((result) => {
-      console.log(result);
-      console.log(result.activeSessions);
-      for (const activeSession of result.activeSessions) {
-        addEditingSession(
-          {
-            email: activeSession.otherUser,
-            questionId: activeSession.questionId,
-            websocketUrl: activeSession.wsUrl,
-            questionComplexity: activeSession.questionComplexity,
-          },
-          false,
-        );
-      }
-    });
-  }, [user.email]);
-
   return (
     <Dropdown
       placement="top-end"
@@ -93,7 +112,9 @@ const ActiveSessions = () => {
         <div className="fixed bottom-10 right-10 z-[10000]">
           <Badge
             content={activeSessionsCount}
-            isInvisible={!hasActiveSessions}
+            isInvisible={
+              !activeEditingSessions || activeEditingSessions.length === 0
+            }
             color="danger"
           >
             <div
@@ -108,7 +129,7 @@ const ActiveSessions = () => {
       <DropdownMenu
         aria-label="active-sessions-list"
         variant="flat"
-        onAction={(websocketUrl) => router.push(websocketUrl as string)}
+        onAction={(sessionUrl) => router.push(sessionUrl as string)}
       >
         <DropdownSection showDivider>
           <DropdownItem
@@ -124,14 +145,13 @@ const ActiveSessions = () => {
           </DropdownItem>
         </DropdownSection>
         <DropdownSection>
-          {hasActiveSessions ? (
+          {activeEditingSessions ? (
             activeEditingSessions?.map((session) => {
-              // TODO: Need to create the full url here
-              const { websocketUrl, otherUser, question } = session;
+              const { sessionUrl, otherUser, question } = session;
               return (
                 <DropdownItem
-                  key={websocketUrl}
-                  textValue={websocketUrl}
+                  key={sessionUrl}
+                  textValue={sessionUrl}
                   className="h-[50px] w-[225px]"
                 >
                   <Tooltip

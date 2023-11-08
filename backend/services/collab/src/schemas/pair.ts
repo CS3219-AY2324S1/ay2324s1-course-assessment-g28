@@ -8,7 +8,7 @@ const PairSchema = new mongoose.Schema({
   wsUrl1: String,
   wsUrl2: String,
   questionId: Number,
-  complexity: String
+  complexity: Number
 });
 
 export const Pair = mongoose.model('Pair', PairSchema);

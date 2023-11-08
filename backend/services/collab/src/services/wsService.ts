@@ -1,6 +1,8 @@
 import { WS_METHODS } from "../constants";
 import { runCode } from "./executionService";
+import { getNextQuestion } from "./nextQuestionService";
 import { handleOperationOt } from "./otService";
+import { getComplexityByPairId, updatePairNextQuestion } from "./pairService";
 
 export function getQueryParams(url: string): { [key: string]: string } {
   const queryIdx = url.indexOf("?");
@@ -107,6 +109,23 @@ export function handleExit(
 ) {
   const message = JSON.stringify({ method: WS_METHODS.EXIT });
   connection.close();
+  partnerConnection.send(message);
+}
+
+export async function handleNextQuestionConfirm(
+  connection: WebSocket,
+  partnerConnection: WebSocket,
+  userId: string,
+  partnerId: string,
+  pairId: string,
+) {
+  const complexity = await getComplexityByPairId(pairId);
+  const questionId = await getNextQuestion(userId, partnerId, complexity);
+  await updatePairNextQuestion(pairId, questionId);
+
+  const message = JSON.stringify({ method: WS_METHODS.NEXT_QUESTION_ID, questionId })
+
+  connection.send(message);
   partnerConnection.send(message);
 }
 
