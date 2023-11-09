@@ -27,8 +27,10 @@ export default async function handler(
     return;
   }
 
-  // add to query params
-  req.url += `&user=${session.user.email}`;
+  // add email to query params for GET
+  if (req.method === "GET") {
+    req.url += `&user=${session.user.email}`;
+  }
 
   await forwardRequestAndGetResponse(
     req,
