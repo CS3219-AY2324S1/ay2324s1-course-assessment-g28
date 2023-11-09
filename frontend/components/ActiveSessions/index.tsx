@@ -68,8 +68,11 @@ const ActiveSessions = () => {
             ),
           ),
         );
+        console.log("Initializing active session details");
         await questionDetailFetches;
+        console.log("Fetched question details");
         await userDetailFetches;
+        console.log("Fetched user details");
         // compose all the data together
         const data = activeSessions.map((s) => ({
           otherUser: userDetails[s.otherUser],

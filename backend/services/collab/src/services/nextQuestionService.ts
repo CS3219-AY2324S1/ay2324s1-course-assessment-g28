@@ -8,8 +8,6 @@ export async function getNextQuestion(userId: string, partnerId: string, complex
   urlWithParams.searchParams.set("user2", partnerId);
   urlWithParams.searchParams.set("complexity", complexity.toString());
 
-  console.log("Fetching random qn from:", urlWithParams);
-
   const response = await fetch(urlWithParams);
   const responseJson = await response.json();
   const questionId: number = responseJson["questionId"];

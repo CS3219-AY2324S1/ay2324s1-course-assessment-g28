@@ -80,7 +80,7 @@ export const SubmissionContextProvider = ({
   children,
   websocketUrl,
 }: PropsWithChildren<{ websocketUrl: string }>) => {
-  const [isPeerStillHere, setIsPeerStillHere] = useState(true);
+  const [isPeerStillHere, setIsPeerStillHere] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [nextQuestionPath, setNextQuestionPath] = useState("");

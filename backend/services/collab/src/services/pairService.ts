@@ -9,8 +9,6 @@ export async function getPairByPairId(pairId: string, userId: string): Promise<a
   const pairDoc = await Pair.findOne({ id: pairId }).exec();
 
   if (pairDoc?.user1 === userId || pairDoc?.user2 === userId) {
-    console.log("pairDoc:", pairDoc);
-
     return pairDoc;
   }
 
@@ -25,4 +23,14 @@ export async function getComplexityByPairId(pairId: string) {
 
 export async function updatePairNextQuestion(pairId: string, questionId: number) {
   const pairDoc = await Pair.findOneAndUpdate({ id: pairId }, { $set: { questionId } });
+}
+
+export async function setExpiryByPairId(pairId: string, expiry: number) {
+  const pairDoc = await Pair.findOne({ id: pairId }).exec();
+
+  if (pairDoc === null) {
+    throw new Error("Cannot find pair in DB!");
+  }
+
+  pairDoc.expireAt = new Date(Date.now() + expiry);
 }

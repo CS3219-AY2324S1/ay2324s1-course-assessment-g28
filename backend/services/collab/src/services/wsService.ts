@@ -1,4 +1,5 @@
 import { WS_METHODS } from "../constants";
+import { sendMessage } from "../utils/websocketUtil";
 import { runCode } from "./executionService";
 import { getNextQuestion } from "./nextQuestionService";
 import { handleOperationOt } from "./otService";
@@ -22,7 +23,7 @@ export function getQueryParams(url: string): { [key: string]: string } {
 
 export function handleReadyToReceive(connection: WebSocket) {
   const message = JSON.stringify({ method: WS_METHODS.READY_TO_RECEIVE });
-  connection.send(message);
+  sendMessage(connection, message);
 }
 
 export function handlePairConnected(
@@ -40,8 +41,8 @@ export function handlePairConnected(
     partnerId: userId 
   });
   
-  connection.send(messageUser);
-  partnerConnection.send(messagePartner);
+  sendMessage(connection, messageUser);
+  sendMessage(partnerConnection, messagePartner);
 }
 
 export function handleOp(
@@ -65,7 +66,7 @@ export function handleCaretPos(
     start: data.start,
     end: data.end,
   });
-  partnerConnection.send(message);
+  sendMessage(partnerConnection, message);
 }
 
 export function handleSwitchLang(
@@ -77,7 +78,7 @@ export function handleSwitchLang(
     method: WS_METHODS.SWITCH_LANG,
     language: data.language,
   });
-  partnerConnection.send(message);
+  sendMessage(partnerConnection, message);
 }
 
 export function handleRunCode(
@@ -86,18 +87,18 @@ export function handleRunCode(
   data: any
 ) {
   const message = JSON.stringify({ method: WS_METHODS.RUN_CODE });
-  partnerConnection.send(message);
+  sendMessage(partnerConnection, message);
 
   // TODO: Compile/run code and broadcast result with RUN_CODE_RESULT
 
   runCode(data.code, data.language).then((result) => {
-    console.log("Finished running. Result: ", result);
+    console.log("Finished running code. Result: ", result);
     const messageResult = JSON.stringify({
       method: WS_METHODS.RUN_CODE_RESULT,
       result: result,
     });
-    connection.send(messageResult);
-    partnerConnection.send(messageResult);
+    sendMessage(connection, messageResult);
+    sendMessage(partnerConnection, messageResult)
   });
 }
 
@@ -110,7 +111,7 @@ export function handleMessage(
     method: WS_METHODS.MESSAGE,
     message: data.message,
   });
-  partnerConnection.send(message);
+  sendMessage(partnerConnection, message);
 }
 
 export function handleExit(
@@ -120,7 +121,7 @@ export function handleExit(
 ) {
   const message = JSON.stringify({ method: WS_METHODS.EXIT });
   connection.close();
-  partnerConnection.send(message);
+  sendMessage(partnerConnection, message);
 }
 
 export async function handleNextQuestionId(
@@ -136,10 +137,8 @@ export async function handleNextQuestionId(
 
   const message = JSON.stringify({ method: WS_METHODS.NEXT_QUESTION_ID, questionId })
 
-  console.log("Outbound next question message:", message);
-
-  connection.send(message);
-  partnerConnection.send(message);
+  sendMessage(connection, message);
+  sendMessage(partnerConnection, message);
 }
 
 export function handlePartnerDisconnected(
@@ -147,7 +146,7 @@ export function handlePartnerDisconnected(
   partnerConnection: WebSocket,
 ) {
   const message = JSON.stringify({ method: WS_METHODS.PARTNER_DISCONNECTED });
-  partnerConnection.send(message);
+  sendMessage(partnerConnection, message);
 }
 
 export function handleDefault(
@@ -155,5 +154,5 @@ export function handleDefault(
   method: WS_METHODS
 ) {
   const message = JSON.stringify({ method: method });
-  partnerConnection.send(message);
+  sendMessage(partnerConnection, message);
 }

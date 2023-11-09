@@ -21,7 +21,6 @@ export async function runCode(code: string, language: string): Promise<string> {
 
   
   console.log("Code:", codeBase64);
-  console.log("languageId:", languageId);
 
   const options = {
     method: "POST",
@@ -69,9 +68,7 @@ export async function runCode(code: string, language: string): Promise<string> {
 
   try {
     const response: Response = await fetch(url, options);
-    console.log("Response:", response);
     const submissionToken = (await response.json())["token"];
-    console.log("Submission Token:", submissionToken);
 
     while (isInQueue) {
       sleep(2000);
@@ -79,8 +76,6 @@ export async function runCode(code: string, language: string): Promise<string> {
       //const getSubmissionUrl = `https://judge0-ce.p.rapidapi.com/submissions/${submissionToken}?base64_encoded=true&fields=*`;
       const submissionResponse: Response = await fetch(getSubmissionUrl, getSubmissionOptions);
       const submissionDetails = await submissionResponse.json();
-
-      console.log("Your submission details:", submissionDetails);
 
       const status = submissionDetails["status"]["id"];
 
@@ -97,15 +92,12 @@ export async function runCode(code: string, language: string): Promise<string> {
 
       if (compileOutput !== null) {
         result = fromBase64(compileOutput);
-        console.log("compile_output:", result);
       }
       
       if (stderr !== null) {
         result += fromBase64(stderr);
-        console.log("stderr:", result);
       } else if (stdout !== null) {
         result += fromBase64(stdout);
-        console.log("stdout:", result);
       }
     }
 

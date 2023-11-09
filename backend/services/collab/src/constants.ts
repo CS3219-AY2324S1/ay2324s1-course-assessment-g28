@@ -49,3 +49,6 @@ export const initialDocuments: Record<ProgrammingLanguages, string> = {
 
 export const QUESTION_API_RANDOM_URL = 
   process.env.QUESTION_API + "/question/unattemptedUsersMatch";
+
+export const DEFAULT_EXPIRY = 45;
+export const DEFAULT_EXPIRY_AFTER_EXIT = 15;

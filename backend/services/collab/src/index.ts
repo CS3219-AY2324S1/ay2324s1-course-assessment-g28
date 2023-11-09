@@ -1,6 +1,6 @@
 import express, { Express, Request } from "express";
 import dotenv from "dotenv";
-import { getPairByPairId } from "./services/pairService";
+import { getPairByPairId, setExpiryByPairId } from "./services/pairService";
 import {
   getQueryParams,
   handleCaretPos,
@@ -15,7 +15,7 @@ import {
   handleRunCode,
   handleSwitchLang,
 } from "./services/wsService";
-import { WS_METHODS } from "./constants";
+import { DEFAULT_EXPIRY, DEFAULT_EXPIRY_AFTER_EXIT, WS_METHODS } from "./constants";
 import { addPairToOt, removePairFromOt } from "./services/otService";
 dotenv.config();
 
@@ -110,7 +110,7 @@ const pairs: { [pairId: string]: string } = {};
 // A new client connection request received
 // Query params: ?pairId=<pairId>?userId=<userId>
 wsServer.on("connection", function (connection: WebSocket, request: Request) {
-  console.log(`Recieved a new connection.`);
+  console.log(`=====Recieved a new connection.=====`);
 
   // Store the new connection and handle messages
   //console.log(`${connection} connected.`);
@@ -131,6 +131,9 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
       } else {
         pairs[pairId] = pairDoc.user2;
       }
+
+      // Renew expiry of pair entry
+      setExpiryByPairId(pairId, DEFAULT_EXPIRY);
 
       addPairToOt(pairId);
 
@@ -193,7 +196,8 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
         break;
       case WS_METHODS.NEXT_QUESTION_ID:
         handleNextQuestionId(connection, partnerConnection, userId, partnerId, pairId).then(result => {
-          handleClosePair(connection, partnerConnection, userId, partnerId, pairId);
+          connection.close();
+          partnerConnection.close();
         });
         break;
       case WS_METHODS.NEXT_QUESTION_REJECT:
@@ -212,13 +216,16 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
     const partnerConnection = partnerId === undefined ? undefined : clients[partnerId];
 
     if (partnerConnection !== undefined && partnerConnection.readyState == partnerConnection.OPEN) {
+      // Partner is still connected, inform him of my disconnection
       handlePartnerDisconnected(connection, partnerConnection);
     }
+
+    onCloseCleanup(connection, userId, partnerId, pairId);
   };
 });
 
 /**
- * Should effectively delete and close everything to allow start over 
+ * Should effectively delete everything to allow start over 
  * from clean slate upon reconnection
  * DB entry not deleted but set 1hr expiry as users have not confirm exit yet
  * 
@@ -228,30 +235,18 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
  * @param partnerId 
  * @param pairId 
  */
-function handleCloseConnection(connection: WebSocket, partnerConnection: WebSocket, userId: string, partnerId: string, pairId: string) {
+function onCloseCleanup(connection: WebSocket, userId: string, partnerId: string, pairId: string) {
   delete clients[userId];
   delete partners[userId];
+
+  console.log("Cleaning up data for:", userId);
 
   // Partner has also left
   if (partnerId !in clients) {
-    // TODO: Add expiry on db entry
+    console.log("Partner:", partnerId,"has already left");
     delete pairs[pairId];
     removePairFromOt(pairId);
+    // Both users are disconnected, begin timeout of mongodb entry
+    setExpiryByPairId(pairId, DEFAULT_EXPIRY_AFTER_EXIT);
   }
-
-  connection.close();
-}
-
-function handleClosePair(connection: WebSocket, partnerConnection: WebSocket, userId: string, partnerId: string, pairId: string) {
-  delete clients[userId];
-  delete partners[userId];
-
-  delete clients[partnerId];
-  delete partners[partnerId];
-
-  delete pairs[pairId];
-  removePairFromOt(pairId);
-
-  connection.close();
-  partnerConnection.close();
 }

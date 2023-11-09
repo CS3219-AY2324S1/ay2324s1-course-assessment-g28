@@ -72,6 +72,7 @@ export default function CodeWindow({
   const router = useRouter();
   const {
     isPeerStillHere,
+    setIsPeerStillHere,
     initateExitMyself,
     initateNextQnMyself,
     submissionStatus,
@@ -160,6 +161,7 @@ export default function CodeWindow({
     const partnerId = data.partnerId;
     console.log("Your partner is:", partnerId);
     setIsPairConnected(true);
+    setIsPeerStillHere(true);
     setPartnerDetails((prevState) => {
       return {
         ...prevState,
