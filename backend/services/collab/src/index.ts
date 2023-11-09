@@ -196,6 +196,7 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
         break;
       case WS_METHODS.NEXT_QUESTION_ID:
         handleNextQuestionId(connection, partnerConnection, userId, partnerId, pairId).then(result => {
+          removePairFromOt(pairId);
           connection.close();
           partnerConnection.close();
         });
@@ -245,7 +246,8 @@ function onCloseCleanup(connection: WebSocket, userId: string, partnerId: string
   if (partnerId !in clients) {
     console.log("Partner:", partnerId,"has already left");
     delete pairs[pairId];
-    removePairFromOt(pairId);
+    // TODO: Create a timeout that calls this when pair is deleted
+    // removePairFromOt(pairId);
     // Both users are disconnected, begin timeout of mongodb entry
     setExpiryByPairId(pairId, DEFAULT_EXPIRY_AFTER_EXIT);
   }
