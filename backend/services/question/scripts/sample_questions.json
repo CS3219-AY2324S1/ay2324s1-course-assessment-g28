@@ -1,7 +1,5 @@
 [
   {
-    "_id": "654b8bbe8c976ae907f5b9c6",
-    "id": 1,
     "title": "Reverse a String",
     "description": {
       "type": "doc",
@@ -150,8 +148,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9cc",
-    "id": 2,
     "title": "Linked List Cycle Detection",
     "description": {
       "type": "doc",
@@ -439,8 +435,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9cf",
-    "id": 3,
     "title": "Roman to Integer",
     "description": {
       "type": "doc",
@@ -704,8 +698,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9d2",
-    "id": 4,
     "title": "Add Binary",
     "description": {
       "type": "doc",
@@ -850,8 +842,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9d5",
-    "id": 5,
     "title": "Fibonacci Number",
     "description": {
       "type": "doc",
@@ -1036,8 +1026,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9d8",
-    "id": 6,
     "title": "Implement Stack using Queues",
     "description": {
       "type": "doc",
@@ -1304,8 +1292,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9db",
-    "id": 7,
     "title": "Combine Two Tables",
     "description": {
       "type": "doc",
@@ -1600,8 +1586,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9de",
-    "id": 8,
     "title": "Repeated DNA Sequences",
     "description": {
       "type": "doc",
@@ -1758,8 +1742,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9e1",
-    "id": 9,
     "title": "Course Schedule",
     "description": {
       "type": "doc",
@@ -1976,8 +1958,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9e4",
-    "id": 10,
     "title": "LRU Cache Design",
     "description": {
       "type": "doc",
@@ -2234,8 +2214,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9e7",
-    "id": 11,
     "title": "Longest Common Subsequence",
     "description": {
       "type": "doc",
@@ -2469,8 +2447,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9ea",
-    "id": 12,
     "title": "Rotate Image",
     "description": {
       "type": "doc",
@@ -2641,8 +2617,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9ed",
-    "id": 13,
     "title": "Airplane Seat Assignment Probability",
     "description": {
       "type": "doc",
@@ -2796,8 +2770,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9f0",
-    "id": 14,
     "title": "Validate Binary Search Tree",
     "description": {
       "type": "doc",
@@ -2970,8 +2942,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9f3",
-    "id": 15,
     "title": "Sliding Window Maximum",
     "description": {
       "type": "doc",
@@ -3168,8 +3138,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9f6",
-    "id": 16,
     "title": "N-Queen Problem",
     "description": {
       "type": "doc",
@@ -3315,8 +3283,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9f9",
-    "id": 17,
     "title": "Serialize and Deserialize a Binary Tree",
     "description": {
       "type": "doc",
@@ -3472,8 +3438,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9fc",
-    "id": 18,
     "title": "Wildcard Matching",
     "description": {
       "type": "doc",
@@ -3721,8 +3685,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5b9ff",
-    "id": 19,
     "title": "Chalkboard XOR Game",
     "description": {
       "type": "doc",
@@ -3919,8 +3881,6 @@
     "__v": 0
   },
   {
-    "_id": "654b8bbe8c976ae907f5ba02",
-    "id": 20,
     "title": "Trips and Users",
     "description": {
       "type": "doc",
