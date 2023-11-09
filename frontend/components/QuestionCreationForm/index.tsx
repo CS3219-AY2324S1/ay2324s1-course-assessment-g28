@@ -148,7 +148,7 @@ export default function QuestionCreationForm({
                 setIsEdited(true);
                 onChange(val);
               }}
-              className="min-h-screen-2/3"
+              className="h-screen-65%"
             ></QuestionDescription>
           )}
         />

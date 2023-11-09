@@ -10,10 +10,10 @@ const TimeoutCard = () => {
       <ModalHeader className="flex flex-col gap-1">Timeout</ModalHeader>
       <ModalBody>
         <div className="mb-[80px]">No peers available at the moment</div>
-        <Button className="text-foreground" onClick={onRetry}>
+        <Button color="secondary" onClick={onRetry}>
           Try again
         </Button>
-        <Button className="text-foreground" onClick={onClose}>
+        <Button onClick={onClose}>
           Cancel
         </Button>
       </ModalBody>

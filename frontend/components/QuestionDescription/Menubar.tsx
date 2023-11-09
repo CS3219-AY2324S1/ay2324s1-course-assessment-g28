@@ -17,7 +17,7 @@ const Menubar = ({ editor }: MenubarProps) => {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col sticky">
       <div className="flex flex-row flex-wrap gap-1">
         <Button
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -116,6 +116,28 @@ const Menubar = ({ editor }: MenubarProps) => {
           color="secondary"
         >
           h6
+        </Button>
+        <Button
+          onClick={() => editor.chain().focus().unsetSuperscript().toggleSubscript().run()}
+          size="sm"
+          variant={editor.isActive("subscript") ? "solid" : "bordered"}
+          color="secondary"
+          title="Toggle Subscript"
+        >
+          <p className="text-md">
+            x<sub>2</sub>
+          </p>
+        </Button>
+        <Button
+          onClick={() => editor.chain().focus().unsetSubscript().toggleSuperscript().run()}
+          size="sm"
+          variant={editor.isActive("superscript") ? "solid" : "bordered"}
+          color="secondary"
+          title="Toggle Superscript"
+        >
+          <p className="text-md">
+            x<sup>2</sup>
+          </p>
         </Button>
         <Button
           onClick={() => editor.chain().focus().toggleBulletList().run()}

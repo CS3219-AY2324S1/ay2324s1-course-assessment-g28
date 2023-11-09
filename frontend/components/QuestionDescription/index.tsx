@@ -5,6 +5,8 @@ import ListItem from "@tiptap/extension-list-item";
 import TextStyle from "@tiptap/extension-text-style";
 import StarterKit from "@tiptap/starter-kit";
 import Typography from "@tiptap/extension-typography";
+import Superscript from '@tiptap/extension-superscript';
+import Subscript from '@tiptap/extension-subscript';
 import { TipTapCustomImage } from "@/components/QuestionDescription/TipTapCustomImage";
 import { cn } from "@nextui-org/react";
 
@@ -45,6 +47,8 @@ export default function QuestionDescription({
       }),
       TipTapCustomImage,
       Typography,
+      Superscript,
+      Subscript
     ],
     content: initialContent,
     onUpdate({ editor }) {
@@ -57,12 +61,12 @@ export default function QuestionDescription({
   return (
     <div
       className={cn(
-        "bg-default-100 p-2 flex flex-col gap-y-2 rounded-lg",
+        "bg-default-100 p-2 flex flex-col gap-y-2 rounded-lg grow overflow-auto",
         className,
       )}
     >
-      {!readonly && <Menubar editor={editor} />}
-      <EditorContent editor={editor} className="flex flex-col grow gap-1" />
+      {!readonly && <Menubar editor={editor}/>}
+      <EditorContent editor={editor} className="max-h-full overflow-auto" />
     </div>
   );
 }
