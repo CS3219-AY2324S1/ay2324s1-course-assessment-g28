@@ -27,7 +27,7 @@ export const createQuestion = async (req: Request, res: Response) => {
     }
 
     if (!req.body.description) {
-      req.body.description = {};
+      req.body.description = { type: "doc", content: [{ type: "paragraph" }] };
     }
 
     const question = new Question(req.body);
