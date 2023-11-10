@@ -1,5 +1,11 @@
 /* eslint-disable */
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import useWebSocket from "react-use-websocket";
 import { Button, Select, SelectItem, Spinner } from "@nextui-org/react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
@@ -7,8 +13,10 @@ import ResizeHandleHorizontal from "../ResizeHandleHorizontal";
 import LoadingScreen from "../LoadingScreen";
 import { dracula, tomorrow } from "thememirror";
 import {
+  ErrorScreenText,
   LANGUAGES,
   LANGUAGE_DATA,
+  LoadingScreenText,
   WSMessageType,
   WS_METHODS,
 } from "../constants";
@@ -40,6 +48,8 @@ import { CreateQuestionAttemptRequestBody } from "@/api/user/types";
 interface CodeWindowProps {
   websocketUrl: string;
   question: Question;
+  setErrorScreenText: Dispatch<SetStateAction<ErrorScreenText>>;
+  setLoadingScreenText: Dispatch<SetStateAction<LoadingScreenText>>;
 }
 
 // Used to hold the state of the editor's theme
@@ -53,6 +63,8 @@ const editorTheme = new Compartment();
 export default function CodeWindow({
   websocketUrl,
   question,
+  setErrorScreenText,
+  setLoadingScreenText,
 }: CodeWindowProps) {
   const { theme } = useTheme();
   const [language, setLanguage] = useState<string>("Python");
@@ -94,6 +106,7 @@ export default function CodeWindow({
     },
     onMessage: onMessage,
     onError: onError,
+    onClose: onClose,
   });
 
   useEffect(() => {
@@ -129,6 +142,9 @@ export default function CodeWindow({
       case WS_METHODS.PAIR_CONNECTED:
         handlePairConnected(data);
         break;
+      case WS_METHODS.INVALID_WSURL_PARAMS:
+        handleInvalidWsUrlParams(data);
+        break;
       case WS_METHODS.OP:
         handleOp(data);
         break;
@@ -146,15 +162,34 @@ export default function CodeWindow({
       case WS_METHODS.EXIT:
         handleExit(data);
         break;
+      case WS_METHODS.UNEXPECTED_ERROR:
+        handleUnexpectedError(data);
+        break;
+    }
+  }
+
+  function onClose(e: Event) {
+    // Will show loading screen with text based on event
+    // Disconnected -> Show check network and reload screen
+    // Next question -> Show loading next question screen
+    if (submissionStatus === SubmissionStatus.SUBMIT_BEFORE_NEXT_QN) {
+      setLoadingScreenText(LoadingScreenText.LOADING_NEXT_QUESTION);
+    } else {
+      setLoadingScreenText(LoadingScreenText.CONNECTION_LOST);
     }
   }
 
   function onError(e: Event) {
-    // TODO: Handle error
+    console.log("!!! ERROR: Unable to connect to websocket !!!");
+    setErrorScreenText(ErrorScreenText.CANNOT_CONNECT_TO_WS);
   }
 
   function handleReadyToReceive(data: any) {
+    console.log("+++ WebSocket is ready for messages +++");
     setIsWebsocketReady(true);
+    setLoadingScreenText(LoadingScreenText.FINISHED_LOADING);
+
+    setLanguage(data.language);
   }
 
   function handlePairConnected(data: any) {
@@ -178,6 +213,11 @@ export default function CodeWindow({
         };
       });
     });
+  }
+
+  function handleInvalidWsUrlParams(data: any) {
+    console.log("!!! ERROR !!! WsUrl params are invalid");
+    setErrorScreenText(ErrorScreenText.INVALID_WSURL_PARAMS);
   }
 
   function handleOp(data: any) {
@@ -218,31 +258,9 @@ export default function CodeWindow({
     router.push(HOME);
   }
 
-  /**
-   * Called at the start of each question
-   */
-  function initEditor() {
-    console.log("Initializing editor");
-    getIsMyTurn();
-  }
-
-  function getIsMyTurn() {
-    console.log("Checking if its your turn...");
-    sendJsonMessage({
-      method: WS_METHODS.GET_TURN,
-    });
-  }
-
-  function onCodeChange(val: string) {
-    console.log("=====CODE CHANGE=======");
-
-    console.log(val);
-
-    // // TODO: Handle ops
-    // sendJsonMessage({
-    //   method: WS_METHODS.OP,
-    //   op: val
-    // });
+  function handleUnexpectedError(data: any) {
+    console.log("!!! An unexpected error occurred !!!", data);
+    setErrorScreenText(ErrorScreenText.UNEXPECTED_ERROR);
   }
 
   //#region collaborative editing logic
@@ -469,6 +487,9 @@ export default function CodeWindow({
   }
 
   function onLanguageChange(val: string) {
+    if (val === language) {
+      return;
+    }
     setLanguage(val);
     sendJsonMessage({
       method: WS_METHODS.SWITCH_LANG,

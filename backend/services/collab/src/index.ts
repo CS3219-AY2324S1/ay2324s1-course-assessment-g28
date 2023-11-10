@@ -5,7 +5,9 @@ import {
   getQueryParams,
   handleCaretPos,
   handleDefault,
+  handleError,
   handleExit,
+  handleInvalidWsParams,
   handleMessage,
   handleNextQuestionId,
   handleOp,
@@ -15,7 +17,7 @@ import {
   handleRunCode,
   handleSwitchLang,
 } from "./services/wsService";
-import { DEFAULT_EXPIRY, DEFAULT_EXPIRY_AFTER_EXIT, WS_METHODS } from "./constants";
+import { DEFAULT_EXPIRY, DEFAULT_EXPIRY_AFTER_EXIT, PairState, ProgrammingLanguages, WS_METHODS } from "./constants";
 import { addPairToOt, removePairFromOt } from "./services/otService";
 dotenv.config();
 
@@ -105,7 +107,9 @@ const partners: { [userId: string]: string } = {};
 // List of clients' WebSocket connection
 const clients: { [userId: string]: WebSocket } = {};
 // Keeps track of whose turn it is in each pair
-const pairs: { [pairId: string]: string } = {};
+const pairs: { 
+  [pairId: string]: PairState
+} = {};
 
 // A new client connection request received
 // Query params: ?pairId=<pairId>?userId=<userId>
@@ -126,10 +130,11 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
   // Check pair exists, else close connection
   getPairByPairId(pairId, userId).then((pairDoc) => {
     if (pairDoc !== null) {
-      if (pairDoc.isUser1Turn) {
-        pairs[pairId] = pairDoc.user1;
-      } else {
-        pairs[pairId] = pairDoc.user2;
+      if (!(pairId in pairs)) {
+        pairs[pairId] = {
+          messages: [],
+          language: "Python"
+        };
       }
 
       // Renew expiry of pair entry
@@ -148,7 +153,7 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
       console.log("Has partner connected?", partnerId in clients);
 
       // Inform user that WS is ready for messages
-      handleReadyToReceive(connection);
+      handleReadyToReceive(connection, userId, pairs[pairId]);
 
       // Check if partner has already connected
       // If so, send READY to the pair
@@ -157,6 +162,7 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
       } 
     } else {
       console.log(`User: ${userId} | Pair does not exist: ${pairId}`);
+      handleInvalidWsParams(connection);
       connection.close();
     }
   });
@@ -168,45 +174,60 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
     const partnerId = partners[userId];
     const partnerConnection = clients[partnerId];
 
-    switch (data.method) {
-      case WS_METHODS.OP:
-        handleOp(connection, partnerConnection, pairId, data);
-        break;
-      case WS_METHODS.CARET_POS:
-        handleCaretPos(connection, partnerConnection, data);
-        break;
-      case WS_METHODS.SWITCH_LANG:
-        handleSwitchLang(connection, partnerConnection, data);
-        break;
-      case WS_METHODS.RUN_CODE:
-        handleRunCode(connection, partnerConnection, data);
-        break;
-      case WS_METHODS.MESSAGE:
-        handleMessage(connection, partnerConnection, data);
-        break;
-      case WS_METHODS.EXIT:
-        console.log("EXIT WS .......");
-        handleExit(connection, partnerConnection, data);
-        break;
-      case WS_METHODS.NEXT_QUESTION_INITATED_BY_PEER:
-        handleDefault(partnerConnection, data.method);
-        break;
-      case WS_METHODS.NEXT_QUESTION_CONFIRM:
-        handleDefault(partnerConnection, data.method);
-        break;
-      case WS_METHODS.NEXT_QUESTION_ID:
-        handleNextQuestionId(connection, partnerConnection, userId, partnerId, pairId).then(result => {
-          removePairFromOt(pairId);
-          connection.close();
-          partnerConnection.close();
-        });
-        break;
-      case WS_METHODS.NEXT_QUESTION_REJECT:
-      case WS_METHODS.EXIT_INITIATED_BY_PEER:
-      case WS_METHODS.EXIT_CONFIRM:
-      case WS_METHODS.EXIT_REJECT:
-      case WS_METHODS.PEER_HAS_EXITED:
-        handleDefault(partnerConnection, data.method);
+    try {
+      switch (data.method) {
+        case WS_METHODS.OP:
+          handleOp(connection, partnerConnection, pairId, data);
+          break;
+        case WS_METHODS.CARET_POS:
+          handleCaretPos(connection, partnerConnection, data);
+          break;
+        case WS_METHODS.SWITCH_LANG:
+          pairs[pairId].language = data.language
+          handleSwitchLang(connection, partnerConnection, data);
+          break;
+        case WS_METHODS.RUN_CODE:
+          handleRunCode(connection, partnerConnection, data);
+          break;
+        case WS_METHODS.MESSAGE:
+          pairs[pairId].messages.push({
+            from: userId,
+            message: data.message
+          })
+          handleMessage(connection, partnerConnection, data);
+          break;
+        case WS_METHODS.EXIT:
+          console.log("EXIT WS .......");
+          handleExit(connection, partnerConnection, data);
+          break;
+        case WS_METHODS.NEXT_QUESTION_INITATED_BY_PEER:
+          handleDefault(partnerConnection, data.method);
+          break;
+        case WS_METHODS.NEXT_QUESTION_CONFIRM:
+          handleDefault(partnerConnection, data.method);
+          break;
+        case WS_METHODS.NEXT_QUESTION_ID:
+          handleNextQuestionId(connection, partnerConnection, userId, partnerId, pairId).then(result => {
+            // Remove current pair state when moving to next question
+            delete pairs[pairId];
+            removePairFromOt(pairId);
+            connection.close();
+            partnerConnection.close();
+          });
+          break;
+        case WS_METHODS.NEXT_QUESTION_REJECT:
+        case WS_METHODS.EXIT_INITIATED_BY_PEER:
+        case WS_METHODS.EXIT_CONFIRM:
+        case WS_METHODS.EXIT_REJECT:
+        case WS_METHODS.PEER_HAS_EXITED:
+          handleDefault(partnerConnection, data.method);
+      }
+    } catch (error) {
+      console.log("!!! AN UNEXPECTED ERROR OCCURRED !!!", error);
+      handleError(connection, partnerConnection, error);
+
+      connection.close();
+      partnerConnection.close();
     }
   };
 
@@ -243,12 +264,16 @@ function onCloseCleanup(connection: WebSocket, userId: string, partnerId: string
   console.log("Cleaning up data for:", userId);
 
   // Partner has also left
-  if (partnerId !in clients) {
-    console.log("Partner:", partnerId,"has already left");
-    delete pairs[pairId];
+  if (!(partnerId in clients)) {
+    console.log("Partner:", partnerId, "has already left");
     // TODO: Create a timeout that calls this when pair is deleted
+    // delete pairs[pairId];
     // removePairFromOt(pairId);
     // Both users are disconnected, begin timeout of mongodb entry
-    setExpiryByPairId(pairId, DEFAULT_EXPIRY_AFTER_EXIT);
+    try {
+      setExpiryByPairId(pairId, DEFAULT_EXPIRY_AFTER_EXIT);
+    } catch (error) {
+      console.log("!!! Error while setting expiry !!!", error);
+    }
   }
 }

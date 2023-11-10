@@ -1,4 +1,4 @@
-import { WS_METHODS } from "../constants";
+import { PairState, WS_METHODS } from "../constants";
 import { sendMessage } from "../utils/websocketUtil";
 import { runCode } from "./executionService";
 import { getNextQuestion } from "./nextQuestionService";
@@ -21,8 +21,26 @@ export function getQueryParams(url: string): { [key: string]: string } {
   return params;
 }
 
-export function handleReadyToReceive(connection: WebSocket) {
-  const message = JSON.stringify({ method: WS_METHODS.READY_TO_RECEIVE });
+export function handleReadyToReceive(
+  connection: WebSocket,
+  userId: string,
+  pairState: PairState
+) {
+  const messageList = [];
+
+  for (const message of pairState.messages) {
+    messageList.push([
+      message.message,
+      userId === message.from
+    ]);
+  }
+
+  const message = JSON.stringify({ 
+    method: WS_METHODS.READY_TO_RECEIVE,
+    messageList: messageList,
+    language: pairState.language
+  });
+
   sendMessage(connection, message);
 }
 
@@ -43,6 +61,15 @@ export function handlePairConnected(
   
   sendMessage(connection, messageUser);
   sendMessage(partnerConnection, messagePartner);
+}
+
+export function handleInvalidWsParams(
+  connection: WebSocket,
+) {
+  const message = JSON.stringify({
+    method: WS_METHODS.INVALID_WSURL_PARAMS
+  })
+  sendMessage(connection, message);
 }
 
 export function handleOp(
@@ -88,8 +115,6 @@ export function handleRunCode(
 ) {
   const message = JSON.stringify({ method: WS_METHODS.RUN_CODE });
   sendMessage(partnerConnection, message);
-
-  // TODO: Compile/run code and broadcast result with RUN_CODE_RESULT
 
   runCode(data.code, data.language).then((result) => {
     console.log("Finished running code. Result: ", result);
@@ -154,5 +179,15 @@ export function handleDefault(
   method: WS_METHODS
 ) {
   const message = JSON.stringify({ method: method });
+  sendMessage(partnerConnection, message);
+}
+
+export function handleError(
+  connection: WebSocket,
+  partnerConnection: WebSocket,
+  error: any
+) {
+  const message = JSON.stringify({ method: WS_METHODS.UNEXPECTED_ERROR, error: error });
+  sendMessage(connection, message);
   sendMessage(partnerConnection, message);
 }

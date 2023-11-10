@@ -19,7 +19,7 @@ export default function MessageWindow(props: MessageWindowProps) {
   const [isWebsocketLoaded, setIsWebsocketLoaded] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [messageValue, setMessageValue] = useState("");
-  const [messageList, setMessageList] = useState([]);
+  const [messageList, setMessageList] = useState<>([]);
 
   const messageInput = useRef(null);
   const messageScrollDiv = useRef(null);
@@ -37,7 +37,6 @@ export default function MessageWindow(props: MessageWindowProps) {
       setIsWebsocketLoaded(true);
     },
     onMessage: onMessage,
-    onError: onError,
   });
 
   function onMessage(e: any) {
@@ -45,8 +44,8 @@ export default function MessageWindow(props: MessageWindowProps) {
     console.log("MessageWindow received: ", data);
 
     switch (data.method) {
-      case WS_METHODS.PAIR_CONNECTED:
-        handleReady(data);
+      case WS_METHODS.READY_TO_RECEIVE:
+        handleReadyToReceive(data);
         break;
       case WS_METHODS.MESSAGE:
         handleMessage(data);
@@ -54,12 +53,10 @@ export default function MessageWindow(props: MessageWindowProps) {
     }
   }
 
-  function onError(e: Event) {
-    // TODO: Handle error
-  }
-
-  function handleReady(data: any) {
+  function handleReadyToReceive(data: any) {
     setIsInitialized(true);
+    console.log("Initial messages:", data.messageList);
+    setMessageList(data.messageList);
   }
 
   function handleMessage(data: any) {

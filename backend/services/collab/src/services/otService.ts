@@ -33,9 +33,9 @@ export function addPairToOt(pairId: string) {
   }
   if (!(pairId in doc)) {
     doc[pairId] = {
-      Java: Text.of([initialDocuments.java]),
-      JavaScript: Text.of([initialDocuments.javascript]),
-      Python: Text.of([initialDocuments.python])
+      Java: Text.of([initialDocuments.Java]),
+      JavaScript: Text.of([initialDocuments.JavaScript]),
+      Python: Text.of([initialDocuments.Python])
     };
   }
   if (!(pairId in pending)) {
@@ -48,7 +48,7 @@ export function addPairToOt(pairId: string) {
 }
 
 export function removePairFromOt(pairId: string) {
-  console.log("===DELETING PAIR===");
+  console.log(`=== DELETING PAIR: ${pairId} ===`);
   if (pairId in updates) {
     delete updates[pairId];
   }

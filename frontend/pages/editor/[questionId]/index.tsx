@@ -9,12 +9,17 @@ import QuestionDetailsCard from "@/components/QuestionDetailsCard.tsx";
 import { useRouter } from "next/router";
 import { SubmissionContextProvider } from "@/components/Editor/Submission/SubmissionContext";
 import { SubmissionModal } from "@/components/Editor/Submission/SubmissionModal";
-import { Spinner } from "@nextui-org/react";
 import VerticalResizeHandle from "@/components/PanelResizeHandles/VerticalResizeHandle";
 import HorizontalResizeHandle from "@/components/PanelResizeHandles/HorizontalResizeHandle";
 import useSWR from "swr";
 import { getPublicUserInfo } from "@/api/user";
 import { Users, User as UserIcon } from "lucide-react";
+import {
+  ErrorScreenText,
+  LoadingScreenText,
+} from "@/components/Editor/constants";
+import LoadingScreen from "@/components/Editor/LoadingScreen";
+import ErrorScreen from "@/components/Editor/ErrorScreen";
 
 // indicates if only one person in collab session or both.
 enum CollabStatus {
@@ -53,6 +58,14 @@ export default function EditorPage({
   const [collabStatus, setCollabStatus] = useState<CollabStatus>(
     CollabStatus.DOUBLE,
   );
+  const [loadingScreenText, setLoadingScreenText] = useState<LoadingScreenText>(
+    LoadingScreenText.INITIALIZING_EDITOR,
+  );
+  // Set to false if cannot connect OR WS returns INVALID_WSURL_PARAMS status
+  // If false, don't show editor and show error screen
+  const [errorScreenText, setErrorScreenText] = useState<ErrorScreenText>(
+    ErrorScreenText.NO_ERROR,
+  );
   // Obtain the WebSocket link from query and get the first question
   useEffect(() => {
     if (question === undefined) {
@@ -64,16 +77,21 @@ export default function EditorPage({
     setWebsocketUrl(wsUrl);
   }, [router, question]);
 
-  if (!websocketUrl)
-    return (
-      <div className="w-full h-full flex items-center justify-center">
-        <Spinner color="secondary" />
-      </div>
-    );
+  // WebSocket URL obtained from path but is invalid
+  if (errorScreenText !== ErrorScreenText.NO_ERROR)
+    return <ErrorScreen displayText={errorScreenText} />;
 
   return (
     <SubmissionContextProvider websocketUrl={websocketUrl}>
       <div className="flex w-full grow rounded-xl relative">
+        {
+          // Event 1: Initializing editor (waiting for WS to send READY_FOR_MESSAGES)
+          // Event 2: WS closed due to disconnection (handled in onClose)
+          // Event 3: Fetching next question (handled in onClose)
+          loadingScreenText !== LoadingScreenText.FINISHED_LOADING && (
+            <LoadingScreen displayText={loadingScreenText} />
+          )
+        }
         <PanelGroup direction="horizontal" className="grow">
           <Panel defaultSize={40} minSize={25}>
             <PanelGroup direction="vertical">
@@ -88,9 +106,9 @@ export default function EditorPage({
                 <div className="h-full w-full flex flex-col gap-y-1">
                   <div className="flex flex-row gap-x-2">
                     {collabStatus === CollabStatus.DOUBLE ? (
-                      <Users fill="purple"/>
+                      <Users fill="purple" />
                     ) : (
-                      <UserIcon fill="gray"/>
+                      <UserIcon fill="gray" />
                     )}
                     <h2 className="text-lg">
                       Session Status:{" "}
@@ -119,6 +137,8 @@ export default function EditorPage({
               <CodeWindow
                 websocketUrl={websocketUrl}
                 question={question}
+                setErrorScreenText={setErrorScreenText}
+                setLoadingScreenText={setLoadingScreenText}
               ></CodeWindow>
             )}
           </Panel>
