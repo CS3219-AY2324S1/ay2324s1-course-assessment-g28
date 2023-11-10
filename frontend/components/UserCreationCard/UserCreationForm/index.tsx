@@ -51,7 +51,7 @@ export default function UserCreationForm() {
         e.response.status === HttpStatus.INTERNAL_SERVER_ERROR;
       if (isServerError) {
         const errorInfo = await e.response.json();
-        toast.error(getUserErrorMessageFromErrorCode(errorInfo.error));
+        toast.error(getUserErrorMessageFromErrorCode(errorInfo.errorCode));
       } else {
         toast.error("Something went wrong. Please try again.");
       }
