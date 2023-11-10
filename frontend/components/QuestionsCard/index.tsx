@@ -9,9 +9,7 @@ interface QuestionsCardProps {
 export default function QuestionsCard({ userIsAdmin }: QuestionsCardProps) {
   return (
     <Card className="flex-shrink-0 flex-grow">
-      <QuestionTableProvider>
         <QuestionsTable userIsAdmin={userIsAdmin} />
-      </QuestionTableProvider>
     </Card>
   );
 }
