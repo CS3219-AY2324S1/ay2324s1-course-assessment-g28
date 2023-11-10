@@ -104,12 +104,12 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
           attempt?.otherUser ? "Attempted with a peer" : "Attempted by yourself"
         }
       >
-        <div className="relative flex justify-center">
+        <div className="relative flex">
           {attempt?.otherUser ? <FaUserFriends /> : <BsFillPersonFill />}
         </div>
       </Tooltip>
     ),
-    align: "center",
+    align: "start",
   },
 };
 
