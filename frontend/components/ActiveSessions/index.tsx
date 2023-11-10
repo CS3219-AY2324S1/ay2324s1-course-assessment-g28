@@ -68,10 +68,7 @@ const ActiveSessions = () => {
         const data = activeSessions.map((s) => ({
           otherUser: userDetails[s.otherUser],
           question: questionDetails[s.questionId],
-          sessionUrl: getEditorPath(
-            s.questionId,
-            s.wsUrl
-          ),
+          sessionUrl: getEditorPath(s.questionId, s.wsUrl),
         }));
         return data;
       }

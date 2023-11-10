@@ -57,5 +57,5 @@ export const CLASSNAME_PARTNER_MESSAGE =
   "max-w-[90%] self-start bg-gray-200 text-black rounded-r-md rounded-bl-md py-1 px-3";
 
 export type WSMessageType = {
-  data: string,
-}
+  data: string;
+};

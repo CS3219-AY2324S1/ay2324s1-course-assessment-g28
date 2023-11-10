@@ -122,9 +122,7 @@ export default function MessageWindow(props: MessageWindowProps) {
         <Input
           placeholder="Send a message..."
           labelPlacement="outside"
-          endContent={
-            <SendHorizontal />
-          }
+          endContent={<SendHorizontal />}
           value={messageValue}
           onInput={(e) => setMessageValue(e.target.value)}
           onKeyUp={onKeyUp}

@@ -489,11 +489,7 @@ export default function CodeWindow(props: CodeWindowProps) {
                   Next Question
                 </Button>
               ) : null}
-              <Button
-                onClick={initateExitMyself}
-                size="sm"
-                color="default"
-              >
+              <Button onClick={initateExitMyself} size="sm" color="default">
                 Exit
               </Button>
             </div>

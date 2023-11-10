@@ -4,12 +4,12 @@ import { getActiveSessionsPath, getRoute } from "../routes";
 import { GetActiveSessionsResponse } from "./types";
 
 export async function getActiveSessions(
-  userId: string
+  userId: string,
 ): Promise<GetActiveSessionsResponse> {
   const path = getRoute(getActiveSessionsPath(userId), false);
   const res = await fetch(path, {
     method: HttpMethod.GET,
-    headers: jsonRequestHeaders
+    headers: jsonRequestHeaders,
   });
   if (!res.ok) {
     throw new RequestError(res);

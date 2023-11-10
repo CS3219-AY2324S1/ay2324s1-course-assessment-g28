@@ -57,7 +57,10 @@ export default function EditorPage({
           <Panel defaultSize={40} minSize={25}>
             <PanelGroup direction="vertical">
               <Panel defaultSize={80}>
-                <QuestionDetailsCard question={question} className="max-h-full overflow-auto"/>
+                <QuestionDetailsCard
+                  question={question}
+                  className="max-h-full overflow-auto"
+                />
               </Panel>
               <HorizontalResizeHandle />
               <Panel>

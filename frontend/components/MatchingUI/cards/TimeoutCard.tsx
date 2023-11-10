@@ -13,9 +13,7 @@ const TimeoutCard = () => {
         <Button color="secondary" onClick={onRetry}>
           Try again
         </Button>
-        <Button onClick={onClose}>
-          Cancel
-        </Button>
+        <Button onClick={onClose}>Cancel</Button>
       </ModalBody>
     </>
   );

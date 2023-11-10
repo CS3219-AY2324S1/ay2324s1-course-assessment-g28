@@ -3,5 +3,5 @@ export interface GetActiveSessionsResponse {
     otherUser: string;
     wsUrl: string;
     questionId: number;
-  } []
-};
+  }[];
+}
