@@ -14,7 +14,7 @@ export default async function handler(
   }
   const options = {
     method: "GET",
-    headers: jsonRequestHeaders
+    headers: jsonRequestHeaders,
   };
   try {
     const userId = req.query["userId"];
@@ -24,6 +24,8 @@ export default async function handler(
     const activeSessions = responseJson["activeSessions"];
     res.status(HttpStatus.OK).json({ activeSessions: activeSessions });
   } catch (e) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).send("Error fetching active sessions");
+    res
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .send("Error fetching active sessions");
   }
 }

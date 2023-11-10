@@ -1,4 +1,4 @@
-import {  HttpStatus } from "@/api/constants";
+import { HttpStatus } from "@/api/constants";
 import {
   checkIfUserIsAdmin,
   forwardRequestAndGetResponse,

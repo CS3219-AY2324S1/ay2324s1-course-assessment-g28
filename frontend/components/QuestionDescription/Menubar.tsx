@@ -118,7 +118,9 @@ const Menubar = ({ editor }: MenubarProps) => {
           h6
         </Button>
         <Button
-          onClick={() => editor.chain().focus().unsetSuperscript().toggleSubscript().run()}
+          onClick={() =>
+            editor.chain().focus().unsetSuperscript().toggleSubscript().run()
+          }
           size="sm"
           variant={editor.isActive("subscript") ? "solid" : "bordered"}
           color="secondary"
@@ -129,7 +131,9 @@ const Menubar = ({ editor }: MenubarProps) => {
           </p>
         </Button>
         <Button
-          onClick={() => editor.chain().focus().unsetSubscript().toggleSuperscript().run()}
+          onClick={() =>
+            editor.chain().focus().unsetSubscript().toggleSuperscript().run()
+          }
           size="sm"
           variant={editor.isActive("superscript") ? "solid" : "bordered"}
           color="secondary"
