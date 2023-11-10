@@ -17,6 +17,7 @@ import {
   LANGUAGES,
   LANGUAGE_DATA,
   LoadingScreenText,
+  PartnerDetailsType,
   WSMessageType,
   WS_METHODS,
 } from "../constants";
@@ -48,6 +49,8 @@ import { CreateQuestionAttemptRequestBody } from "@/api/user/types";
 interface CodeWindowProps {
   websocketUrl: string;
   question: Question;
+  partnerDetails: PartnerDetailsType;
+  setPartnerDetails: Dispatch<SetStateAction<PartnerDetailsType>>;
   setErrorScreenText: Dispatch<SetStateAction<ErrorScreenText>>;
   setLoadingScreenText: Dispatch<SetStateAction<LoadingScreenText>>;
 }
@@ -63,6 +66,8 @@ const editorTheme = new Compartment();
 export default function CodeWindow({
   websocketUrl,
   question,
+  partnerDetails,
+  setPartnerDetails,
   setErrorScreenText,
   setLoadingScreenText,
 }: CodeWindowProps) {
@@ -74,12 +79,8 @@ export default function CodeWindow({
   const [isWebsocketReady, setIsWebsocketReady] = useState(false);
   const [isCodeRunning, setIsCodeRunning] = useState(false);
   const [isCodeMirrorLoaded, setIsCodeMirrorLoaded] = useState(false);
+  // TODO: might delete this since its not actually used
   const [isPairConnected, setIsPairConnected] = useState(false);
-  const [partnerDetails, setPartnerDetails] = useState({
-    email: "",
-    username: "",
-    favouriteProgrammingLanguage: "",
-  });
   const [requestQueue, setRequestQueue] = useState<Record<string, any>>({});
   const router = useRouter();
   const {

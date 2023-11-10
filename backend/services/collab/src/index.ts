@@ -257,7 +257,7 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
  * @param partnerId 
  * @param pairId 
  */
-function onCloseCleanup(connection: WebSocket, userId: string, partnerId: string, pairId: string) {
+async function onCloseCleanup(connection: WebSocket, userId: string, partnerId: string, pairId: string) {
   delete clients[userId];
   delete partners[userId];
 
@@ -271,7 +271,7 @@ function onCloseCleanup(connection: WebSocket, userId: string, partnerId: string
     // removePairFromOt(pairId);
     // Both users are disconnected, begin timeout of mongodb entry
     try {
-      setExpiryByPairId(pairId, DEFAULT_EXPIRY_AFTER_EXIT);
+      await setExpiryByPairId(pairId, DEFAULT_EXPIRY_AFTER_EXIT);
     } catch (error) {
       console.log("!!! Error while setting expiry !!!", error);
     }

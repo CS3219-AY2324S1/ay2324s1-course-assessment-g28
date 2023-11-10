@@ -11,15 +11,14 @@ import { SubmissionContextProvider } from "@/components/Editor/Submission/Submis
 import { SubmissionModal } from "@/components/Editor/Submission/SubmissionModal";
 import VerticalResizeHandle from "@/components/PanelResizeHandles/VerticalResizeHandle";
 import HorizontalResizeHandle from "@/components/PanelResizeHandles/HorizontalResizeHandle";
-import useSWR from "swr";
-import { getPublicUserInfo } from "@/api/user";
-import { Users, User as UserIcon } from "lucide-react";
 import {
   ErrorScreenText,
   LoadingScreenText,
+  PartnerDetailsType,
 } from "@/components/Editor/constants";
 import LoadingScreen from "@/components/Editor/LoadingScreen";
 import ErrorScreen from "@/components/Editor/ErrorScreen";
+import PartnerDetails from "@/components/Editor/PartnerDetails";
 
 // indicates if only one person in collab session or both.
 enum CollabStatus {
@@ -34,38 +33,29 @@ export const getServerSideProps = (async ({ params }) => {
   question: Question;
 }>;
 
-//TODO: remove when done
-// fill in with appropriate data
-const mock_collab_data = {
-  status: CollabStatus,
-  otherUserEmail: "ghjben@gmail.com",
-};
-
 export default function EditorPage({
   question,
 }: InferGetStaticPropsType<typeof getServerSideProps>) {
   const router = useRouter();
 
   const [websocketUrl, setWebsocketUrl] = useState<string>("");
-  //TODO: set this variable to be the actual user email
-  const otherUserEmail = mock_collab_data.otherUserEmail;
-  const { data: otherUser } = useSWR(
-    { otherUserEmail, getPublicUserInfo },
-    () => getPublicUserInfo(otherUserEmail),
-  );
 
-  // TODO: set this approriately based on the collab state
-  const [collabStatus, setCollabStatus] = useState<CollabStatus>(
-    CollabStatus.DOUBLE,
-  );
+  const [partnerDetails, setPartnerDetails] = useState<PartnerDetailsType>({
+    email: "",
+    username: "",
+    favouriteProgrammingLanguage: "Python",
+  });
+
   const [loadingScreenText, setLoadingScreenText] = useState<LoadingScreenText>(
     LoadingScreenText.INITIALIZING_EDITOR,
   );
+
   // Set to false if cannot connect OR WS returns INVALID_WSURL_PARAMS status
   // If false, don't show editor and show error screen
   const [errorScreenText, setErrorScreenText] = useState<ErrorScreenText>(
     ErrorScreenText.NO_ERROR,
   );
+
   // Obtain the WebSocket link from query and get the first question
   useEffect(() => {
     if (question === undefined) {
@@ -92,6 +82,7 @@ export default function EditorPage({
             <LoadingScreen displayText={loadingScreenText} />
           )
         }
+        <PartnerDetails partnerDetails={partnerDetails} />
         <PanelGroup direction="horizontal" className="grow">
           <Panel defaultSize={40} minSize={25}>
             <PanelGroup direction="vertical">
@@ -104,27 +95,7 @@ export default function EditorPage({
               <HorizontalResizeHandle />
               <Panel>
                 <div className="h-full w-full flex flex-col gap-y-1">
-                  <div className="flex flex-row gap-x-2">
-                    {collabStatus === CollabStatus.DOUBLE ? (
-                      <Users fill="purple" />
-                    ) : (
-                      <UserIcon fill="gray" />
-                    )}
-                    <h2 className="text-lg">
-                      Session Status:{" "}
-                      {collabStatus === CollabStatus.DOUBLE ? (
-                        <span>
-                          Coding with{" "}
-                          <span className="text-purple-400">
-                            {otherUser?.username}
-                          </span>
-                        </span>
-                      ) : (
-                        "Coding alone"
-                      )}
-                    </h2>
-                  </div>
-                  {websocketUrl && collabStatus === CollabStatus.DOUBLE && (
+                  {websocketUrl && (
                     <MessageWindow websocketUrl={websocketUrl}></MessageWindow>
                   )}
                 </div>
@@ -137,6 +108,8 @@ export default function EditorPage({
               <CodeWindow
                 websocketUrl={websocketUrl}
                 question={question}
+                partnerDetails={partnerDetails}
+                setPartnerDetails={setPartnerDetails}
                 setErrorScreenText={setErrorScreenText}
                 setLoadingScreenText={setLoadingScreenText}
               ></CodeWindow>
