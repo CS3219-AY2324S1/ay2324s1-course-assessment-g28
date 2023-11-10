@@ -6,5 +6,5 @@ export interface GetActiveSessionsResponse {
     wsUrl: string;
     questionId: number;
     questionComplexity: QuestionComplexity;
-  } []
-};
+  }[];
+}

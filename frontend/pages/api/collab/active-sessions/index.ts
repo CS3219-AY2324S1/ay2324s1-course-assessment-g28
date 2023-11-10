@@ -27,8 +27,8 @@ export default async function handler(
     res.status(HttpStatus.OK).json({ activeSessions: activeSessions });
   } catch (e) {
     console.log(e);
-    res.status(
-      HttpStatus.INTERNAL_SERVER_ERROR
-    ).send("Error fetching active sessions");
+    res
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .send("Error fetching active sessions");
   }
 }

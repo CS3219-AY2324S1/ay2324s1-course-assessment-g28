@@ -24,8 +24,10 @@ const PieChart = ({ data }: { data?: User }) => {
         Question complexity breakdown
       </div>
       {attemptCount > 0 ? (
-        <div className="flex flex-col sm:flex-row lg:flex-col
-                        items-center justify-center w-full">
+        <div
+          className="flex flex-col sm:flex-row lg:flex-col
+                        items-center justify-center w-full"
+        >
           <Pie
             data={processedPieData}
             innerRadius={0.5}
