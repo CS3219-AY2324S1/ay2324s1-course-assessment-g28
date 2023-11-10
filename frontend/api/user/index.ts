@@ -17,6 +17,7 @@ import {
   User,
   UserExists,
   UserExistsZod,
+  UserPublic,
   UserPublicZod,
   UserZod,
 } from "@/api/user/types";
@@ -50,7 +51,7 @@ export async function getPublicUserInfo(email: string) {
   }
   const body = await res.json();
   UserPublicZod.parse(body);
-  return body as User;
+  return body as UserPublic;
 }
 
 export async function getQuestionAttempt(
