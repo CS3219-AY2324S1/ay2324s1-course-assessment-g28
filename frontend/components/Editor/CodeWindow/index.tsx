@@ -526,7 +526,7 @@ export default function CodeWindow({
         <LoadingScreen displayText="Initializing Code Space ..."></LoadingScreen>
       )}
       <Panel defaultSize={80}>
-        <div className="h-full w-full flex flex-col overflow-auto rounded-xl bg-content1">
+        <div className="h-full w-full flex flex-col overflow-hidden rounded-xl bg-content1">
           <div className="w-full flex flex-row p-1">
             <div className="flex flex-row w-1/2 gap-2">
               <Select
@@ -584,11 +584,11 @@ export default function CodeWindow({
               </Button>
             </div>
           </div>
-          <div id="editors" className="h-full w-full text-lg">
+          <div id="editors" className="grow w-full overflow-y-scroll text-lg">
             {LANGUAGES.map((lang, i) => (
               <div
-                className={` bg-content2 h-full w-full overflow-y-scroll ${
-                  language === lang ? "visible" : "invisible max-h-0"
+                className={`bg-content2 h-full w-full ${
+                  language === lang ? "visible" : "hidden max-h-0"
                 }`}
                 key={lang}
                 ref={(el) => (editorsParentRef.current[lang] = el)}

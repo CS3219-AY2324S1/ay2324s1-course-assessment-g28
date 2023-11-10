@@ -29,7 +29,7 @@ export async function setExpiryByPairId(pairId: string, expiry: number) {
   const pairDoc = await Pair.findOne({ id: pairId }).exec();
 
   if (pairDoc === null) {
-    throw new Error("Cannot find pair in DB!");
+    throw new Error("Setting expiry. Cannot find pair in DB: " + pairId);
   }
 
   pairDoc.expireAt = new Date(Date.now() + expiry);

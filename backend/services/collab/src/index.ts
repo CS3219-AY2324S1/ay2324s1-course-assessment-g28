@@ -156,7 +156,7 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
         handlePairConnected(connection, clients[partnerId], userId, partnerId);
       } 
     } else {
-      console.log("Closing connection for user ", userId);
+      console.log(`User: ${userId} | Pair does not exist: ${pairId}`);
       connection.close();
     }
   });
