@@ -47,12 +47,12 @@ export default function EditorPage({
 
   return (
     <SubmissionContextProvider websocketUrl={websocketUrl}>
-      <div className="flex flex-col w-full h-full mb-[-100px] flex-grow rounded-xl relative">
+      <div className="flex flex-col w-full grow rounded-xl relative">
         <PanelGroup direction="horizontal" className="grow">
           <Panel defaultSize={40} minSize={25}>
             <PanelGroup direction="vertical">
               <Panel defaultSize={80}>
-                <QuestionDetailsCard question={question} />
+                <QuestionDetailsCard question={question} className="max-h-full overflow-auto"/>
               </Panel>
               <HorizontalResizeHandle />
               <Panel>

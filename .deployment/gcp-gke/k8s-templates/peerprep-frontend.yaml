@@ -20,6 +20,8 @@ spec:
               memory: "2048Mi"
               cpu: "500m"
           env:
+            - name: JUDGE0_URL
+              value: "http://34.126.172.186:2358"
             - name: NEXTAUTH_URL
               value: "http://34.143.142.116.nip.io:3000"
             - name: NEXTAUTH_SECRET

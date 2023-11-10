@@ -71,7 +71,7 @@ export default function QuestionCreationForm({
         e.response.status === HttpStatus.INTERNAL_SERVER_ERROR
       ) {
         const errorInfo = await e.response.json();
-        toast.error(getQuestionErrorMessageFromErrorCode(errorInfo.error));
+        toast.error(getQuestionErrorMessageFromErrorCode(errorInfo.errorCode));
       } else {
         toast.error("Something went wrong. Please try again.");
       }
@@ -148,7 +148,7 @@ export default function QuestionCreationForm({
                 setIsEdited(true);
                 onChange(val);
               }}
-              className="min-h-screen-2/3"
+              className="h-screen-65%"
             ></QuestionDescription>
           )}
         />

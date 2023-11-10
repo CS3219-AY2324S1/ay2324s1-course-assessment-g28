@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
   Table,
@@ -39,6 +39,7 @@ export default function QuestionTable({ userIsAdmin }: QuestionTableProps) {
     selectedComplexity,
     pageSize,
     page,
+    setPage,
     resetQuestionTableOptions,
     onlyUnattemptedFilter,
   } = useQuestionTableContext();
@@ -58,6 +59,13 @@ export default function QuestionTable({ userIsAdmin }: QuestionTableProps) {
     { refreshInterval: 1000 },
   );
   const { content: questions } = data ?? {};
+
+  useEffect(() => {
+    if (!isLoading && page > 1 && (data?.content?.length ?? 0) === 0) {
+      setPage((page) => page - 1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   if (error) {
     return (

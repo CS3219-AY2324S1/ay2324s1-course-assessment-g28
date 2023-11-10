@@ -16,9 +16,15 @@ function matchOnQuestion(user1: User, user2: User): Question | null {
   // Cannot match user to themself
   if (user1.match_options.user === user2.match_options.user) {
     return null;
-  } else if (typeof user1.match_options.complexity === "number" && typeof user2.match_options.complexity === "number") {
+  } else if (
+    typeof user1.match_options.complexity === "number" &&
+    typeof user2.match_options.complexity === "number"
+  ) {
     question = matchComplexity(user1, user2);
-  } else if (typeof user1.match_options.question === "number" || typeof user2.match_options.question === "number") {
+  } else if (
+    typeof user1.match_options.question === "number" ||
+    typeof user2.match_options.question === "number"
+  ) {
     question = matchSpecificQuestion(user1, user2);
   }
 
@@ -50,6 +56,8 @@ function matchSpecificQuestion(user1: User, user2: User): Question | null {
 function matchUser(userList: List<User>, user: User): Match | null {
   let curr = userList.head;
   let now_timestamp = Date.now();
+
+  displayUserList(userList);
 
   while (curr) {
     let next = curr.next;
@@ -86,6 +94,17 @@ function removeUser(userList: List<User>, correlationId: string): void {
   }
 
   return;
+}
+
+function displayUserList(userList: List<User>): void {
+  let queue = [];
+  let curr = userList.head;
+  while (curr) {
+    queue.push(curr.match_options);
+    curr = curr.next;
+  }
+
+  logger.info(`Queue status: ${JSON.stringify(queue)}`);
 }
 
 export { matchUser, removeUser };

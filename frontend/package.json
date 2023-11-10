@@ -18,6 +18,8 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@tiptap/extension-code": "^2.1.12",
     "@tiptap/extension-color": "^2.1.12",
+    "@tiptap/extension-subscript": "^2.1.12",
+    "@tiptap/extension-superscript": "^2.1.12",
     "@tiptap/extension-text-style": "^2.1.12",
     "@tiptap/extension-typography": "^2.1.12",
     "@tiptap/pm": "^2.1.12",

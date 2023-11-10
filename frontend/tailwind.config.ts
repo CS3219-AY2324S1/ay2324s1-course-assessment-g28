@@ -9,11 +9,14 @@ const config: Config = {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    minHeight: {
-      "screen-1/2": "50vh",
-      "screen-2/3": "67vh",
-    },
     extend: {
+      height: {
+        "screen-65%": "65vh",
+      },
+      minHeight: {
+        "screen-1/2": "50vh",
+        "screen-2/3": "67vh",
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":

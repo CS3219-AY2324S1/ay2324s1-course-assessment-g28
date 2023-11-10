@@ -27,7 +27,7 @@ export const createQuestion = async (req: Request, res: Response) => {
     }
 
     if (!req.body.description) {
-      req.body.description = {};
+      req.body.description = { type: "doc", content: [{ type: "paragraph" }] };
     }
 
     const question = new Question(req.body);
@@ -135,16 +135,20 @@ export const getQuestions = async (req: Request, res: Response) => {
         threshold: 1.0,
       };
       const f = new fuse(modifiedQuestions, fuseOptions);
+      const content = f
+        .search(req.query.keyword as string)
+        .map((entry) => entry.item)
+        .slice(offset * size, offset * size + size);
+
+      content.sort((q1, q2) => q1.id - q2.id);
       res.status(200).json({
-        content: f
-          .search(req.query.keyword as string)
-          .map((entry) => entry.item)
-          .slice(offset * size, offset * size + size),
+        content: content,
         total: total,
       });
       return;
     }
 
+    modifiedQuestions.sort((q1, q2) => q1.id - q2.id);
     res.status(200).json({
       content: modifiedQuestions.slice(offset * size, offset * size + size),
       total: total,

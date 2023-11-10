@@ -27,8 +27,8 @@ export default async function handler(
     return;
   }
 
-  if (req.method !== HttpMethod.POST) {
-    // add to query params
+  // add email to query params for GET
+  if (req.method === HttpMethod.GET) {
     req.url += `&user=${session.user.email}`;
   }
 

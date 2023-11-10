@@ -30,6 +30,8 @@ spec:
                   key: MONGO_URI
             - name: PORT
               value: "3000"
+            - name: USER_API
+              value: "http://peerprep-user.default.svc.cluster.local:1235"
 ---
 apiVersion: v1
 kind: Service
