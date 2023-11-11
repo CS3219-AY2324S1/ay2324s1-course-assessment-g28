@@ -10,7 +10,7 @@ const Card4 = () => {
       contentPosition={ContentPosition.RIGHT}
       content={
         <div>
-          <div>Track your learning progress</div>
+          <div className="cursor-default">Track your learning progress</div>
           <div className="flex justify-end w-full mt-5">
             <Button
               color="secondary"

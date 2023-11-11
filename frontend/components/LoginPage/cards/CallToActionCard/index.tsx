@@ -16,7 +16,10 @@ const CallToActionCard = (props: { providers?: Providers }) => {
         isInView ? "opacity-100" : "opacity-10",
       )}
     >
-      <div id={CALL_TO_ACTION} className="text-[3em] font-semibold mb-3">
+      <div
+        id={CALL_TO_ACTION}
+        className="cursor-default text-[3em] font-semibold mb-3"
+      >
         Start coding!
       </div>
       <LoginButtonGroup {...props} />

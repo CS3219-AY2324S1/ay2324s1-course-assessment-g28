@@ -10,7 +10,9 @@ const Card2 = () => {
       contentPosition={ContentPosition.RIGHT}
       content={
         <div>
-          <div>Attempt the latest LeetCode questions</div>
+          <div className="cursor-default">
+            Attempt the latest LeetCode questions
+          </div>
           <div className="flex justify-end w-full mt-5">
             <Button
               color="secondary"

@@ -13,7 +13,7 @@ const Card1 = ({ providers }: { providers?: Providers }) => {
       wrapperClassName="pt-[64px] pb-[120px]"
       content={
         <div>
-          <div>welcome to</div>
+          <div className="cursor-default">welcome to</div>
           <div className={cx(RACING_SANS_ONE_CLASS, "text-8xl mb-5")}>
             PeerPrep
           </div>

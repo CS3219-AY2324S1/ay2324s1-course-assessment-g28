@@ -10,7 +10,7 @@ const Card3 = () => {
       contentPosition={ContentPosition.LEFT}
       content={
         <div>
-          <div>Collaborate with peers</div>
+          <div className="cursor-default">Collaborate with peers</div>
           <div className="flex justify-end w-full mt-5">
             <Button
               color="secondary"
