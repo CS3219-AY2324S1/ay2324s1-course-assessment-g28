@@ -2,7 +2,7 @@ import darkImage from "./tracking-dark.jpg";
 import lightImage from "./tracking-light.jpg";
 import TemplateCard, { ContentPosition } from "../TemplateCard";
 import { Button } from "@nextui-org/react";
-import { scrollTillCallToAction } from "../utils";
+import { scrollTillCallToAction } from "../../utils";
 
 const Card4 = () => {
   return (

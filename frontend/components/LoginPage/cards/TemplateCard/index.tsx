@@ -1,5 +1,5 @@
 import { Card } from "@nextui-org/react";
-import ImageCard, { ImageCardProps } from "../ImageCard";
+import ImageCard, { ImageCardProps } from "./ImageCard";
 import cx from "classnames";
 import { ReactNode, useRef } from "react";
 import { useIsIntersecting } from "@/hooks/useIsIntersecting";

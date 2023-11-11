@@ -1,31 +1,31 @@
-import darkImage from "./matching-dark.jpg";
-import lightImage from "./matching-light.jpg";
+import darkImage from "./question-dark.jpg";
+import lightImage from "./question-light.jpg";
 import TemplateCard, { ContentPosition } from "../TemplateCard";
 import { Button } from "@nextui-org/react";
-import { scrollTillCallToAction } from "../utils";
+import { scrollTillCallToAction } from "../../utils";
 
-const Card3 = () => {
+const Card2 = () => {
   return (
     <TemplateCard
-      contentPosition={ContentPosition.LEFT}
+      contentPosition={ContentPosition.RIGHT}
       content={
         <div>
-          <div>Collaborate with peers</div>
+          <div>Attempt the latest LeetCode questions</div>
           <div className="flex justify-end w-full mt-5">
             <Button
               color="secondary"
               variant="bordered"
               onClick={scrollTillCallToAction}
             >
-              Find a peer!
+              Begin now!
             </Button>
           </div>
         </div>
       }
-      contentClassName="mt-[15px]"
-      imageProps={{ darkImage, lightImage, alt: "login-card-3" }}
+      contentClassName="mt-[45px]"
+      imageProps={{ darkImage, lightImage, alt: "login-card-2" }}
     />
   );
 };
 
-export default Card3;
+export default Card2;

@@ -1,6 +1,6 @@
 import cx from "classnames";
 import { RACING_SANS_ONE_CLASS } from "@/assets/fonts/racingSansOne";
-import LoginButtonGroup, { Providers } from "../LoginButtonGroup";
+import LoginButtonGroup, { Providers } from "../../LoginButtonGroup";
 import TemplateCard, { ContentPosition } from "../TemplateCard";
 import darkImage from "./all-questions-dark.jpg";
 import lightImage from "./all-questions-light.jpg";
