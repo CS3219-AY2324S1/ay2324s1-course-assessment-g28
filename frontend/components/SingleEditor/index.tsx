@@ -26,7 +26,7 @@ export default function SingleEditor({ question }: SingleEditorProps) {
     inProgress: false,
     error: false,
   });
-  const [language, setLanguage] = useState<ProgrammingLanguage>("Java");
+  const [language, setLanguage] = useState<ProgrammingLanguage>("Python");
 
   const [editorState, setEditorState] =
     useState<ProgrammingLanguageEditorStates>({
