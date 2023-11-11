@@ -15,7 +15,7 @@ const LanguageCard = () => {
       <div className="m-[36px]">
         <div>
           <div className="cursor-default">
-            {"Our code editor supports Python, Java, JavaScript"}
+            {"Our code editor supports Python, Java, and JavaScript"}
           </div>
           <div className="flex justify-center h-[50px] gap-5 my-5">
             <SiPython
