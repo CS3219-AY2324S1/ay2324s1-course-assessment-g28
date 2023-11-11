@@ -175,8 +175,8 @@ const Menubar = ({ editor }: MenubarProps) => {
           </PopoverTrigger>
           <PopoverContent>
             <div className="px-1 py-2">
-              <div className="text-small font-bold text-black">Add Image</div>
-              <div className="text-tiny text-black">
+              <div className="text-small font-bold">Add Image</div>
+              <div className="text-tiny">
                 Drag and drop images at the position in the description editor
                 you wish to place them at. Alternatively, you may copy and paste
                 images.
