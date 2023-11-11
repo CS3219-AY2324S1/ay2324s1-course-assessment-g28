@@ -58,13 +58,20 @@ export default function getPairingRequestCallback(
     channel.ack(msg!);
 
     if (match) {
-      const {user1, user2} = await postPair(
-        match.user1.match_options.user,
-        match.user2.match_options.user
-      );
+      let websocketUrls = null;
+      try {
+        websocketUrls = await postPair(
+          match.user1.match_options.user,
+          match.user2.match_options.user
+        );
+      } catch (e) {
+        logger.info(`Failed to post to editor service for match ${match}`);
+        return
+      }
+
       // Reply to user 1
       const reply1 = {
-        url: user1,
+        url: websocketUrls.user1,
         otherUser: match.user2.match_options.user,
         questionId: match.question.id,
       };
@@ -78,7 +85,7 @@ export default function getPairingRequestCallback(
 
       // Reply to user 2
       const reply2 = {
-        url: user2,
+        url: websocketUrls.user2,
         otherUser: match.user1.match_options.user,
         questionId: match.question.id,
       };
