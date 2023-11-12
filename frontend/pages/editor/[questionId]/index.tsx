@@ -20,12 +20,6 @@ import LoadingScreen from "@/components/Editor/LoadingScreen";
 import ErrorScreen from "@/components/Editor/ErrorScreen";
 import PartnerDetails from "@/components/Editor/PartnerDetails";
 
-// indicates if only one person in collab session or both.
-enum CollabStatus {
-  SINGLE,
-  DOUBLE,
-}
-
 export const getServerSideProps = (async ({ params }) => {
   const data = await getQuestion(Number(params?.questionId), true);
   return { props: { question: data } };
@@ -38,7 +32,7 @@ export default function EditorPage({
 }: InferGetStaticPropsType<typeof getServerSideProps>) {
   const router = useRouter();
 
-  const [websocketUrl, setWebsocketUrl] = useState<string>("");
+  const websocketUrl = router.query["wsUrl"] as string;
 
   const [partnerDetails, setPartnerDetails] = useState<PartnerDetailsType>({
     email: "",
@@ -55,17 +49,6 @@ export default function EditorPage({
   const [errorScreenText, setErrorScreenText] = useState<ErrorScreenText>(
     ErrorScreenText.NO_ERROR,
   );
-
-  // Obtain the WebSocket link from query and get the first question
-  useEffect(() => {
-    if (question === undefined) {
-      return;
-    }
-    // The pairId and userId are already appended into the encoded wsUrl
-    // Append questionId into wsUrl for service to store and allow retrieval upon reconnection
-    const wsUrl = (router.query["wsUrl"] as string) ?? "";
-    setWebsocketUrl(wsUrl);
-  }, [router, question]);
 
   // WebSocket URL obtained from path but is invalid
   if (errorScreenText !== ErrorScreenText.NO_ERROR)
@@ -86,10 +69,10 @@ export default function EditorPage({
         <PanelGroup direction="horizontal" className="grow">
           <Panel defaultSize={40} minSize={25}>
             <PanelGroup direction="vertical">
-              <Panel defaultSize={80}>
+              <Panel defaultSize={80} className="flex">
                 <QuestionDetailsCard
                   question={question}
-                  className="max-h-full overflow-auto"
+                  className="max-h-full overflow-auto grow"
                 />
               </Panel>
               <HorizontalResizeHandle />
