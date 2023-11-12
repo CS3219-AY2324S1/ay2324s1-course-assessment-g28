@@ -22,15 +22,24 @@ export async function getComplexityByPairId(pairId: string) {
 }
 
 export async function updatePairNextQuestion(pairId: string, questionId: number) {
-  const pairDoc = await Pair.findOneAndUpdate({ id: pairId }, { $set: { questionId } });
+  console.log("+++ Next question id:", questionId, "+++");
+  const pairDoc = await Pair.findOneAndUpdate({ id: pairId }, { $set: { questionId: questionId } });
 }
 
-export async function setExpiryByPairId(pairId: string, expiry: number) {
-  const pairDoc = await Pair.findOne({ id: pairId }).exec();
+export async function deletePairByPairId(pairId: string) {
+  const pairDoc = await Pair.findOneAndDelete({ id: pairId }).exec();
 
-  if (pairDoc === null) {
-    throw new Error("Setting expiry. Cannot find pair in DB: " + pairId);
+  if (pairDoc === undefined) {
+    throw new Error("Trying to delete pair but cannot find in DB: " + pairId);
   }
-
-  pairDoc.expireAt = new Date(Date.now() + expiry);
 }
+
+// export async function setExpiryByPairId(pairId: string, expiry: number) {
+//   const pairDoc = await Pair.findOne({ id: pairId }).exec();
+
+//   if (pairDoc === null) {
+//     throw new Error("Setting expiry. Cannot find pair in DB: " + pairId);
+//   }
+
+//   pairDoc.expireAt = new Date(Date.now() + expiry);
+// }

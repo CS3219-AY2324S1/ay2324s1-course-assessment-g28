@@ -163,6 +163,9 @@ export default function CodeWindow({
       case WS_METHODS.EXIT:
         handleExit(data);
         break;
+      case WS_METHODS.DUPLICATE_SESSION_ERROR:
+        handleDuplicateSessionError(data);
+        break;
       case WS_METHODS.UNEXPECTED_ERROR:
         handleUnexpectedError(data);
         break;
@@ -257,6 +260,11 @@ export default function CodeWindow({
   function handleExit(data: any) {
     console.log("EXITING EDITOR ...");
     router.push(HOME);
+  }
+
+  function handleDuplicateSessionError(data: any) {
+    console.log("!!! Cannot open same session on another tab !!!");
+    setErrorScreenText(ErrorScreenText.DUPLICATE_SESSION_ERROR);
   }
 
   function handleUnexpectedError(data: any) {

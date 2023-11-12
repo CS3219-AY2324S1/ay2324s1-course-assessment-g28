@@ -23,6 +23,7 @@ export enum WS_METHODS {
 
   MESSAGE,
   INVALID_WSURL_PARAMS,
+  DUPLICATE_SESSION_ERROR,
   UNEXPECTED_ERROR
 }
 
@@ -46,13 +47,23 @@ export const initialDocuments: Record<ProgrammingLanguages, string> = {
   JavaScript: "// Write your code here"
 }
 
+export type ConnectionDetails = {
+  connection: WebSocket,
+  partnerId: string,
+}
+
+export type PairConnectionDetails = {
+  [user: string]: ConnectionDetails,
+}
+
 export type PairState = {
   messages: { from: string, message: string }[],
-  language: ProgrammingLanguages
+  language: ProgrammingLanguages,
+  connectionDetails: PairConnectionDetails,
 }
 
 export const QUESTION_API_RANDOM_URL = 
   process.env.QUESTION_API + "/question/unattemptedUsersMatch";
 
-export const DEFAULT_EXPIRY = 24 * 3600;
-export const DEFAULT_EXPIRY_AFTER_EXIT = 3600;
+export const DEFAULT_EXPIRY = 24 * 3600 * 1000;
+export const DEFAULT_EXPIRY_AFTER_EXIT = 3600 * 1000;

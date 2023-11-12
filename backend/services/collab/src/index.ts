@@ -1,10 +1,11 @@
 import express, { Express, Request } from "express";
 import dotenv from "dotenv";
-import { getPairByPairId, setExpiryByPairId } from "./services/pairService";
+import { deletePairByPairId, getPairByPairId } from "./services/pairService";
 import {
   getQueryParams,
   handleCaretPos,
   handleDefault,
+  handleDuplicateSessionError,
   handleError,
   handleExit,
   handleInvalidWsParams,
@@ -102,13 +103,12 @@ server.listen(port, () => {
   console.log(`WebSocket server is running on port ${port}`);
 });
 
-// List of user: partner pairs
-const partners: { [userId: string]: string } = {};
-// List of clients' WebSocket connection
-const clients: { [userId: string]: WebSocket } = {};
 // Keeps track of whose turn it is in each pair
 const pairs: { 
-  [pairId: string]: PairState
+  [pairId: string]: PairState,
+} = {};
+const expiryTimers: {
+  [pairId: string]: NodeJS.Timeout
 } = {};
 
 // A new client connection request received
@@ -130,35 +130,54 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
   // Check pair exists, else close connection
   getPairByPairId(pairId, userId).then((pairDoc) => {
     if (pairDoc !== null) {
+      const partnerId =
+        userId === pairDoc.user1 ? pairDoc.user2 : pairDoc.user1;
+        
       if (!(pairId in pairs)) {
         pairs[pairId] = {
           messages: [],
-          language: "Python"
+          language: "Python",
+          connectionDetails: {
+            [userId]: {
+              connection: connection,
+              partnerId: partnerId,
+            }
+          }
         };
+
+        addPairToOt(pairId);
+
+      } else if (!(userId in pairs[pairId].connectionDetails)) {
+        pairs[pairId].connectionDetails[userId] = {
+          connection: connection,
+          partnerId: partnerId
+        }
+      } else {
+        // User already has an active tab for this session
+        handleDuplicateSessionError(connection);
+        return;
       }
 
-      // Renew expiry of pair entry
-      setExpiryByPairId(pairId, DEFAULT_EXPIRY);
+      // // Renew expiry of pair entry
+      // setExpiryByPairId(pairId, DEFAULT_EXPIRY);
 
-      addPairToOt(pairId);
+      clearTimeout(expiryTimers[pairId]);
 
-      const partnerId =
-        userId === pairDoc.user1 ? pairDoc.user2 : pairDoc.user1;
-      const currTurnId = pairDoc.currTurn;
-
-      partners[userId] = partnerId;
-      clients[userId] = connection;
-
-      console.log("User:",userId, ", Partner:", partnerId);
-      console.log("Has partner connected?", partnerId in clients);
+      console.log("User:", userId, ", Partner:", partnerId);
+      console.log("Has partner connected?", partnerId in pairs[pairId].connectionDetails);
 
       // Inform user that WS is ready for messages
       handleReadyToReceive(connection, userId, pairs[pairId]);
 
       // Check if partner has already connected
       // If so, send READY to the pair
-      if (partnerId in clients) {
-        handlePairConnected(connection, clients[partnerId], userId, partnerId);
+      if (partnerId in pairs[pairId].connectionDetails) {
+        handlePairConnected(
+          connection, 
+          pairs[pairId].connectionDetails[partnerId].connection, 
+          userId, 
+          partnerId
+        );
       } 
     } else {
       console.log(`User: ${userId} | Pair does not exist: ${pairId}`);
@@ -171,8 +190,13 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
     const data = JSON.parse(message.data);
     console.log("New Message:::", data);
 
-    const partnerId = partners[userId];
-    const partnerConnection = clients[partnerId];
+    if (!(pairId in pairs)) {
+      return;
+    }
+
+    const pairConnectionDetails = pairs[pairId]?.connectionDetails;
+    const partnerId = pairConnectionDetails[userId]?.partnerId;
+    const partnerConnection = pairConnectionDetails[partnerId]?.connection;
 
     try {
       switch (data.method) {
@@ -207,9 +231,13 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
           handleDefault(partnerConnection, data.method);
           break;
         case WS_METHODS.NEXT_QUESTION_ID:
+          if (!(pairId in pairs))
+            // Prevents multiple calls of next question
+            break;
+          delete pairs[pairId];
           handleNextQuestionId(connection, partnerConnection, userId, partnerId, pairId).then(result => {
             // Remove current pair state when moving to next question
-            delete pairs[pairId];
+            // We will not be using the same WebSocket connection anymore
             removePairFromOt(pairId);
             connection.close();
             partnerConnection.close();
@@ -234,15 +262,25 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
   connection.onclose = (message: any) => {
     console.log("Connection closed: ", userId);
 
-    const partnerId = partners[userId];
-    const partnerConnection = partnerId === undefined ? undefined : clients[partnerId];
-
-    if (partnerConnection !== undefined && partnerConnection.readyState == partnerConnection.OPEN) {
-      // Partner is still connected, inform him of my disconnection
-      handlePartnerDisconnected(connection, partnerConnection);
+    if (pairId in pairs) {
+      const pairConnectionDetails = pairs[pairId].connectionDetails;
+      
+      if (connection !== pairConnectionDetails[userId].connection) {
+        // Closing a duplicate tab, not the same session;
+        console.log("!!! Closing duplicate session !!!");
+        return;
+      }
+      
+      const partnerId = pairConnectionDetails[userId].partnerId;
+      const partnerConnection = pairConnectionDetails[partnerId]?.connection;
+  
+      if (partnerConnection !== undefined && partnerConnection.readyState == partnerConnection.OPEN) {
+        // Partner is still connected, inform him of my disconnection
+        handlePartnerDisconnected(connection, partnerConnection);
+      }
     }
 
-    onCloseCleanup(connection, userId, partnerId, pairId);
+    onCloseCleanup(connection, userId, pairId);
   };
 });
 
@@ -257,23 +295,41 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
  * @param partnerId 
  * @param pairId 
  */
-async function onCloseCleanup(connection: WebSocket, userId: string, partnerId: string, pairId: string) {
-  delete clients[userId];
-  delete partners[userId];
+async function onCloseCleanup(connection: WebSocket, userId: string, pairId: string) {
+  if (!(pairId in pairs)) {
+    deletePairState(pairId);
+    return;
+  }
+
+  const pairConnectionDetails = pairs[pairId].connectionDetails;
+  const partnerId = pairConnectionDetails[userId].partnerId;
+  delete pairConnectionDetails[userId];
 
   console.log("Cleaning up data for:", userId);
 
-  // Partner has also left
-  if (!(partnerId in clients)) {
+  // Partner has already left, remove pair
+  if (!(partnerId in pairConnectionDetails)) {
     console.log("Partner:", partnerId, "has already left");
-    // TODO: Create a timeout that calls this when pair is deleted
-    // delete pairs[pairId];
-    // removePairFromOt(pairId);
-    // Both users are disconnected, begin timeout of mongodb entry
-    try {
-      await setExpiryByPairId(pairId, DEFAULT_EXPIRY_AFTER_EXIT);
-    } catch (error) {
-      console.log("!!! Error while setting expiry !!!", error);
-    }
+    deletePairState(pairId);
   }
+}
+
+async function deletePairState(pairId: string) {
+  if (pairId in expiryTimers) {
+    clearTimeout(expiryTimers[pairId]);
+  }
+
+  // TODO: Create a timeout that calls this when pair is deleted
+  expiryTimers[pairId] = setTimeout(() => {
+    console.log("!!! Timeout: Deleting pair permanently !!!");
+    delete pairs[pairId];
+    removePairFromOt(pairId);
+    deletePairByPairId(pairId);
+  }, DEFAULT_EXPIRY_AFTER_EXIT);
+
+  // try {
+  //   await setExpiryByPairId(pairId, DEFAULT_EXPIRY_AFTER_EXIT);
+  // } catch (error) {
+  //   console.log("!!! Error while setting expiry !!!", error);
+  // }
 }

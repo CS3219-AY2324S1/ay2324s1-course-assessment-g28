@@ -182,6 +182,13 @@ export function handleDefault(
   sendMessage(partnerConnection, message);
 }
 
+export function handleDuplicateSessionError(
+  connection: WebSocket,
+) {
+  const message = JSON.stringify({ method: WS_METHODS.DUPLICATE_SESSION_ERROR });
+  sendMessage(connection, message);
+}
+
 export function handleError(
   connection: WebSocket,
   partnerConnection: WebSocket,

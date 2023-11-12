@@ -28,6 +28,7 @@ export enum WS_METHODS {
 
   MESSAGE,
   INVALID_WSURL_PARAMS,
+  DUPLICATE_SESSION_ERROR,
   UNEXPECTED_ERROR
 }
 
@@ -87,6 +88,8 @@ export enum ErrorScreenText {
     `Oops! The URL appears to be broken.`,
   INVALID_WSURL_PARAMS = 
     `Oops! This session does not exist.`,
+  DUPLICATE_SESSION_ERROR = 
+    `This session is already active on another tab!`,
   UNEXPECTED_ERROR = 
     `Oops, an unexpected error occurred!`
 }
