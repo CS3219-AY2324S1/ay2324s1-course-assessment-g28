@@ -69,10 +69,10 @@ export default function EditorPage({
         <PanelGroup direction="horizontal" className="grow">
           <Panel defaultSize={40} minSize={25}>
             <PanelGroup direction="vertical">
-              <Panel defaultSize={80}>
+              <Panel defaultSize={80} className="flex">
                 <QuestionDetailsCard
                   question={question}
-                  className="max-h-full overflow-auto"
+                  className="max-h-full overflow-auto grow"
                 />
               </Panel>
               <HorizontalResizeHandle />
