@@ -71,7 +71,9 @@ export default function getPairingRequestCallback(
       try {
         websocketUrls = await postPair(
           match.user1.match_options.user,
-          match.user2.match_options.user
+          match.user2.match_options.user,
+          match.question.complexity,
+          match.question.id
         );
       } catch (e) {
         logger.info(`Failed to post to editor service for match ${match}`);

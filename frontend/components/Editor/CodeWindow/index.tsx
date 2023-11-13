@@ -175,6 +175,7 @@ export default function CodeWindow({
     // Will show loading screen with text based on event
     // Disconnected -> Show check network and reload screen
     // Next question -> Show loading next question screen
+    setIsPeerStillHere(false);
     if (submissionStatus === SubmissionStatus.SUBMIT_BEFORE_NEXT_QN) {
       setLoadingScreenText(LoadingScreenText.LOADING_NEXT_QUESTION);
     } else {
