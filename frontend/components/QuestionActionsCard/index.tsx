@@ -86,6 +86,7 @@ export default function QuestionActionsCard({
               title="Navigate to edit question page"
               onPress={editQuestionCallback}
               endContent={<Pencil size="18" />}
+              className="text-foreground"
             >
               Edit
             </Button>

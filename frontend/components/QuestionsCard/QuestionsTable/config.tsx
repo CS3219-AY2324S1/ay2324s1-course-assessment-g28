@@ -70,7 +70,7 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
     render: (question: QuestionBase) => (
       <div className="flex gap-2">
         {question.category.map((cat) => (
-          <Chip variant="flat" key={cat}>
+          <Chip className="text-foreground" variant="flat" key={cat}>
             {cat}
           </Chip>
         ))}
@@ -115,8 +115,9 @@ export const COLUMN_CONFIGS_ADMIN: Record<ColumnKeyAdmin, ColumnConfig> = {
             <Button
               size="sm"
               variant="flat"
-              endContent={<Pencil size="16" />}
+              endContent={<Pencil className="text-foreground" size="16" />}
               title="Edit Question"
+              className="text-foreground"
             >
               Edit
             </Button>
