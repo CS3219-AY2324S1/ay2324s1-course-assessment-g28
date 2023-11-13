@@ -1,14 +1,9 @@
-import { v4 as uuidv4 } from "uuid";
-import fs from "fs";
-import util from "util";
-import { exec } from "child_process";
 import { fromBase64, toBase64 } from "../utils/formatUtil";
 import { LANGUAGE_IDS } from "../constants";
 // @ts-ignore
 import * as fetch from "node-fetch";
 import { sleep } from "../utils/asyncUtil";
 
-const execPromise = util.promisify(exec);
 const judge0HostnameAndPort = process.env.JUDGE0_URL;
 
 export async function runCode(code: string, language: string): Promise<string> {
@@ -26,7 +21,6 @@ export async function runCode(code: string, language: string): Promise<string> {
 
   
   console.log("Code:", codeBase64);
-  console.log("languageId:", languageId);
 
   const options = {
     method: "POST",
@@ -74,9 +68,7 @@ export async function runCode(code: string, language: string): Promise<string> {
 
   try {
     const response: Response = await fetch(url, options);
-    console.log("Response:", response);
     const submissionToken = (await response.json())["token"];
-    console.log("Submission Token:", submissionToken);
 
     while (isInQueue) {
       sleep(2000);
@@ -84,8 +76,6 @@ export async function runCode(code: string, language: string): Promise<string> {
       //const getSubmissionUrl = `https://judge0-ce.p.rapidapi.com/submissions/${submissionToken}?base64_encoded=true&fields=*`;
       const submissionResponse: Response = await fetch(getSubmissionUrl, getSubmissionOptions);
       const submissionDetails = await submissionResponse.json();
-
-      console.log("Your submission details:", submissionDetails);
 
       const status = submissionDetails["status"]["id"];
 
@@ -102,15 +92,12 @@ export async function runCode(code: string, language: string): Promise<string> {
 
       if (compileOutput !== null) {
         result = fromBase64(compileOutput);
-        console.log("compile_output:", result);
       }
       
       if (stderr !== null) {
         result += fromBase64(stderr);
-        console.log("stderr:", result);
       } else if (stdout !== null) {
         result += fromBase64(stdout);
-        console.log("stdout:", result);
       }
     }
 

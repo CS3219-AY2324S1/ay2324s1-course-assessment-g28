@@ -100,7 +100,8 @@ export default function QuestionAttemptPage({
           <PanelGroup direction="vertical" className="flex flex-grow">
             <Panel className="flex flex-col" defaultSize={80}>
               <div className="flex flex-col flex-grow">
-                <div className="flex flex-row gap-2 items-center justify-start w-full pb-2">
+                <div className="flex flex-row gap-2 items-center 
+                                justify-start w-full pb-2">
                   <Chip color="secondary">{attempt.attemptLanguage}</Chip>
                   <div>
                     <h3 className="text-lg">
@@ -133,11 +134,13 @@ export default function QuestionAttemptPage({
                   <h2 className="text-lg">Execution Output</h2>
                 </div>
                 {codeRunState.error ? (
-                  <div className="h-full w-full bg-content1 rounded-md p-4 text-red-700 dark:text-red-400">
+                  <div className="h-full w-full bg-content1 rounded-md p-4 
+                                  text-red-700 dark:text-red-400">
                     There was an error executing your code. Please try again.
                   </div>
                 ) : codeRunState.inProgress ? (
-                  <div className="w-full h-full grid content-center bg-content1 rounded-md">
+                  <div className="w-full h-full grid content-center 
+                                  bg-content1 rounded-md">
                     <Spinner
                       label="Executing code..."
                       color="secondary"

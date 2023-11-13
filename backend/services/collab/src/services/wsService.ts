@@ -1,6 +1,9 @@
-import { WS_METHODS } from "../constants";
+import { PairState, WS_METHODS } from "../constants";
+import { sendMessage } from "../utils/websocketUtil";
 import { runCode } from "./executionService";
+import { getNextQuestion } from "./nextQuestionService";
 import { handleOperationOt } from "./otService";
+import { getComplexityByPairId, updatePairNextQuestion } from "./pairService";
 
 export function getQueryParams(url: string): { [key: string]: string } {
   const queryIdx = url.indexOf("?");
@@ -18,25 +21,55 @@ export function getQueryParams(url: string): { [key: string]: string } {
   return params;
 }
 
-export function handleReady(
+export function handleReadyToReceive(
   connection: WebSocket,
-  partnerConnection: WebSocket,
   userId: string,
-  partnerId: string,
-  currTurnId: string
+  pairState: PairState
 ) {
-  const isMyTurn = userId == currTurnId;
-  const messageUser = JSON.stringify({
-    method: WS_METHODS.READY,
-    isMyTurn: isMyTurn,
-  });
-  const messagePartner = JSON.stringify({
-    method: WS_METHODS.READY,
-    isMyTurn: !isMyTurn,
+  const messageList = [];
+
+  for (const message of pairState.messages) {
+    messageList.push([
+      message.message,
+      userId === message.from
+    ]);
+  }
+
+  const message = JSON.stringify({ 
+    method: WS_METHODS.READY_TO_RECEIVE,
+    messageList: messageList,
+    language: pairState.language
   });
 
-  connection.send(messageUser);
-  partnerConnection.send(messagePartner);
+  sendMessage(connection, message);
+}
+
+export function handlePairConnected(
+  connection: WebSocket, 
+  partnerConnection: WebSocket, 
+  userId: string,
+  partnerId: string
+) {
+  const messageUser = JSON.stringify({ 
+    method: WS_METHODS.PAIR_CONNECTED, 
+    partnerId: partnerId 
+  });
+  const messagePartner = JSON.stringify({ 
+    method: WS_METHODS.PAIR_CONNECTED, 
+    partnerId: userId 
+  });
+  
+  sendMessage(connection, messageUser);
+  sendMessage(partnerConnection, messagePartner);
+}
+
+export function handleInvalidWsParams(
+  connection: WebSocket,
+) {
+  const message = JSON.stringify({
+    method: WS_METHODS.INVALID_WSURL_PARAMS
+  })
+  sendMessage(connection, message);
 }
 
 export function handleOp(
@@ -60,7 +93,7 @@ export function handleCaretPos(
     start: data.start,
     end: data.end,
   });
-  partnerConnection.send(message);
+  sendMessage(partnerConnection, message);
 }
 
 export function handleSwitchLang(
@@ -72,7 +105,7 @@ export function handleSwitchLang(
     method: WS_METHODS.SWITCH_LANG,
     language: data.language,
   });
-  partnerConnection.send(message);
+  sendMessage(partnerConnection, message);
 }
 
 export function handleRunCode(
@@ -81,18 +114,16 @@ export function handleRunCode(
   data: any
 ) {
   const message = JSON.stringify({ method: WS_METHODS.RUN_CODE });
-  partnerConnection.send(message);
-
-  // TODO: Compile/run code and broadcast result with RUN_CODE_RESULT
+  sendMessage(partnerConnection, message);
 
   runCode(data.code, data.language).then((result) => {
-    console.log("Finished running. Result: ", result);
+    console.log("Finished running code. Result: ", result);
     const messageResult = JSON.stringify({
       method: WS_METHODS.RUN_CODE_RESULT,
       result: result,
     });
-    connection.send(messageResult);
-    partnerConnection.send(messageResult);
+    sendMessage(connection, messageResult);
+    sendMessage(partnerConnection, messageResult)
   });
 }
 
@@ -105,7 +136,7 @@ export function handleMessage(
     method: WS_METHODS.MESSAGE,
     message: data.message,
   });
-  partnerConnection.send(message);
+  sendMessage(partnerConnection, message);
 }
 
 export function handleExit(
@@ -115,7 +146,32 @@ export function handleExit(
 ) {
   const message = JSON.stringify({ method: WS_METHODS.EXIT });
   connection.close();
-  partnerConnection.send(message);
+  sendMessage(partnerConnection, message);
+}
+
+export async function handleNextQuestionId(
+  connection: WebSocket,
+  partnerConnection: WebSocket,
+  userId: string,
+  partnerId: string,
+  pairId: string,
+) {
+  const complexity = await getComplexityByPairId(pairId);
+  const questionId = await getNextQuestion(userId, partnerId, complexity);
+  await updatePairNextQuestion(pairId, questionId);
+
+  const message = JSON.stringify({ method: WS_METHODS.NEXT_QUESTION_ID, questionId })
+
+  sendMessage(connection, message);
+  sendMessage(partnerConnection, message);
+}
+
+export function handlePartnerDisconnected(
+  connection: WebSocket,
+  partnerConnection: WebSocket,
+) {
+  const message = JSON.stringify({ method: WS_METHODS.PARTNER_DISCONNECTED });
+  sendMessage(partnerConnection, message);
 }
 
 export function handleDefault(
@@ -123,5 +179,22 @@ export function handleDefault(
   method: WS_METHODS
 ) {
   const message = JSON.stringify({ method: method });
-  partnerConnection.send(message);
+  sendMessage(partnerConnection, message);
+}
+
+export function handleDuplicateSessionError(
+  connection: WebSocket,
+) {
+  const message = JSON.stringify({ method: WS_METHODS.DUPLICATE_SESSION_ERROR });
+  sendMessage(connection, message);
+}
+
+export function handleError(
+  connection: WebSocket,
+  partnerConnection: WebSocket,
+  error: any
+) {
+  const message = JSON.stringify({ method: WS_METHODS.UNEXPECTED_ERROR, error: error });
+  sendMessage(connection, message);
+  sendMessage(partnerConnection, message);
 }

@@ -4,11 +4,13 @@ import {
   SetStateAction,
   createContext,
   useContext,
+  useEffect,
   useState,
 } from "react";
 import { WSMessageType, WS_METHODS } from "../constants";
 import useWebSocket from "react-use-websocket";
 import toast from "react-hot-toast";
+import { getEditorPath } from "@/routes";
 
 export enum SubmissionStatus {
   NOT_SUBMITTING,
@@ -34,6 +36,9 @@ type SubmissionContextType = {
   setSubmissionStatus: Dispatch<SetStateAction<SubmissionStatus>>;
   initateExitMyself: () => void;
   initateNextQnMyself: () => void;
+  isSubmitted: boolean;
+  setIsSubmitted: Dispatch<SetStateAction<boolean>>;
+  nextQuestionPath: string;
   stayOnQuestion: (wsMethod?: WS_METHODS) => void;
   leaveQuestion: (
     nextState:
@@ -57,6 +62,9 @@ const defaultContext: SubmissionContextType = {
   setSubmissionStatus: throwNotInProviderError,
   initateExitMyself: throwNotInProviderError,
   initateNextQnMyself: throwNotInProviderError,
+  isSubmitted: false,
+  setIsSubmitted: throwNotInProviderError,
+  nextQuestionPath: "",
   stayOnQuestion: throwNotInProviderError,
   leaveQuestion: throwNotInProviderError,
   websocketUrl: "",
@@ -72,8 +80,10 @@ export const SubmissionContextProvider = ({
   children,
   websocketUrl,
 }: PropsWithChildren<{ websocketUrl: string }>) => {
-  const [isPeerStillHere, setIsPeerStillHere] = useState(true);
+  const [isPeerStillHere, setIsPeerStillHere] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [nextQuestionPath, setNextQuestionPath] = useState("");
   const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus>(
     SubmissionStatus.NOT_SUBMITTING,
   );
@@ -82,6 +92,16 @@ export const SubmissionContextProvider = ({
     filter: () => false,
     onMessage: onMessage,
   });
+
+  useEffect(() => {
+    // User has submitted code, now ask websocket for next qn url
+    if (
+      isSubmitted &&
+      submissionStatus === SubmissionStatus.SUBMIT_BEFORE_NEXT_QN
+    ) {
+      sendMessage(WS_METHODS.NEXT_QUESTION_ID);
+    }
+  }, [isSubmitted, submissionStatus]);
 
   function onMessage(e: WSMessageType) {
     const data = JSON.parse(e.data);
@@ -92,6 +112,7 @@ export const SubmissionContextProvider = ({
         return setSubmissionStatus(SubmissionStatus.SUBMIT_BEFORE_EXIT);
       case WS_METHODS.EXIT_REJECT:
         return setSubmissionStatus(SubmissionStatus.EXIT_REJECTED);
+      case WS_METHODS.PARTNER_DISCONNECTED:
       case WS_METHODS.PEER_HAS_EXITED:
         setIsPeerStillHere(false);
         return toast.success(
@@ -102,6 +123,8 @@ export const SubmissionContextProvider = ({
         return handleNextQnInitiatedByPeer();
       case WS_METHODS.NEXT_QUESTION_CONFIRM:
         return setSubmissionStatus(SubmissionStatus.SUBMIT_BEFORE_NEXT_QN);
+      case WS_METHODS.NEXT_QUESTION_ID:
+        return handleNextQuestionId(data);
     }
   }
 
@@ -141,6 +164,17 @@ export const SubmissionContextProvider = ({
     setSubmissionStatus(SubmissionStatus.NEXT_QN_INITIATED_BY_PEER);
   };
 
+  const handleNextQuestionId = (data: {
+    method: WS_METHODS;
+    questionId: number;
+  }) => {
+    console.log("Received next qn details:", data);
+    const questionId = data.questionId;
+    const newPath = getEditorPath(questionId, encodeURIComponent(websocketUrl));
+    console.log("Next question path:", newPath);
+    setNextQuestionPath(newPath);
+  };
+
   const stayOnQuestion = (message?: WS_METHODS) => {
     if (message) sendMessage(message);
     setIsModalOpen(false);
@@ -163,6 +197,9 @@ export const SubmissionContextProvider = ({
         setSubmissionStatus,
         initateExitMyself,
         initateNextQnMyself,
+        isSubmitted: isSubmitted,
+        setIsSubmitted: setIsSubmitted,
+        nextQuestionPath,
         stayOnQuestion,
         leaveQuestion,
         websocketUrl,

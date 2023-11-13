@@ -1,14 +1,22 @@
 /* eslint-disable */
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import useWebSocket from "react-use-websocket";
 import { Button, Select, SelectItem, Spinner } from "@nextui-org/react";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import ResizeHandleHorizontal from "../ResizeHandleHorizontal";
+import { Panel, PanelGroup } from "react-resizable-panels";
 import LoadingScreen from "../LoadingScreen";
 import { dracula, tomorrow } from "thememirror";
 import {
+  ErrorScreenText,
   LANGUAGES,
   LANGUAGE_DATA,
+  LoadingScreenText,
+  PartnerDetailsType,
   WSMessageType,
   WS_METHODS,
 } from "../constants";
@@ -27,13 +35,23 @@ import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/router";
 import { HOME } from "@/routes";
-import { useSubmissionContext } from "../Submission/SubmissionContext";
+import {
+  SubmissionStatus,
+  useSubmissionContext,
+} from "../Submission/SubmissionContext";
 import HorizontalResizeHandle from "@/components/PanelResizeHandles/HorizontalResizeHandle";
+import { createQuestionAttempt, getPublicUserInfo } from "@/api/user";
+import { Question, QuestionComplexity } from "@/api/questions/types";
+import toast from "react-hot-toast";
+import { CreateQuestionAttemptRequestBody } from "@/api/user/types";
 
 interface CodeWindowProps {
-  template?: string;
-  language?: string;
   websocketUrl: string;
+  question: Question;
+  partnerDetails: PartnerDetailsType;
+  setPartnerDetails: Dispatch<SetStateAction<PartnerDetailsType>>;
+  setErrorScreenText: Dispatch<SetStateAction<ErrorScreenText>>;
+  setLoadingScreenText: Dispatch<SetStateAction<LoadingScreenText>>;
 }
 
 // Used to hold the state of the editor's theme
@@ -44,36 +62,51 @@ const editorTheme = new Compartment();
  * TODO: Add typing and clean up the code
  */
 
-export default function CodeWindow(props: CodeWindowProps) {
+export default function CodeWindow({
+  websocketUrl,
+  question,
+  partnerDetails,
+  setPartnerDetails,
+  setErrorScreenText,
+  setLoadingScreenText,
+}: CodeWindowProps) {
   const { theme } = useTheme();
-  const [language, setLanguage] = useState<string>(props.language ?? "Java");
+  const [language, setLanguage] = useState<string>("Python");
   const [result, setResult] = useState(
     'Click "Run Code" to execute your code!',
   );
-  const [isMyTurn, setIsMyTurn] = useState(false);
-  const [isWebsocketLoaded, setIsWebsocketLoaded] = useState(false);
+  const [isWebsocketReady, setIsWebsocketReady] = useState(false);
   const [isCodeRunning, setIsCodeRunning] = useState(false);
   const [isCodeMirrorLoaded, setIsCodeMirrorLoaded] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
+  // TODO: might delete this since its not actually used
+  const [isPairConnected, setIsPairConnected] = useState(false);
   const [requestQueue, setRequestQueue] = useState<Record<string, any>>({});
   const router = useRouter();
-  const { isPeerStillHere, initateExitMyself, initateNextQnMyself } =
-    useSubmissionContext();
+  const {
+    isPeerStillHere,
+    setIsPeerStillHere,
+    initateExitMyself,
+    initateNextQnMyself,
+    submissionStatus,
+    setIsSubmitted,
+  } = useSubmissionContext();
 
   const editorsParentRef = useRef<{ [lang: string]: HTMLDivElement | null }>(
     {},
   );
   const editorsRef = useRef<{ [lang: string]: EditorView }>({});
 
-  const { sendJsonMessage } = useWebSocket(props.websocketUrl, {
+  const { sendJsonMessage } = useWebSocket(websocketUrl, {
     share: true,
     filter: () => false,
     onOpen: () => {
-      console.log("Websocket connection established");
-      setIsWebsocketLoaded(true);
+      console.log(
+        "Websocket connection established (not yet ready for messages)",
+      );
     },
     onMessage: onMessage,
     onError: onError,
+    onClose: onClose,
   });
 
   useEffect(() => {
@@ -87,13 +120,30 @@ export default function CodeWindow(props: CodeWindowProps) {
     }
   }, [theme]);
 
+  useEffect(() => {
+    if (
+      submissionStatus === SubmissionStatus.SUBMIT_BEFORE_NEXT_QN ||
+      submissionStatus === SubmissionStatus.SUBMIT_BEFORE_EXIT
+    ) {
+      setIsSubmitted(false);
+      // Next question or exit approved by both users
+      submitCode(null, true);
+    }
+  }, [submissionStatus]);
+
   function onMessage(e: WSMessageType) {
     const data = JSON.parse(e.data);
     console.log("CodeWindow received: ", data);
 
     switch (data.method) {
-      case WS_METHODS.READY:
-        handleReady(data);
+      case WS_METHODS.READY_TO_RECEIVE:
+        handleReadyToReceive(data);
+        break;
+      case WS_METHODS.PAIR_CONNECTED:
+        handlePairConnected(data);
+        break;
+      case WS_METHODS.INVALID_WSURL_PARAMS:
+        handleInvalidWsUrlParams(data);
         break;
       case WS_METHODS.OP:
         handleOp(data);
@@ -112,16 +162,66 @@ export default function CodeWindow(props: CodeWindowProps) {
       case WS_METHODS.EXIT:
         handleExit(data);
         break;
+      case WS_METHODS.DUPLICATE_SESSION_ERROR:
+        handleDuplicateSessionError(data);
+        break;
+      case WS_METHODS.UNEXPECTED_ERROR:
+        handleUnexpectedError(data);
+        break;
+    }
+  }
+
+  function onClose(e: Event) {
+    // Will show loading screen with text based on event
+    // Disconnected -> Show check network and reload screen
+    // Next question -> Show loading next question screen
+    setIsPeerStillHere(false);
+    if (submissionStatus === SubmissionStatus.SUBMIT_BEFORE_NEXT_QN) {
+      setLoadingScreenText(LoadingScreenText.LOADING_NEXT_QUESTION);
+    } else {
+      setLoadingScreenText(LoadingScreenText.CONNECTION_LOST);
     }
   }
 
   function onError(e: Event) {
-    // TODO: Handle error
+    console.log("!!! ERROR: Unable to connect to websocket !!!");
+    setErrorScreenText(ErrorScreenText.CANNOT_CONNECT_TO_WS);
   }
 
-  function handleReady(data: any) {
-    setIsMyTurn(data.isMyTurn);
-    setIsInitialized(true);
+  function handleReadyToReceive(data: any) {
+    console.log("+++ WebSocket is ready for messages +++");
+    setIsWebsocketReady(true);
+    setLoadingScreenText(LoadingScreenText.FINISHED_LOADING);
+
+    setLanguage(data.language);
+  }
+
+  function handlePairConnected(data: any) {
+    const partnerId = data.partnerId;
+    console.log("Your partner is:", partnerId);
+    setIsPairConnected(true);
+    setIsPeerStillHere(true);
+    setPartnerDetails((prevState) => {
+      return {
+        ...prevState,
+        email: partnerId,
+      };
+    });
+    getPublicUserInfo(partnerId).then((userInfo) => {
+      setPartnerDetails((prevState) => {
+        return {
+          ...prevState,
+          username: userInfo.username,
+          favouriteProgrammingLanguage:
+            userInfo.favouriteProgrammingLanguage ?? "unknown",
+        };
+      });
+    });
+  }
+
+  function handleInvalidWsUrlParams(data: any) {
+    console.log("!!! ERROR !!! WsUrl params are invalid");
+    setErrorScreenText(ErrorScreenText.INVALID_WSURL_PARAMS);
   }
 
   function handleOp(data: any) {
@@ -162,32 +262,17 @@ export default function CodeWindow(props: CodeWindowProps) {
     router.push(HOME);
   }
 
-  /**
-   * Called at the start of each question
-   */
-  function initEditor() {
-    console.log("Initializing editor");
-    getIsMyTurn();
+  function handleDuplicateSessionError(data: any) {
+    console.log("!!! Cannot open same session on another tab !!!");
+    setErrorScreenText(ErrorScreenText.DUPLICATE_SESSION_ERROR);
   }
 
-  function getIsMyTurn() {
-    console.log("Checking if its your turn...");
-    sendJsonMessage({
-      method: WS_METHODS.GET_TURN,
-    });
+  function handleUnexpectedError(data: any) {
+    console.log("!!! An unexpected error occurred !!!", data);
+    setErrorScreenText(ErrorScreenText.UNEXPECTED_ERROR);
   }
 
-  function onCodeChange(val: string) {
-    console.log("=====CODE CHANGE=======");
-
-    console.log(val);
-
-    // // TODO: Handle ops
-    // sendJsonMessage({
-    //   method: WS_METHODS.OP,
-    //   op: val
-    // });
-  }
+  //#region collaborative editing logic
 
   function pause(time: number) {
     return new Promise<void>((resolve) => setTimeout(resolve, time));
@@ -346,7 +431,6 @@ export default function CodeWindow(props: CodeWindowProps) {
     return [collab({ startVersion }), plugin];
   }
 
-  //const worker = new Worker(workerScript)
   async function addPeer(lang: string) {
     let { version, doc } = await getDocument(new Connection(), lang);
     let connection = new Connection();
@@ -362,9 +446,9 @@ export default function CodeWindow(props: CodeWindowProps) {
     });
     let editorParentDiv = editorsParentRef.current[lang];
 
-    // TODO: Add 3 EditorViews one for each language
+    // Adds one editor per language
     // Display only the one for the selected language
-    // This ensures version history is consistent for all languages
+    // Ensures version history is maintained separately for each language
     editorsRef.current[lang] = new EditorView({
       state,
       parent: editorParentDiv!,
@@ -374,7 +458,7 @@ export default function CodeWindow(props: CodeWindowProps) {
   useEffect(() => {
     if (
       editorsParentRef.current !== null &&
-      isWebsocketLoaded &&
+      isWebsocketReady &&
       !isCodeMirrorLoaded
     ) {
       console.log("CodeMirror Ref initialized and WebSocket is loaded");
@@ -386,7 +470,11 @@ export default function CodeWindow(props: CodeWindowProps) {
 
       setIsCodeMirrorLoaded(true);
     }
-  }, [editorsParentRef, isWebsocketLoaded]);
+  }, [editorsParentRef, isWebsocketReady]);
+
+  //#endregion
+
+  //#region UI event handlers
 
   // TODO: add proper typing later
   function onMouseUp(e: any) {
@@ -408,6 +496,9 @@ export default function CodeWindow(props: CodeWindowProps) {
   }
 
   function onLanguageChange(val: string) {
+    if (val === language) {
+      return;
+    }
     setLanguage(val);
     sendJsonMessage({
       method: WS_METHODS.SWITCH_LANG,
@@ -430,13 +521,42 @@ export default function CodeWindow(props: CodeWindowProps) {
     setIsCodeRunning(true);
   }
 
+  function submitCode(e: any, toSetIsSubmitted: boolean = false) {
+    console.log("Submitting code...");
+    const code = editorsRef.current[language].state.doc.toString();
+
+    let questionAttempt: CreateQuestionAttemptRequestBody = {
+      questionId: question.id ?? 0,
+      questionTitle: question.title ?? "",
+      questionDifficulty: question.complexity ?? QuestionComplexity.EASY,
+      attemptDate: new Date().toISOString(),
+      attemptDetails: code,
+      attemptLanguage: language,
+    };
+
+    const otherUser = partnerDetails.email;
+
+    if (otherUser !== "") {
+      questionAttempt.otherUser = otherUser;
+    }
+
+    createQuestionAttempt(questionAttempt).then((res) => {
+      console.log("After code submission:", res);
+      toast.success("Your code has been submitted successfully!");
+
+      if (toSetIsSubmitted) setIsSubmitted(true);
+    });
+  }
+
+  //#endregion
+
   return (
     <PanelGroup direction="vertical" className="relative">
-      {!isInitialized && (
-        <LoadingScreen displayText="Initializing Code Space ..." />
+      {!isCodeMirrorLoaded && (
+        <LoadingScreen displayText="Initializing Code Space ..."></LoadingScreen>
       )}
       <Panel defaultSize={80}>
-        <div className="h-full w-full flex flex-col overflow-auto rounded-xl bg-content1">
+        <div className="h-full w-full flex flex-col overflow-hidden rounded-xl bg-content1">
           <div className="w-full flex flex-row p-1">
             <div className="flex flex-row w-1/2 gap-2">
               <Select
@@ -470,7 +590,7 @@ export default function CodeWindow(props: CodeWindowProps) {
               </Button>
               <Button
                 disabled={isCodeRunning}
-                onClick={runCode} // TODO: Change this to submit
+                onClick={submitCode} // TODO: Change this to submit
                 size="sm"
                 color="secondary"
               >
@@ -494,11 +614,11 @@ export default function CodeWindow(props: CodeWindowProps) {
               </Button>
             </div>
           </div>
-          <div id="editors" className="h-full w-full text-lg">
+          <div id="editors" className="grow w-full overflow-y-scroll text-lg">
             {LANGUAGES.map((lang, i) => (
               <div
-                className={` bg-content2 h-full w-full overflow-y-scroll ${
-                  language === lang ? "visible" : "invisible max-h-0"
+                className={`bg-content2 h-full w-full ${
+                  language === lang ? "visible" : "hidden max-h-0"
                 }`}
                 key={lang}
                 ref={(el) => (editorsParentRef.current[lang] = el)}
@@ -510,7 +630,7 @@ export default function CodeWindow(props: CodeWindowProps) {
       <HorizontalResizeHandle />
       <Panel>
         <div className="h-full w-full flex flex-col overflow-auto rounded-xl relative box-border bg-content1">
-          {isCodeRunning && isInitialized ? (
+          {isCodeRunning && isWebsocketReady ? (
             <div className="w-full h-full grid content-center bg-content1 rounded-md">
               <Spinner label="Executing code..." color="secondary"></Spinner>
             </div>

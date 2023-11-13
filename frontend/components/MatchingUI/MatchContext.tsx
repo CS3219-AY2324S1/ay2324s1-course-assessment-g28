@@ -25,6 +25,7 @@ type MatchContextType = {
   matchStatus: MatchStatus;
   setMatchStatus: Dispatch<SetStateAction<MatchStatus>>;
   editorUrl: string;
+  selectedComplexity: QuestionComplexity | undefined;
   onChangeComplexity: (complexity: QuestionComplexity) => void;
   onRetry: () => void;
   onClose: () => void;
@@ -40,6 +41,7 @@ const defaultContext: MatchContextType = {
   setMatchStatus: () => {
     throw new Error("Not in provider!");
   },
+  selectedComplexity: QuestionComplexity.EASY,
   onChangeComplexity: () => {
     throw new Error("Not in provider!");
   },
@@ -143,6 +145,7 @@ export const MatchContextProvider = ({
         matchStatus,
         setMatchStatus,
         editorUrl,
+        selectedComplexity,
         onChangeComplexity,
         onRetry,
         onClose,

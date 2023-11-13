@@ -20,24 +20,22 @@ import { getQuestion } from "@/api/questions";
 import { getPublicUserInfo } from "@/api/user";
 import { getEditorPath } from "@/routes";
 
-export type EditingSessionDetails = {
-  otherUser: UserPublic;
-  question: Question;
-  sessionUrl: string; // add later
-};
-
 const ActiveSessions = () => {
   const [isShowing, setIsShowing] = useState(false);
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const router = useRouter();
 
   const user = useUserInfo();
+
   const { data: activeEditingSessions } = useSWR(
     [getActiveSessions, user.email],
     async () => {
       if (user.email) {
         const activeSessions = (await getActiveSessions(user.email!))
           .activeSessions;
+
+        console.log(activeSessions);
+        console.log(activeSessions.length);
 
         // fetch all question data
         const questionDetails: Record<number, Question> = {};
@@ -62,8 +60,11 @@ const ActiveSessions = () => {
             ),
           ),
         );
+        console.log("Initializing active session details");
         await questionDetailFetches;
+        console.log("Fetched question details");
         await userDetailFetches;
+        console.log("Fetched user details");
         // compose all the data together
         const data = activeSessions.map((s) => ({
           otherUser: userDetails[s.otherUser],

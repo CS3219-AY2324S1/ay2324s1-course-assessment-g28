@@ -188,12 +188,24 @@ export const getRandomQuestionId = async (req: Request, res: Response) => {
     );
     const user2AttemptedIds = new Set<Number>(await user2Resp.json());
 
+    const allAttemptedIds = new Set<Number>();
+
     for (const id of user1AttemptedIds) {
-      questionIds.delete(id);
+      allAttemptedIds.add(id);
     }
 
     for (const id of user2AttemptedIds) {
+      allAttemptedIds.add(id);
+    }
+
+    for (const id of allAttemptedIds) {
       questionIds.delete(id);
+    }
+
+    // If all questions have been attempted before, just return a random one
+    if (questionIds.size === 0) {
+      const ids = Array.from(allAttemptedIds);
+      questionIds.add(ids[Math.floor(Math.random() * ids.length)]);
     }
 
     const questionIdArray = Array.from(questionIds);

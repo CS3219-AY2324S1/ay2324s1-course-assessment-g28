@@ -23,7 +23,7 @@ function resp(connection: WebSocket, requestId: string, value: any) {
 
 
 export function addPairToOt(pairId: string) {
-  console.log("ADDING PAIR")
+  console.log("===ADDING PAIR===")
   if (!(pairId in updates)) {
     updates[pairId] = {
       Java: [],
@@ -33,9 +33,9 @@ export function addPairToOt(pairId: string) {
   }
   if (!(pairId in doc)) {
     doc[pairId] = {
-      Java: Text.of([initialDocuments.java]),
-      JavaScript: Text.of([initialDocuments.javascript]),
-      Python: Text.of([initialDocuments.python])
+      Java: Text.of([initialDocuments.Java]),
+      JavaScript: Text.of([initialDocuments.JavaScript]),
+      Python: Text.of([initialDocuments.Python])
     };
   }
   if (!(pairId in pending)) {
@@ -44,11 +44,11 @@ export function addPairToOt(pairId: string) {
       JavaScript: [],
       Python: []
     };
-  } 
-  console.log(updates, doc, pending);
+  }
 }
 
 export function removePairFromOt(pairId: string) {
+  console.log(`=== DELETING PAIR: ${pairId} ===`);
   if (pairId in updates) {
     delete updates[pairId];
   }
@@ -64,7 +64,7 @@ export function handleOperationOt(connection: WebSocket, pairId: string, request
   // const pairUpdates = updates[pairId];
   // const pairDoc = doc[pairId];
 
-  console.log("handleOp::: pairID:", pairId, "lang:", lang);
+  console.log("handleOp::: pairID:", pairId, "| lang:", lang, "| type:", data.type);
 
   if (data.type == "pullUpdates") {
     if (data.version < updates[pairId][lang].length) {

@@ -13,39 +13,31 @@ import { HOME } from "@/routes";
  */
 const SubmitCard = () => {
   const [secondsLeft, setSecondsLeft] = useState(3);
-  const { submissionStatus, setSubmissionStatus, setIsModalOpen } =
-    useSubmissionContext();
-  const [isSubmitting, setIsSubmitting] = useState(true);
+  const {
+    submissionStatus,
+    setSubmissionStatus,
+    setIsModalOpen,
+    nextQuestionPath,
+    isSubmitted: isSubmissionInProgress,
+  } = useSubmissionContext();
   const router = useRouter();
 
   useEffect(() => {
-    // todo: submission logic
-    (async () => {
-      /*
-       await createQuestionAttempt({
-        questionId: question.id,
-        questionTitle: question.title,
-        questionDifficulty: question.complexity,
-        attemptDate: new Date().toISOString(),
-        attemptDetails: editorContent,
-        attemptLanguage: language,
-      });
-       */
-
-      setIsSubmitting(false);
-    })();
-  }, []);
+    if (nextQuestionPath !== "") {
+      router
+        .push(nextQuestionPath, undefined, { shallow: false })
+        .then((res) => setTimeout(() => router.reload(), 3000));
+    }
+  }, [nextQuestionPath]);
 
   useEffect(() => {
-    if (isSubmitting) return;
     if (secondsLeft < 1) {
-      // TODO: link to next question
-      const nextQnUrl = "";
+      console.log("Next qn url:", nextQuestionPath);
+
       if (submissionStatus === SubmissionStatus.SUBMIT_BEFORE_EXIT) {
-        router.replace(HOME);
-      } else {
-        router.replace(nextQnUrl);
+        router.push(HOME);
       }
+
       return () => {
         setSubmissionStatus(SubmissionStatus.NOT_SUBMITTING);
         setIsModalOpen(false);
@@ -57,7 +49,6 @@ const SubmitCard = () => {
       );
     }
   }, [
-    isSubmitting,
     secondsLeft,
     router,
     submissionStatus,
@@ -65,7 +56,7 @@ const SubmitCard = () => {
     setIsModalOpen,
   ]);
 
-  return isSubmitting ? (
+  return isSubmissionInProgress ? (
     <>
       <ModalHeader className="flex flex-col gap-1">
         Submitting your attempt

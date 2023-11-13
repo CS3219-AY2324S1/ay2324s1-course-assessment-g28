@@ -2,16 +2,23 @@ import CodeWindow from "@/components/Editor/CodeWindow";
 import MessageWindow from "@/components/Editor/MessageWindow";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { getQuestion } from "@/api/questions";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { GetServerSideProps, InferGetStaticPropsType } from "next";
 import { Question } from "@/api/questions/types";
 import QuestionDetailsCard from "@/components/QuestionDetailsCard.tsx";
 import { useRouter } from "next/router";
 import { SubmissionContextProvider } from "@/components/Editor/Submission/SubmissionContext";
 import { SubmissionModal } from "@/components/Editor/Submission/SubmissionModal";
-import { Spinner } from "@nextui-org/react";
 import VerticalResizeHandle from "@/components/PanelResizeHandles/VerticalResizeHandle";
 import HorizontalResizeHandle from "@/components/PanelResizeHandles/HorizontalResizeHandle";
+import {
+  ErrorScreenText,
+  LoadingScreenText,
+  PartnerDetailsType,
+} from "@/components/Editor/constants";
+import LoadingScreen from "@/components/Editor/LoadingScreen";
+import ErrorScreen from "@/components/Editor/ErrorScreen";
+import PartnerDetails from "@/components/Editor/PartnerDetails";
 
 export const getServerSideProps = (async ({ params }) => {
   const data = await getQuestion(Number(params?.questionId), true);
@@ -25,49 +32,52 @@ export default function EditorPage({
 }: InferGetStaticPropsType<typeof getServerSideProps>) {
   const router = useRouter();
 
-  const [websocketUrl, setWebsocketUrl] = useState<string>("");
+  const websocketUrl = router.query["wsUrl"] as string;
 
-  // Obtain the WebSocket link from query and get the first question
-  useEffect(() => {
-    if (question === undefined) {
-      return;
-    }
-    console.log(process.env);
-    console.log(process.env.COLLAB_API);
-    // The pairId and userId are already appended into the encoded wsUrl
-    // Append questionId into wsUrl for service to store and allow retrieval upon reconnection
-    const oldWsUrl = (router.query["wsUrl"] as string) ?? "";
-    console.log("Old wsUrl:", oldWsUrl);
-    const wsUrl = `${oldWsUrl}&questionId=${question.id}`;
-    console.log("Connecting to WS:", wsUrl);
-    setWebsocketUrl(wsUrl);
-  }, [router, question]);
+  const [partnerDetails, setPartnerDetails] = useState<PartnerDetailsType>({
+    email: "",
+    username: "",
+    favouriteProgrammingLanguage: "Python",
+  });
 
-  if (!websocketUrl)
-    return (
-      <div className="w-full h-full flex items-center justify-center">
-        <Spinner color="secondary" />
-      </div>
-    );
+  const [loadingScreenText, setLoadingScreenText] = useState<LoadingScreenText>(
+    LoadingScreenText.INITIALIZING_EDITOR,
+  );
+
+  // Set to false if cannot connect OR WS returns INVALID_WSURL_PARAMS status
+  // If false, don't show editor and show error screen
+  const [errorScreenText, setErrorScreenText] = useState<ErrorScreenText>(
+    ErrorScreenText.NO_ERROR,
+  );
+
+  // WebSocket URL obtained from path but is invalid
+  if (errorScreenText !== ErrorScreenText.NO_ERROR)
+    return <ErrorScreen displayText={errorScreenText} />;
 
   return (
     <SubmissionContextProvider websocketUrl={websocketUrl}>
-      <div className="flex flex-col w-full grow rounded-xl relative">
+      <div className="flex w-full grow rounded-xl relative">
+        {
+          // Event 1: Initializing editor (waiting for WS to send READY_FOR_MESSAGES)
+          // Event 2: WS closed due to disconnection (handled in onClose)
+          // Event 3: Fetching next question (handled in onClose)
+          loadingScreenText !== LoadingScreenText.FINISHED_LOADING && (
+            <LoadingScreen displayText={loadingScreenText} />
+          )
+        }
+        <PartnerDetails partnerDetails={partnerDetails} />
         <PanelGroup direction="horizontal" className="grow">
           <Panel defaultSize={40} minSize={25}>
             <PanelGroup direction="vertical">
-              <Panel defaultSize={80}>
+              <Panel defaultSize={80} className="flex">
                 <QuestionDetailsCard
                   question={question}
-                  className="max-h-full overflow-auto"
+                  className="max-h-full overflow-auto grow"
                 />
               </Panel>
               <HorizontalResizeHandle />
               <Panel>
-                <div className="h-full w-full flex flex-col">
-                  <div>
-                    <h2 className="text-lg">Chat</h2>
-                  </div>
+                <div className="h-full w-full flex flex-col gap-y-1">
                   {websocketUrl && (
                     <MessageWindow websocketUrl={websocketUrl}></MessageWindow>
                   )}
@@ -78,7 +88,14 @@ export default function EditorPage({
           <VerticalResizeHandle />
           <Panel minSize={40}>
             {websocketUrl && (
-              <CodeWindow websocketUrl={websocketUrl}></CodeWindow>
+              <CodeWindow
+                websocketUrl={websocketUrl}
+                question={question}
+                partnerDetails={partnerDetails}
+                setPartnerDetails={setPartnerDetails}
+                setErrorScreenText={setErrorScreenText}
+                setLoadingScreenText={setLoadingScreenText}
+              ></CodeWindow>
             )}
           </Panel>
         </PanelGroup>
