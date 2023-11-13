@@ -7,7 +7,6 @@ import {
   getQuestions,
   getQuestionById,
   updateQuestionById,
-  getRandomQuestionId,
 } from "./controller";
 
 async function initConnection(MONGO_URI: string) {
@@ -21,7 +20,6 @@ async function createEndpoints(router: express.Router) {
   // GET endpoints
   router.get("/questions/:id", getQuestionById);
   router.get("/questions", getQuestions);
-  router.get("/question/unattemptedUsersMatch", getRandomQuestionId);
 
   // PUT/PATCH endpoints
   router.put("/questions/:id", updateQuestionById); // we can use this for both put/patch because mongo supports takes Partial<Question> as json for update

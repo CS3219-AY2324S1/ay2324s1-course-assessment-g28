@@ -4,7 +4,7 @@ import { getNextSequenceValue } from "./sequence";
 interface IQuestion extends Document {
   id: number;
   title: string;
-  description: Record<string, any>;
+  description: string;
   category: string[];
   complexity: number;
 }
@@ -13,7 +13,7 @@ const questionSchema = new mongoose.Schema<IQuestion>({
   id: { type: Number, unique: true, index: true },
   title: { type: String, required: true, unique: true },
   description: {
-    type: mongoose.Schema.Types.Mixed,
+    type: String,
     required: true,
   },
   category: { type: [String], required: true },
