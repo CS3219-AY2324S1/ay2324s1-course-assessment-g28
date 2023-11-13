@@ -18,7 +18,7 @@ import {
   handleRunCode,
   handleSwitchLang,
 } from "./services/wsService";
-import { DEFAULT_EXPIRY, DEFAULT_EXPIRY_AFTER_EXIT, PairState, ProgrammingLanguages, WS_METHODS } from "./constants";
+import { DEFAULT_EXPIRY_AFTER_EXIT_MS, PairState, WS_METHODS } from "./constants";
 import { addPairToOt, removePairFromOt } from "./services/otService";
 dotenv.config();
 
@@ -159,7 +159,7 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
       }
 
       // // Renew expiry of pair entry
-      // setExpiryByPairId(pairId, DEFAULT_EXPIRY);
+      // setExpiryByPairId(pairId, DEFAULT_EXPIRY_SECONDS);
 
       clearTimeout(expiryTimers[pairId]);
 
@@ -319,16 +319,16 @@ async function deletePairState(pairId: string) {
     clearTimeout(expiryTimers[pairId]);
   }
 
-  // TODO: Create a timeout that calls this when pair is deleted
+  // Creates a timeout to clear pair state 1hr after pair leaves
   expiryTimers[pairId] = setTimeout(() => {
     console.log("!!! Timeout: Deleting pair permanently !!!");
     delete pairs[pairId];
     removePairFromOt(pairId);
     deletePairByPairId(pairId);
-  }, DEFAULT_EXPIRY_AFTER_EXIT);
+  }, DEFAULT_EXPIRY_AFTER_EXIT_MS);
 
   // try {
-  //   await setExpiryByPairId(pairId, DEFAULT_EXPIRY_AFTER_EXIT);
+  //   await setExpiryByPairId(pairId, DEFAULT_EXPIRY_AFTER_EXIT_MS);
   // } catch (error) {
   //   console.log("!!! Error while setting expiry !!!", error);
   // }

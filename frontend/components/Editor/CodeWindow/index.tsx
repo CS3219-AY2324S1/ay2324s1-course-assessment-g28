@@ -8,8 +8,7 @@ import React, {
 } from "react";
 import useWebSocket from "react-use-websocket";
 import { Button, Select, SelectItem, Spinner } from "@nextui-org/react";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import ResizeHandleHorizontal from "../ResizeHandleHorizontal";
+import { Panel, PanelGroup } from "react-resizable-panels";
 import LoadingScreen from "../LoadingScreen";
 import { dracula, tomorrow } from "thememirror";
 import {

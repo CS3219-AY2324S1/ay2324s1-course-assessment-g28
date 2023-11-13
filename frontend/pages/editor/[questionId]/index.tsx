@@ -2,7 +2,7 @@ import CodeWindow from "@/components/Editor/CodeWindow";
 import MessageWindow from "@/components/Editor/MessageWindow";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { getQuestion } from "@/api/questions";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { GetServerSideProps, InferGetStaticPropsType } from "next";
 import { Question } from "@/api/questions/types";
 import QuestionDetailsCard from "@/components/QuestionDetailsCard.tsx";
