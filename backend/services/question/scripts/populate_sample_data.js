@@ -1,70 +1,34 @@
-const mongoose = require("mongoose");
 const fs = require("fs");
+require("dotenv").config({ path: __dirname + "/../.env" });
 
-const MONGO_URI = "mongodb://localhost:27018";
+/**
+ * This script uses sample_questions.json to populate the questions MongoDB using the CRUD API.
+ */
 
-const questionSchema = new mongoose.Schema({
-  id: { type: Number, unique: true, index: true },
-  title: { type: String, required: true, unique: true },
-  description: {
-    type: mongoose.Schema.Types.Mixed,
-    required: true,
-  },
-  category: { type: [String], required: true },
-  complexity: { type: Number, enum: [0, 1, 2], required: true },
-});
+const QUESTION_API = `http://localhost:${process.env.PORT}`; // Update with your own question API URL
 
-// auto increment id field before saving!
-questionSchema.pre("save", async function (next) {
-  if (!this.id) {
-    try {
-      const nextId = await getNextSequenceValue("Question");
-      this.id = nextId;
-      next();
-    } catch (error) {
-      next(error);
-    }
-  } else {
-    next();
-  }
-});
-
-const Question = mongoose.model("Question", questionSchema);
-
-const sequenceSchema = new mongoose.Schema({
-  _id: { type: String, required: true },
-  sequence_value: { type: Number, default: 1 },
-});
-
-const Sequence = mongoose.model("Sequence", sequenceSchema);
-
-const getNextSequenceValue = async (sequenceName) => {
-  const sequence = await Sequence.findOneAndUpdate(
-    { _id: sequenceName },
-    { $inc: { sequence_value: 1 } },
-    { new: true, upsert: true }
+async function populateQuestions() {
+  const questionJson = JSON.parse(
+    fs.readFileSync(__dirname + "/sample_questions.json")
   );
-  return sequence.sequence_value;
-};
 
-async function saveQuestions() {
-  try {
-    mongoose.connect(MONGO_URI);
-    const questionJson = JSON.parse(
-      fs.readFileSync(__dirname + "/sample_questions.json")
-    );
-    let saved = 1;
-    for (let question of questionJson) {
-      console.log(`attempting to save question ${saved}...`);
-      await new Question(question).save();
-      console.log("Done!");
-      saved++;
+  for (let question of questionJson) {
+    try {
+      const response = await fetch(`${QUESTION_API}/questions`, {
+        method: "POST",
+        body: JSON.stringify(question), // Ensure the body is a JSON string
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (response.status === 201) {
+        console.log(`Question ${question.title} added successfully`);
+      } else {
+        console.error("Failed to add question:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error while adding question:", error);
     }
-  } catch (error) {
-    console.log(`saveQuestions failed: error ${error}`);
-  } finally {
-    await mongoose.disconnect();
   }
 }
 
-saveQuestions();
+populateQuestions(); // Call the async function to start the process
