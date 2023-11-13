@@ -42,7 +42,9 @@ export default function PartnerDetails({
           >
             <Heart className="h-4 w-4" />
             <div className="">
-              {partnerDetails.favouriteProgrammingLanguage}
+              {partnerDetails.favouriteProgrammingLanguage !== ""
+                ? partnerDetails.favouriteProgrammingLanguage
+                : "I like all languages!"}
             </div>
           </div>
         </div>
