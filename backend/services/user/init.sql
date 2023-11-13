@@ -1,12 +1,10 @@
 -- this script will be run during initialisation
-
 CREATE TABLE IF NOT EXISTS Users (
     email TEXT PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
     favourite_programming_language TEXT,
-    is_admin BOOLEAN NOT NULL DEFAULT TRUE
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
-
 CREATE TABLE IF NOT EXISTS Attempts (
     id serial PRIMARY KEY,
     email TEXT REFERENCES Users(email),
