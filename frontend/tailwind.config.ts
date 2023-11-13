@@ -58,8 +58,8 @@ const config: Config = {
       themes: {
         light: {
           colors: {
-            background: "#FFFFFF", // or DEFAULT
-            foreground: "#11181C", // or 50 to 900 DEFAULT
+            background: "#f7f7f2",
+            foreground: "#220242",
             primary: {
               //... 50 to 900
               foreground: "#FFFFFF",
@@ -70,8 +70,8 @@ const config: Config = {
         },
         dark: {
           colors: {
-            background: "#000000", // or DEFAULT
-            foreground: "#d4d4d8", // or 50 to 900 DEFAULT
+            background: "#0d0c03",
+            foreground: "#faf9f5",
             danger: "#610726",
             warning: "#936316",
             success: "#12a150",
