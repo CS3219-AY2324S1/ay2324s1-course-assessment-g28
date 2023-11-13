@@ -66,7 +66,7 @@ export const QUESTION_API_RANDOM_URL =
   process.env.QUESTION_API + "/question/unattemptedUsersMatch";
 
 // In seconds
-export const DEFAULT_EXPIRY_SECONDS = 3600;
+export const DEFAULT_EXPIRY_SECONDS = 24 * 3600;
 
 // Used for timeout (in ms)
-export const DEFAULT_EXPIRY_AFTER_EXIT_MS = 300 * 1000;
+export const DEFAULT_EXPIRY_AFTER_EXIT_MS = 3600 * 1000;
