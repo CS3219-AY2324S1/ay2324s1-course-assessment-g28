@@ -6,26 +6,17 @@ import {
   updateUserByEmail,
   deleteUserByEmail,
   getUserByEmail,
-  getAttemptById,
-  createAttempt,
-  deleteAttemptById,
   getIsUsernameExists,
-  getAttemptedQuestionsByEmail,
-  getPublicInfoByEmail,
 } from "./controller";
 
 async function createEndpoints(router: express.Router) {
   // POST endpoints
   router.post("/users", createUser);
-  router.post("/users/:email/question-attempt", createAttempt);
 
   // GET endpoints
   router.get("/users", getAllUsers);
   router.get("/users/exists/:username", getIsUsernameExists);
   router.get("/users/:email", getUserByEmail);
-  router.get("/users/:email/question-attempt/:attemptId", getAttemptById);
-  router.get("/users/:email/question-attempt", getAttemptedQuestionsByEmail);
-  router.get("/users/public/:email", getPublicInfoByEmail);
 
   // PUT/PATCH endpoints
   router.put("/users/:email", updateUserByEmail);
@@ -33,7 +24,6 @@ async function createEndpoints(router: express.Router) {
 
   // DELETE endpoints
   router.delete("/users/:email", deleteUserByEmail);
-  router.delete("/users/:email/question-attempt/:attemptId", deleteAttemptById);
 }
 
 async function main() {
