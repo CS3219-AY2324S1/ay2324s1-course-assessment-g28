@@ -1,6 +1,4 @@
-import {
-  forwardRequestAndGetResponse,
-} from "@/api/server/serverConstants";
+import { forwardRequestAndGetResponse } from "@/api/server/serverConstants";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(

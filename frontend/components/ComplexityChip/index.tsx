@@ -2,7 +2,6 @@ import { QuestionComplexity } from "@/api/questions/types";
 import { Chip } from "@nextui-org/react";
 import { CSSProperties } from "react";
 import cx from "classnames";
-import { QuestionComplexityConfigsMap } from "@/api/questions/constants";
 
 type ComplexityChipProps = {
   complexity: QuestionComplexity;

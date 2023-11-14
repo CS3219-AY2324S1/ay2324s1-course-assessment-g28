@@ -1,9 +1,5 @@
 import { API_PREFIX } from "@/api/routes";
-import {
-  HOME,
-  LOGIN,
-  REGISTER,
-} from "@/routes";
+import { HOME, LOGIN, REGISTER } from "@/routes";
 import { getFirstPartOfPath } from "@/util/url";
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
@@ -23,7 +19,7 @@ export default withAuth(
     } else if (req.nextUrl.pathname === REGISTER && isUserExists) {
       // redirect to home page if already registered user
       return NextResponse.redirect(new URL(HOME, req.url));
-    } 
+    }
   },
   {
     pages: {
