@@ -10,6 +10,8 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "${PG_PORT}:5432"
+    expose:
+      - 5432
 
   user-service:
     build:
@@ -17,5 +19,12 @@ services:
     container_name: user-service
     ports:
       - ${PORT}:${PORT}
+    environment:
+      - PORT=${PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PG_PORT=${PG_PORT}
+      - POSTGRES_URI=${POSTGRES_URI}
+
     depends_on:
       - postgres

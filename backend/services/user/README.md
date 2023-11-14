@@ -1,6 +1,6 @@
 ## Quick Start
 
-1. Create a file called `.env` and follow `.env.example` to populate the fields. For example, PORT=3000, POSTGRES_USER=XXXX, POSTGRES_PASSWORD=XXXX, PG_PORT=5432
+1. Create a file called `.env` and follow `.env.example` to populate the fields. For example, PORT=3000, POSTGRES_USER=XXXX, POSTGRES_PASSWORD=XXXX, PG_PORT=5432, POSTGRES_URI=postgres
 2. Run `docker-compose up --build`
 3. Verify that the server is running by checking `localhost:PORT`
 
