@@ -8,8 +8,8 @@ Start both the Question and Frontend service to begin using the application. Mak
 
 ## Question Service
 
-* Refer to the individual README file in the [question folder](backend/services/question/README.md).
+* Refer to the [question service README.md](backend/services/question/README.md).
 
 ## Frontend
 
-* Refer to individual README file in the [frontend folder](frontend).
+* Refer to the [frontend service README.md](frontend/README.md).

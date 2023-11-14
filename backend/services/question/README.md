@@ -1,7 +1,7 @@
 ## Quick Start
 
 1. Ensure mongodb is installed on your local machine, and start it (e.g. on Mac, `brew services start mongodb-community@7.0`)
-2. Create a file called `.env` and follow `.env.example` to populate the fields. For example, PORT=1234 and MONGO_URI=mongodb://127.0.0.1:27017
+2. Create a file called `.env` and add environment variables declared in `.env.example`. You may use the default values set in `.env.example` (recommended).
 3. Install all required dependencies (e.g. `npm ci`).
 4. Run the server using `npm run dev` or `npm run start`.
 5. Verify that the server is running by checking `localhost:{PORT}/questions`.
