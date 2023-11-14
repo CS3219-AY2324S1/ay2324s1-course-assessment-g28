@@ -2,8 +2,15 @@
 
 ## Instructions
 
-Create an .env file that contains the fields in [.env.example](.env.example) file.
-The environment variable QUESTIONS_API should be set to the url of your questions service. Leave it as the value provided in the .env.example file if you started the question service locally with the PORT=1234.
+Create an `.env` file that contains the fields in [.env.example](.env.example) file.
+You may leave the fields as their default values (recommended), or if you have modified the environment variables of the question and/or user service, then modify the corresponding fields accordingly. For the following variables:
+```
+NEXTAUTH_URL
+NEXTAUTH_SECRET
+GOOGLE_CLIENT_ID
+GOOGLE_CLIENT_SECRET
+```
+You must copy the values of these variables found in the "Assignment2-environmentVariables.txt" file submitted on Canvas into the `.env` file. 
 
 ### Development
 

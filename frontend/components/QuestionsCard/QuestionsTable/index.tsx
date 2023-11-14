@@ -10,9 +10,7 @@ import {
   Spinner,
 } from "@nextui-org/react";
 import {
-  COLUMNS,
   COLUMNS_ADMIN,
-  COLUMN_CONFIGS,
   COLUMN_CONFIGS_ADMIN,
   ColumnKey,
   ColumnKeyAdminOnly,

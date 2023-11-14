@@ -10,9 +10,24 @@ type ComplexityChipProps = {
   style?: CSSProperties;
 };
 
+const complexityMap = {
+  [QuestionComplexity.EASY]: {
+    name: "Easy",
+    color: "bg-lime-500",
+  },
+  [QuestionComplexity.MEDIUM]: {
+    name: "Medium",
+    color: "bg-orange-400",
+  },
+  [QuestionComplexity.HARD]: {
+    name: "Hard",
+    color: "bg-red-600",
+  },
+};
+
 const ComplexityChip = (props: ComplexityChipProps) => {
   const { complexity, className, style } = props ?? {};
-  const { color, name } = QuestionComplexityConfigsMap?.[complexity] ?? {};
+  const { color, name } = complexityMap[complexity] ?? {};
   return (
     <Chip
       className={cx(

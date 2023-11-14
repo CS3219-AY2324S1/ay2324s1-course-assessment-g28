@@ -20,7 +20,6 @@ export const authOptions: AuthOptions = {
         const userInfo = await getUserInfoServerSide(token?.email ?? "");
         token.userExists = Boolean(userInfo?.username);
         token.username = userInfo?.username;
-        token.isAdmin = userInfo?.isAdmin ?? false;
       } catch (e) {
         // the given user is not in our own database
         token.userExists = false;
@@ -28,7 +27,6 @@ export const authOptions: AuthOptions = {
       return token;
     },
     session: async ({ session, token }) => {
-      session.user.isAdmin = (token.isAdmin ?? false) as boolean;
       session.user.username = token?.username as string | undefined;
       return session;
     },

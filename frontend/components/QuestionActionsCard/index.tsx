@@ -1,6 +1,5 @@
 import { deleteQuestion } from "@/api/questions";
 import { Question } from "@/api/questions/types";
-import useUserInfo from "@/hooks/useUserInfo";
 import { HOME, getUpdateQuestionPath } from "@/routes";
 import {
   Button,
@@ -26,7 +25,6 @@ export default function QuestionActionsCard({
   question,
   className,
 }: QuestionActionsCardProps) {
-  const { isAdmin } = useUserInfo();
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const router = useRouter();
 
@@ -79,26 +77,24 @@ export default function QuestionActionsCard({
           className,
         )}
       >
-        {isAdmin && (
-          <div className="flex flex-row gap-2">
-            <Button
-              title="Navigate to edit question page"
-              onPress={editQuestionCallback}
-              endContent={<Pencil size="18" />}
-            >
-              Edit
-            </Button>
-            <Button
-              color="danger"
-              endContent={<Trash2 size="18" />}
-              title="Delete Question"
-              isLoading={isLoading}
-              onPress={onOpen}
-            >
-              Delete
-            </Button>
-          </div>
-        )}
+        <div className="flex flex-row gap-2">
+          <Button
+            title="Navigate to edit question page"
+            onPress={editQuestionCallback}
+            endContent={<Pencil size="18" />}
+          >
+            Edit
+          </Button>
+          <Button
+            color="danger"
+            endContent={<Trash2 size="18" />}
+            title="Delete Question"
+            isLoading={isLoading}
+            onPress={onOpen}
+          >
+            Delete
+          </Button>
+        </div>
       </div>
     </>
   );
