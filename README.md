@@ -3,7 +3,7 @@
 
 ## Instructions to running the Dockerized Peerprep application in your local environment
 
-1. Copy all the environment variables in the local-env.txt file (submitted by on canvas) into a ".env" file to be saved in the ".deployment/local-docker" directory. 
+1. Copy all the environment variables in the project-submission-env.txt file (submitted on canvas) into a ".env" file to be saved in the ".deployment/local-docker" directory. 
 2. To start up all containerized services in the local environment, simply run  
    ```
    docker compose -f ".deployment/local-docker/compose.yaml" --profile frontend up -d --build
