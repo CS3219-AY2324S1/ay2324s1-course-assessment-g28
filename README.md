@@ -1,32 +1,24 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/6BOvYMwN)
-# Peerprep by G28
 
-## Instructions to running the Dockerized Peerprep application in your local environment
+# Assignment 3 by G28
 
-1. Copy all the environment variables in the local-env.txt file (submitted by on canvas) into a ".env" file to be saved in the ".deployment/local-docker" directory. 
-2. To start up all containerized services in the local environment, simply run  
-   ```
-   docker compose -f ".deployment/local-docker/compose.yaml" --profile frontend up -d --build
-   ```  
+## Instructions
 
-You may now access the Peerprep webpage at http://localhost:3000
+Start the Question, User and Frontend services to begin using the application. Make sure the environment variables are set correctly as mentioned in their individual instructions.
 
-Initially when started up, Peerprep has no initial user or question data. Thus, follow the instructions in the next 2 sections in order to populate the database with questions or make user accounts administrators by using our scripts.
+### Question Service
 
-### Populating local questions database with all 20 sample questions from the "CS3219Assignments.pdf" specification document
+* Refer to the [question service README.md](backend/services/question/README.md).
 
-Here are the instructions to load all of the 20 sample questions from the assignments document into the database
+### User Service
 
-1. Run `node backend/services/question/scripts/populate_sample_data.js`
-  *If you are running the question mongoDB database at a custom-set specific port (you have changed the port for pp-question-mongodb), make sure to set the `MONGO_URI` variable in the backend/services/question/scripts/populate_sample_data.js file to the URI of your local questions mongodb, if not just leave it as the default.*
+* Refer to the [user service README.md](backend/services/user/README.md).
 
-The sample questions will be loaded into your local questions database instance (refer to terminal output to check for successful addition). You should now be able to see the questions in the Peerprep webpage.
+### Frontend
 
-### Making an existing user an administrator
+* Refer to [frontend README.md](frontend/README.md).
 
-Before you follow these instructions, please make sure that you have logged in to Peerprep with your Google account, and followed the prompt to create your user account on Peerprep. (the screen that you will be redirected to after logging in with your Google account for the first time).
+## Notes 
 
-1. Run `node backend/services/user/scripts/makeUserAdmin.js <email of user to make admin>`
-  *If you have changed the POSTGRES_USER, POSTGRES_PASSWORD and/or PG_PORT environment variables used for the postgres docker container in .deployment/local-docker/compose.yaml , make sure to change their corresponding variable values in the backend/services/user/scripts/makeUserAdmin.js file, if not their defaults will work as is.*
-
-2. You should see the output "\<email you passed as argument\> has been made an administrator", indicating that the user with the given email been successfully made an admin.
+- Authentication is done through Google OAuth. Thus you will need a Google account to sign into PeerPrep. After logging in for the first time with your Google account, you will be prompted to create your user profile. Once created, you will be redirected to the authenticated homepage. If you do not create a user account after logging in for the first time, you will continually be redirected to the user profile creation page until you do.
+- Follow the instructions in the [user service README.md](backend/services/user/README.md) to make the user account associated with your Google email address an administrator.
