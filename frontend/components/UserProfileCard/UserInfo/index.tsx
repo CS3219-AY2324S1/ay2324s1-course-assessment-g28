@@ -32,7 +32,7 @@ const UserInfo = ({ data }: { data?: User }) => {
             <div className="font-extralight  text-xs">@{username}</div>
           </div>
         </div>
-        <div className="text-xs">
+        <div className="text-md">
           {"Favourite programming language: "}
           <span className="font-semibold dark:text-purple-400 text-violet-800">
             {favouriteProgrammingLanguage || UNDEFINED_VALUE}
