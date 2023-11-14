@@ -29,11 +29,7 @@ import TableSelectors from "./TableSelectors";
 import TablePagination from "./TablePagination";
 import ErrorCard from "@/components/ErrorCard";
 
-interface QuestionTableProps {
-  userIsAdmin: boolean;
-}
-
-export default function QuestionTable({ userIsAdmin }: QuestionTableProps) {
+export default function QuestionTable() {
   const {
     filterValue,
     selectedComplexity,
@@ -82,18 +78,14 @@ export default function QuestionTable({ userIsAdmin }: QuestionTableProps) {
   return (
     <Table
       aria-label="Questions table"
-      topContent={<TableSelectors userIsAdmin={userIsAdmin} />}
+      topContent={<TableSelectors />}
       topContentPlacement="outside"
       bottomContent={<TablePagination total={data?.total ?? 0} />}
       bottomContentPlacement="outside"
       onRowAction={(key) => router.push(getQuestionPath(Number(key)))}
     >
       <TableHeader
-        columns={
-          userIsAdmin
-            ? COLUMNS_ADMIN.map((col) => COLUMN_CONFIGS_ADMIN?.[col])
-            : COLUMNS.map((col) => COLUMN_CONFIGS?.[col])
-        }
+        columns={COLUMNS_ADMIN.map((col) => COLUMN_CONFIGS_ADMIN?.[col])}
       >
         {(column) => (
           <TableColumn
@@ -120,21 +112,13 @@ export default function QuestionTable({ userIsAdmin }: QuestionTableProps) {
             key={question.id}
             className="cursor-pointer hover:bg-content3 hover:transition-colors"
           >
-            {userIsAdmin
-              ? (columnKey: string | number) => (
-                  <TableCell key={question.id.toString() + columnKey}>
-                    {COLUMN_CONFIGS_ADMIN[columnKey as ColumnKey]?.render?.(
-                      question,
-                    ) ?? question?.[columnKey as keyof QuestionBase]}
-                  </TableCell>
-                )
-              : (columnKey: string | number) => (
-                  <TableCell key={question.id.toString() + columnKey}>
-                    {COLUMN_CONFIGS[columnKey as ColumnKey]?.render?.(
-                      question,
-                    ) ?? question?.[columnKey as keyof QuestionBase]}
-                  </TableCell>
-                )}
+            {(columnKey: string | number) => (
+              <TableCell key={question.id.toString() + columnKey}>
+                {COLUMN_CONFIGS_ADMIN[columnKey as ColumnKey]?.render?.(
+                  question,
+                ) ?? question?.[columnKey as keyof QuestionBase]}
+              </TableCell>
+            )}
           </TableRow>
         )}
       </TableBody>
