@@ -14,5 +14,9 @@ services:
     container_name: question-service
     ports:
       - ${PORT}:${PORT}
+    environment:
+      - PORT=${PORT}
+      - MONGO_URI=${MONGO_URI}
+      - USER_API=${USER_API}
     depends_on:
       - mongodb
