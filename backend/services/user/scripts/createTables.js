@@ -15,7 +15,6 @@ async function createTables() {
 
     // SQL script
     const initScript = `  
-    DROP TABLE Users CASCADE;
   CREATE TABLE IF NOT EXISTS Users (
     email TEXT PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,

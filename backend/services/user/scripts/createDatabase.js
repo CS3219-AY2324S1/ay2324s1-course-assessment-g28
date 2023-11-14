@@ -1,6 +1,7 @@
 const pgp = require("pg-promise")();
 
-const DB_NAME = "ppusers";
+const DB_NAME = "postgres";
+const DB_TO_CREATE = "ppusers"
 
 async function createDatabase() {
   try {
@@ -13,7 +14,7 @@ async function createDatabase() {
     });
 
     // SQL script
-    const initScript = `CREATE DATABASE ${DB_NAME};`;
+    const initScript = `CREATE DATABASE ${DB_TO_CREATE};`;
     await db.none(initScript);
     console.log("Database created successfully");
     await new Promise((resolve) => setTimeout(resolve, 2000));
