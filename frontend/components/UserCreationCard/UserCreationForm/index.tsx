@@ -18,8 +18,6 @@ import { FormEvent, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import useIsUsernameValid, { UsernameStatus } from "../useIsUsernameValid";
-import { AiFillCheckCircle } from "react-icons/ai";
-import { RxCrossCircled } from "react-icons/rx";
 
 const USERNAME_CHECK_DEBOUNCE = 500;
 
@@ -36,7 +34,9 @@ export default function UserCreationForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [username, setUsername] = useState("");
   const debouncedUsernameValue = useDebounce(username, USERNAME_CHECK_DEBOUNCE);
-  const { usernameStatus, Tip } = useIsUsernameValid(debouncedUsernameValue);
+  const { usernameStatus, EndContent, Tip } = useIsUsernameValid(
+    debouncedUsernameValue,
+  );
 
   const onSubmit: SubmitHandler<CreateUserRequestBody> = async (data) => {
     setIsLoading(true);
@@ -78,13 +78,7 @@ export default function UserCreationForm() {
           onChange={onChange}
           className="text-zinc-600"
           color="secondary"
-          endContent={
-            usernameStatus === UsernameStatus.AVAILABLE ? (
-              <AiFillCheckCircle className="fill-green-600" />
-            ) : (
-              <RxCrossCircled className="text-rose-600" />
-            )
-          }
+          endContent={EndContent}
           placeholder="Username"
         />
         <div className="pl-2">{Tip}</div>
