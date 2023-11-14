@@ -18,11 +18,7 @@ import { CREATE_QUESTION } from "@/routes";
 import { useQuestionTableContext } from "../QuestionsTableContext";
 import { questionFilterRegex } from "@/components/QuestionsCard/QuestionsTable/config";
 
-interface TableSelectorsProps {
-  userIsAdmin: boolean;
-}
-
-const TableSelectors = ({ userIsAdmin }: TableSelectorsProps) => {
+const TableSelectors = () => {
   const {
     filterValue,
     setFilterValue,
@@ -112,17 +108,15 @@ const TableSelectors = ({ userIsAdmin }: TableSelectorsProps) => {
       >
         Unattempted only
       </Checkbox>
-      {userIsAdmin && (
-        <Button
-          className="ml-auto"
-          color="secondary"
-          variant="flat"
-          onPress={() => router.push(CREATE_QUESTION)}
-          title="Go to question creation page"
-        >
-          Create Question <PlusSquare />
-        </Button>
-      )}
+      <Button
+        className="ml-auto"
+        color="secondary"
+        variant="flat"
+        onPress={() => router.push(CREATE_QUESTION)}
+        title="Go to question creation page"
+      >
+        Create Question <PlusSquare />
+      </Button>
     </div>
   );
 };

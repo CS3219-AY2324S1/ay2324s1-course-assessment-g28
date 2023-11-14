@@ -1,14 +1,11 @@
 import Card from "@/components/Card";
 import QuestionsTable from "./QuestionsTable";
 
-interface QuestionsCardProps {
-  userIsAdmin: boolean;
-}
 
-export default function QuestionsCard({ userIsAdmin }: QuestionsCardProps) {
+export default function QuestionsCard() {
   return (
     <Card className="flex-shrink-0 flex-grow">
-      <QuestionsTable userIsAdmin={userIsAdmin} />
+      <QuestionsTable/>
     </Card>
   );
 }

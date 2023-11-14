@@ -1,5 +1,4 @@
 import "@/styles/globals.css";
-import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import { NextUIProvider } from "@nextui-org/react";
 import Layout from "@/components/Layout";
@@ -9,12 +8,11 @@ import { QuestionTableProvider } from "@/components/QuestionsCard/QuestionsTable
 
 export default function App({
   Component,
-  pageProps: { session, ...pageProps },
+  pageProps,
 }: AppProps) {
   return (
     <NextUIProvider>
-      <SessionProvider session={session}>
-        <ThemeProvider attribute="class" defaultTheme="dark">
+        <ThemeProvider attribute="class" defaultTheme="system">
           <QuestionTableProvider>
             <Toaster />
             <Layout>
@@ -22,7 +20,6 @@ export default function App({
             </Layout>
           </QuestionTableProvider>
         </ThemeProvider>
-      </SessionProvider>
     </NextUIProvider>
   );
 }

@@ -1,26 +1,10 @@
-import ActiveSessions from "@/components/ActiveSessions";
-import MatchingUI from "@/components/MatchingUI";
 import QuestionsCard from "@/components/QuestionsCard";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import { getServerSession } from "next-auth";
 
-export const getServerSideProps = (async (context) => {
-  // middlware should ensure that session is always present when this is run
-  const session = await getServerSession(context.req, context.res, authOptions);
-  return { props: { userIsAdmin: session?.user?.isAdmin ?? false } };
-}) satisfies GetServerSideProps<{
-  userIsAdmin: boolean;
-}>;
 
-export default function Home({
-  userIsAdmin,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Home() {
   return (
     <div className="w-full">
-      <MatchingUI />
-      <QuestionsCard userIsAdmin={userIsAdmin} />
-      <ActiveSessions />
+      <QuestionsCard />
     </div>
   );
 }
