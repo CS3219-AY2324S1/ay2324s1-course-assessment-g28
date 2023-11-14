@@ -14,7 +14,7 @@ export default function App({
   return (
     <NextUIProvider>
       <SessionProvider session={session}>
-        <ThemeProvider attribute="class" defaultTheme="dark">
+        <ThemeProvider attribute="class" defaultTheme="system">
           <QuestionTableProvider>
             <Toaster />
             <Layout>
