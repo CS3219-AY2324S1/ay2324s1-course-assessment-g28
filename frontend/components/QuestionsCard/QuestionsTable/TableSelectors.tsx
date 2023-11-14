@@ -5,7 +5,6 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-  Checkbox,
 } from "@nextui-org/react";
 import { QuestionComplexity } from "@/api/questions/types";
 import { ChevronDown, PlusSquare, X } from "lucide-react";
@@ -25,8 +24,6 @@ const TableSelectors = () => {
     selectedComplexity,
     setSelectedComplexity,
     setPage,
-    onlyUnattemptedFilter,
-    setOnlyUnattemptedFilter,
   } = useQuestionTableContext();
   const router = useRouter();
 
@@ -101,14 +98,6 @@ const TableSelectors = () => {
           </Button>
         )}
       </div>
-      <Checkbox
-        isSelected={onlyUnattemptedFilter}
-        onValueChange={setOnlyUnattemptedFilter}
-        color="secondary"
-      >
-        Unattempted only
-      </Checkbox>
-
       <Button
         className="ml-auto"
         color="secondary"
