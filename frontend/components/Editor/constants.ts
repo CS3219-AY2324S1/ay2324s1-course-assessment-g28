@@ -1,18 +1,19 @@
-/* eslint-disable */
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 import { javascript } from "@codemirror/lang-javascript";
 import { java } from "@codemirror/lang-java";
 import { python } from "@codemirror/lang-python";
+import { LanguageSupport } from "@codemirror/language";
 
 export enum WS_METHODS {
-  READY_TO_RECEIVE, //
-  PAIR_CONNECTED,
-  OP, // To indicate I've handled this
-  CARET_POS,
-  GET_TURN,
-  GET_TURN_RESULT,
-  SWITCH_LANG, //
-  RUN_CODE, //
+  READY_TO_RECEIVE,
+  OP,
+  SWITCH_LANG,
+  RUN_CODE,
   RUN_CODE_RESULT,
+  MESSAGE,
+
+  PEER_CONNECTED,
+  PEER_DISCONNECTED,
 
   NEXT_QUESTION_INITATED_BY_PEER,
   NEXT_QUESTION_CONFIRM,
@@ -23,17 +24,14 @@ export enum WS_METHODS {
   EXIT_CONFIRM,
   EXIT_REJECT,
   PEER_HAS_EXITED,
-  EXIT,
-  PARTNER_DISCONNECTED,
 
-  MESSAGE,
   INVALID_WSURL_PARAMS,
   DUPLICATE_SESSION_ERROR,
-  UNEXPECTED_ERROR
+  UNEXPECTED_ERROR,
 }
 
 export const LANGUAGE_DATA: {
-  [key: string]: { codeMirrorExtension: any; templateCode: string };
+  [key: string]: { codeMirrorExtension: LanguageSupport; templateCode: string };
 } = {
   Java: {
     codeMirrorExtension: java(),
@@ -61,6 +59,11 @@ export const CLASSNAME_PARTNER_MESSAGE =
 
 export type WSMessageType = {
   data: string;
+}
+
+export type WSMessageDataType = {
+  method: WS_METHODS;
+  [key: string]: any;
 }
 
 export type PartnerDetailsType = {

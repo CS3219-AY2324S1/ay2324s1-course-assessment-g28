@@ -3,11 +3,9 @@ import dotenv from "dotenv";
 import { deletePairByPairId, getPairByPairId } from "./services/pairService";
 import {
   getQueryParams,
-  handleCaretPos,
   handleDefault,
   handleDuplicateSessionError,
   handleError,
-  handleExit,
   handleInvalidWsParams,
   handleMessage,
   handleNextQuestionId,
@@ -68,7 +66,6 @@ app.use(cookieParser());
  */
 
 const mongoose = require("mongoose");
-console.log(process.env.MONGO_URI);
 mongoose.connect(process.env.MONGO_URI);
 const db = mongoose.connection;
 db.on("error", (error: Error) => console.error(error));
@@ -114,14 +111,9 @@ const expiryTimers: {
 // A new client connection request received
 // Query params: ?pairId=<pairId>?userId=<userId>
 wsServer.on("connection", function (connection: WebSocket, request: Request) {
-  console.log(`=====Recieved a new connection.=====`);
-
-  // Store the new connection and handle messages
-  //console.log(`${connection} connected.`);
-  //console.log("Client ", client)
+  console.log(`=====Received a new connection=====`);
 
   const params = getQueryParams(request.url);
-  //console.log("Query params ", params);
   const pairId = params["pairId"];
   const userId = params["userId"];
 
@@ -203,9 +195,6 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
         case WS_METHODS.OP:
           handleOp(connection, partnerConnection, pairId, data);
           break;
-        case WS_METHODS.CARET_POS:
-          handleCaretPos(connection, partnerConnection, data);
-          break;
         case WS_METHODS.SWITCH_LANG:
           pairs[pairId].language = data.language
           handleSwitchLang(connection, partnerConnection, data);
@@ -219,10 +208,6 @@ wsServer.on("connection", function (connection: WebSocket, request: Request) {
             message: data.message
           })
           handleMessage(connection, partnerConnection, data);
-          break;
-        case WS_METHODS.EXIT:
-          console.log("EXIT WS .......");
-          handleExit(connection, partnerConnection, data);
           break;
         case WS_METHODS.NEXT_QUESTION_INITATED_BY_PEER:
           handleDefault(partnerConnection, data.method);
@@ -326,10 +311,4 @@ async function deletePairState(pairId: string) {
     removePairFromOt(pairId);
     deletePairByPairId(pairId);
   }, DEFAULT_EXPIRY_AFTER_EXIT_MS);
-
-  // try {
-  //   await setExpiryByPairId(pairId, DEFAULT_EXPIRY_AFTER_EXIT_MS);
-  // } catch (error) {
-  //   console.log("!!! Error while setting expiry !!!", error);
-  // }
 }

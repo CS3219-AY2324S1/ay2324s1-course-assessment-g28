@@ -1,10 +1,11 @@
-/* eslint-disable */
-// @ts-nocheck TODO: fix the type errors in this file and remove this.
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from "react";
 import useWebSocket from "react-use-websocket";
 import {
   CLASSNAME_MY_MESSAGE,
   CLASSNAME_PARTNER_MESSAGE,
+  WSMessageDataType,
+  WSMessageType,
   WS_METHODS,
 } from "../constants";
 import LoadingScreen from "../LoadingScreen";
@@ -16,32 +17,28 @@ interface MessageWindowProps {
 }
 
 export default function MessageWindow(props: MessageWindowProps) {
-  const [isWebsocketLoaded, setIsWebsocketLoaded] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [messageValue, setMessageValue] = useState("");
-  const [messageList, setMessageList] = useState<>([]);
+  const [messageList, setMessageList] = useState<[string, boolean][]>([]);
 
-  const messageInput = useRef(null);
-  const messageScrollDiv = useRef(null);
+  const messageInput = useRef<HTMLInputElement>(null);
+  const messageScrollDiv = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // TODO: Fix this
     messageScrollDiv.current?.scrollIntoView({ behavior: "smooth" });
   }, [messageList]);
 
-  const { sendJsonMessage, readyState } = useWebSocket(props.websocketUrl, {
+  const { sendJsonMessage } = useWebSocket(props.websocketUrl, {
     share: true,
     filter: () => false,
     onOpen: () => {
       console.log("Messaging WS connection established");
-      setIsWebsocketLoaded(true);
     },
     onMessage: onMessage,
   });
 
-  function onMessage(e: any) {
+  function onMessage(e: WSMessageType) {
     const data = JSON.parse(e.data);
-    console.log("MessageWindow received: ", data);
 
     switch (data.method) {
       case WS_METHODS.READY_TO_RECEIVE:
@@ -53,19 +50,16 @@ export default function MessageWindow(props: MessageWindowProps) {
     }
   }
 
-  function handleReadyToReceive(data: any) {
+  function handleReadyToReceive(data: WSMessageDataType) {
     setIsInitialized(true);
-    console.log("Initial messages:", data.messageList);
     setMessageList(data.messageList);
   }
 
-  function handleMessage(data: any) {
-    console.log(data);
+  function handleMessage(data: WSMessageDataType) {
     addMessageToList(data.message, false);
   }
 
   function sendMessage() {
-    console.log(messageValue);
     if (messageValue === "") {
       return;
     }
@@ -80,13 +74,12 @@ export default function MessageWindow(props: MessageWindowProps) {
   }
 
   function addMessageToList(message: string, isFromMe: boolean) {
-    // TODO: fix this...This definitely dosent look correct, the state types dont match at all...
     setMessageList((prev) => {
       return [...prev, [message, isFromMe]];
     });
   }
 
-  function onKeyUp(e) {
+  function onKeyUp(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter") {
       sendMessage();
     }
@@ -120,7 +113,9 @@ export default function MessageWindow(props: MessageWindowProps) {
           labelPlacement="outside"
           endContent={<SendHorizontal onClick={sendMessage} />}
           value={messageValue}
-          onInput={(e) => setMessageValue(e.target.value)}
+          onInput={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setMessageValue(e.target.value)
+          }
           onKeyUp={onKeyUp}
           ref={messageInput}
         />

@@ -8,13 +8,10 @@ import { getComplexityByPairId, updatePairNextQuestion } from "./pairService";
 export function getQueryParams(url: string): { [key: string]: string } {
   const queryIdx = url.indexOf("?");
   const paramString = url.substring(queryIdx + 1).split("&");
-  console.log("paramString", paramString);
   const params: { [key: string]: string } = {};
 
   paramString.forEach((param) => {
-    console.log("Param ", param);
     const keyValuePair = param.split("=");
-    console.log("Keyvaluepair ", keyValuePair);
     params[keyValuePair[0]] = keyValuePair[1];
   });
 
@@ -51,11 +48,11 @@ export function handlePairConnected(
   partnerId: string
 ) {
   const messageUser = JSON.stringify({ 
-    method: WS_METHODS.PAIR_CONNECTED, 
+    method: WS_METHODS.PEER_CONNECTED, 
     partnerId: partnerId 
   });
   const messagePartner = JSON.stringify({ 
-    method: WS_METHODS.PAIR_CONNECTED, 
+    method: WS_METHODS.PEER_CONNECTED, 
     partnerId: userId 
   });
   
@@ -81,19 +78,6 @@ export function handleOp(
   const requestId = data.requestId;
   const lang = data.lang;
   handleOperationOt(connection, pairId, requestId, lang, data);
-}
-
-export function handleCaretPos(
-  connection: WebSocket,
-  partnerConnection: WebSocket,
-  data: any
-) {
-  const message = JSON.stringify({
-    method: WS_METHODS.CARET_POS,
-    start: data.start,
-    end: data.end,
-  });
-  sendMessage(partnerConnection, message);
 }
 
 export function handleSwitchLang(
@@ -139,16 +123,6 @@ export function handleMessage(
   sendMessage(partnerConnection, message);
 }
 
-export function handleExit(
-  connection: WebSocket,
-  partnerConnection: WebSocket,
-  data: any
-) {
-  const message = JSON.stringify({ method: WS_METHODS.EXIT });
-  connection.close();
-  sendMessage(partnerConnection, message);
-}
-
 export async function handleNextQuestionId(
   connection: WebSocket,
   partnerConnection: WebSocket,
@@ -170,7 +144,7 @@ export function handlePartnerDisconnected(
   connection: WebSocket,
   partnerConnection: WebSocket,
 ) {
-  const message = JSON.stringify({ method: WS_METHODS.PARTNER_DISCONNECTED });
+  const message = JSON.stringify({ method: WS_METHODS.PEER_DISCONNECTED });
   sendMessage(partnerConnection, message);
 }
 
