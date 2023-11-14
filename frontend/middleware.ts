@@ -1,11 +1,8 @@
 import { API_PREFIX } from "@/api/routes";
 import {
-  CREATE_QUESTION,
   HOME,
   LOGIN,
   REGISTER,
-  UNAUTHORIZED_PAGE,
-  UPDATE_PATH_SEGMENT,
 } from "@/routes";
 import { getFirstPartOfPath } from "@/util/url";
 import { withAuth } from "next-auth/middleware";
@@ -20,23 +17,13 @@ export default withAuth(
       return;
     }
     const isUserExists = req?.nextauth?.token?.userExists ?? false;
-    const isAdmin = req?.nextauth?.token?.isAdmin ?? false;
     if (req.nextUrl.pathname !== REGISTER && !isUserExists) {
       // if user does not exist, then redirect to register page
       return NextResponse.redirect(new URL(REGISTER, req.url));
     } else if (req.nextUrl.pathname === REGISTER && isUserExists) {
       // redirect to home page if already registered user
       return NextResponse.redirect(new URL(HOME, req.url));
-    } else if (
-      (req.nextUrl.pathname === CREATE_QUESTION ||
-        req.nextUrl.pathname.substring(
-          req.nextUrl.pathname.lastIndexOf("/"),
-        ) === UPDATE_PATH_SEGMENT) &&
-      !isAdmin
-    ) {
-      // if not admin but try to access create and update question paths, redirect back to home
-      return NextResponse.redirect(new URL(UNAUTHORIZED_PAGE, req.url));
-    }
+    } 
   },
   {
     pages: {
