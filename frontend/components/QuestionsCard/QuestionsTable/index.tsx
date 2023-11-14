@@ -62,6 +62,7 @@ export default function QuestionTable() {
   }, [data]);
 
   if (error) {
+    console.log(error)
     return (
       <ErrorCard
         isLoading={isLoading}
