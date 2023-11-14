@@ -1,12 +1,11 @@
 import express, { Request, Response } from "express";
 import { v4 as uuidv4 } from 'uuid';
 import { Pair } from '../schemas/pair';
-import dotenv from 'dotenv';
 const router = express.Router();
 
 
 /**
- * Query String: ?user1=<user1id>&user2=<user2id>
+ * Query String: ?user1=<string>&user2=<string>&complexity=<number>&questionId=<number>
  */
 router.get('/getWebsocketUrl', (req: Request, res: Response) => {
 

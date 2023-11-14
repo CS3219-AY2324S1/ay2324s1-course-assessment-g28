@@ -4,8 +4,6 @@ import { SubmissionStatus, useSubmissionContext } from "../SubmissionContext";
 import { useRouter } from "next/router";
 import { HOME } from "@/routes";
 
-// TODO: Pass question from collab editor to this card. use question details to make submission attempt
-
 /**
  * This card is only shown when submission status is:
  *  - SUBMIT_BEFORE_EXIT OR

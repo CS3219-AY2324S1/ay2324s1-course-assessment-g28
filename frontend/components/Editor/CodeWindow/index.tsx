@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 import React, {
   Dispatch,
   SetStateAction,
@@ -17,6 +17,7 @@ import {
   LANGUAGE_DATA,
   LoadingScreenText,
   PartnerDetailsType,
+  WSMessageDataType,
   WSMessageType,
   WS_METHODS,
 } from "../constants";
@@ -33,8 +34,6 @@ import { EditorView, ViewPlugin, ViewUpdate, keymap } from "@codemirror/view";
 import { indentWithTab } from "@codemirror/commands";
 import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "next-themes";
-import { useRouter } from "next/router";
-import { HOME } from "@/routes";
 import {
   SubmissionStatus,
   useSubmissionContext,
@@ -58,10 +57,6 @@ interface CodeWindowProps {
 // Will be reconfigured when user switches theme
 const editorTheme = new Compartment();
 
-/**
- * TODO: Add typing and clean up the code
- */
-
 export default function CodeWindow({
   websocketUrl,
   question,
@@ -78,10 +73,9 @@ export default function CodeWindow({
   const [isWebsocketReady, setIsWebsocketReady] = useState(false);
   const [isCodeRunning, setIsCodeRunning] = useState(false);
   const [isCodeMirrorLoaded, setIsCodeMirrorLoaded] = useState(false);
-  // TODO: might delete this since its not actually used
-  const [isPairConnected, setIsPairConnected] = useState(false);
-  const [requestQueue, setRequestQueue] = useState<Record<string, any>>({});
-  const router = useRouter();
+  const [requestQueue, setRequestQueue] = useState<
+    Record<string, (value: any) => void>
+  >({});
   const {
     isPeerStillHere,
     setIsPeerStillHere,
@@ -139,7 +133,7 @@ export default function CodeWindow({
       case WS_METHODS.READY_TO_RECEIVE:
         handleReadyToReceive(data);
         break;
-      case WS_METHODS.PAIR_CONNECTED:
+      case WS_METHODS.PEER_CONNECTED:
         handlePairConnected(data);
         break;
       case WS_METHODS.INVALID_WSURL_PARAMS:
@@ -147,8 +141,6 @@ export default function CodeWindow({
         break;
       case WS_METHODS.OP:
         handleOp(data);
-        break;
-      case WS_METHODS.CARET_POS:
         break;
       case WS_METHODS.SWITCH_LANG:
         handleSwitchLang(data);
@@ -158,9 +150,6 @@ export default function CodeWindow({
         break;
       case WS_METHODS.RUN_CODE_RESULT:
         handleRunCodeResult(data);
-        break;
-      case WS_METHODS.EXIT:
-        handleExit(data);
         break;
       case WS_METHODS.DUPLICATE_SESSION_ERROR:
         handleDuplicateSessionError(data);
@@ -188,7 +177,7 @@ export default function CodeWindow({
     setErrorScreenText(ErrorScreenText.CANNOT_CONNECT_TO_WS);
   }
 
-  function handleReadyToReceive(data: any) {
+  function handleReadyToReceive(data: WSMessageDataType) {
     console.log("+++ WebSocket is ready for messages +++");
     setIsWebsocketReady(true);
     setLoadingScreenText(LoadingScreenText.FINISHED_LOADING);
@@ -196,10 +185,9 @@ export default function CodeWindow({
     setLanguage(data.language);
   }
 
-  function handlePairConnected(data: any) {
+  function handlePairConnected(data: WSMessageDataType) {
     const partnerId = data.partnerId;
     console.log("Your partner is:", partnerId);
-    setIsPairConnected(true);
     setIsPeerStillHere(true);
     setPartnerDetails((prevState) => {
       return {
@@ -219,55 +207,50 @@ export default function CodeWindow({
     });
   }
 
-  function handleInvalidWsUrlParams(data: any) {
+  function handleInvalidWsUrlParams(data: WSMessageDataType) {
     console.log("!!! ERROR !!! WsUrl params are invalid");
     setErrorScreenText(ErrorScreenText.INVALID_WSURL_PARAMS);
   }
 
-  function handleOp(data: any) {
+  function handleOp(data: WSMessageDataType) {
     const requestId: string = data.requestId;
 
     if (requestId in requestQueue) {
       requestQueue[requestId](data.data);
 
       setRequestQueue((prevState) => {
-        let newState = { ...prevState };
+        const newState = { ...prevState };
         delete newState[requestId];
         return newState;
       });
     }
   }
 
-  function handleCaretPos(data: any) {
+  function handleCaretPos(data: WSMessageDataType) {
     console.log("Partner's caret at ", data.start, " to ", data.end);
   }
 
-  function handleSwitchLang(data: any) {
+  function handleSwitchLang(data: WSMessageDataType) {
     setLanguage(data.language);
   }
 
-  function handleRunCode(data: any) {
+  function handleRunCode(data: WSMessageDataType) {
     setIsCodeRunning(true);
   }
 
-  function handleRunCodeResult(data: any) {
+  function handleRunCodeResult(data: WSMessageDataType) {
     console.log("*****RUN CODE RESULT*****");
     console.log(data);
     setResult(data.result);
     setIsCodeRunning(false);
   }
 
-  function handleExit(data: any) {
-    console.log("EXITING EDITOR ...");
-    router.push(HOME);
-  }
-
-  function handleDuplicateSessionError(data: any) {
+  function handleDuplicateSessionError(data: WSMessageDataType) {
     console.log("!!! Cannot open same session on another tab !!!");
     setErrorScreenText(ErrorScreenText.DUPLICATE_SESSION_ERROR);
   }
 
-  function handleUnexpectedError(data: any) {
+  function handleUnexpectedError(data: WSMessageDataType) {
     console.log("!!! An unexpected error occurred !!!", data);
     setErrorScreenText(ErrorScreenText.UNEXPECTED_ERROR);
   }
@@ -279,7 +262,7 @@ export default function CodeWindow({
   }
 
   function currentLatency() {
-    let base = 100;
+    const base = 100;
     return base * (1 + (Math.random() - 0.5));
   }
 
@@ -317,10 +300,10 @@ export default function CodeWindow({
     }
 
     async request(value: any) {
-      let latency = this.getLatency();
+      const latency = this.getLatency();
       if (this.disconnected) await this.disconnected.wait;
       await pause(latency);
-      let result = await this._request(value);
+      const result = await this._request(value);
       if (this.disconnected) await this.disconnected.wait;
       await pause(latency);
       return result;
@@ -331,8 +314,8 @@ export default function CodeWindow({
         this.disconnected.resolve();
         this.disconnected = null;
       } else if (!value && !this.disconnected) {
-        let resolve: any,
-          wait = new Promise<void>((r) => (resolve = r));
+        let resolve: any;
+        const wait = new Promise<void>((r) => (resolve = r));
         this.disconnected = { wait, resolve };
       }
     }
@@ -345,7 +328,7 @@ export default function CodeWindow({
     lang: string,
   ): Promise<boolean> {
     // Strip off transaction data
-    let updates = fullUpdates.map((u) => ({
+    const updates = fullUpdates.map((u) => ({
       clientID: u.clientID,
       changes: u.changes.toJSON(),
     }));
@@ -389,7 +372,7 @@ export default function CodeWindow({
     connection: Connection,
     lang: string,
   ) {
-    let plugin = ViewPlugin.fromClass(
+    const plugin = ViewPlugin.fromClass(
       class {
         private pushing = false;
         private done = false;
@@ -403,10 +386,10 @@ export default function CodeWindow({
         }
 
         async push() {
-          let updates = sendableUpdates(this.view.state);
+          const updates = sendableUpdates(this.view.state);
           if (this.pushing || !updates.length) return;
           this.pushing = true;
-          let version = getSyncedVersion(this.view.state);
+          const version = getSyncedVersion(this.view.state);
           await pushUpdates(connection, version, updates, lang);
           this.pushing = false;
           // Regardless of whether the push failed or new updates came in
@@ -417,8 +400,8 @@ export default function CodeWindow({
 
         async pull() {
           while (!this.done) {
-            let version = getSyncedVersion(this.view.state);
-            let updates = await pullUpdates(connection, version, lang);
+            const version = getSyncedVersion(this.view.state);
+            const updates = await pullUpdates(connection, version, lang);
             this.view.dispatch(receiveUpdates(this.view.state, updates));
           }
         }
@@ -432,9 +415,9 @@ export default function CodeWindow({
   }
 
   async function addPeer(lang: string) {
-    let { version, doc } = await getDocument(new Connection(), lang);
-    let connection = new Connection();
-    let state = EditorState.create({
+    const { version, doc } = await getDocument(new Connection(), lang);
+    const connection = new Connection();
+    const state = EditorState.create({
       doc,
       extensions: [
         basicSetup,
@@ -444,7 +427,7 @@ export default function CodeWindow({
         editorTheme.of(theme === "dark" ? dracula : tomorrow),
       ],
     });
-    let editorParentDiv = editorsParentRef.current[lang];
+    const editorParentDiv = editorsParentRef.current[lang];
 
     // Adds one editor per language
     // Display only the one for the selected language
@@ -476,25 +459,6 @@ export default function CodeWindow({
 
   //#region UI event handlers
 
-  // TODO: add proper typing later
-  function onMouseUp(e: any) {
-    console.log("=====MOUSE UP=======");
-    console.log(e.srcElement?.selectionStart, e.srcElement?.selectionEnd);
-    console.log(e.target?.selectionStart, e.target?.selectionEnd);
-    console.log(e.currentTarget?.selectionStart, e.currentTarget?.selectionEnd);
-
-    const start = e.target.selectionStart;
-    const end = e.target.selectionEnd;
-
-    console.log(e.srcElement, e.target, e.currentTarget);
-
-    sendJsonMessage({
-      method: WS_METHODS.CARET_POS,
-      start: start,
-      end: end,
-    });
-  }
-
   function onLanguageChange(val: string) {
     if (val === language) {
       return;
@@ -525,7 +489,7 @@ export default function CodeWindow({
     console.log("Submitting code...");
     const code = editorsRef.current[language].state.doc.toString();
 
-    let questionAttempt: CreateQuestionAttemptRequestBody = {
+    const questionAttempt: CreateQuestionAttemptRequestBody = {
       questionId: question.id ?? 0,
       questionTitle: question.title ?? "",
       questionDifficulty: question.complexity ?? QuestionComplexity.EASY,
@@ -590,7 +554,7 @@ export default function CodeWindow({
               </Button>
               <Button
                 disabled={isCodeRunning}
-                onClick={submitCode} // TODO: Change this to submit
+                onClick={submitCode}
                 size="sm"
                 color="secondary"
               >

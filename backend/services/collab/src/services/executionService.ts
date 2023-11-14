@@ -7,21 +7,13 @@ import { sleep } from "../utils/asyncUtil";
 const judge0HostnameAndPort = process.env.JUDGE0_URL;
 
 export async function runCode(code: string, language: string): Promise<string> {
-  console.log(`Running ${language} code: `, code);
-
-  //const url = "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*";
+  // This url is for public API only
+  // const url = "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&fields=*";
   const url = judge0HostnameAndPort + "/submissions?base64_encoded=true&fields=*";
 
-  /* For using the public judge0 only
-  const apiKey = process.env.JUDGE0_API_KEY;
-  console.log("API key:", apiKey);
-  */
   const languageId = LANGUAGE_IDS[language];
   const codeBase64 = toBase64(code);
 
-  
-  console.log("Code:", codeBase64);
-
   const options = {
     method: "POST",
     headers: {
@@ -30,38 +22,12 @@ export async function runCode(code: string, language: string): Promise<string> {
     body: JSON.stringify({
       language_id: languageId,
       source_code: codeBase64,
-      //stdin: ""
     }) 
   }
-  /*
-  const options = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-RapidAPI-Key": apiKey,
-      "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
-      "Host": "judge0-ce.p.rapidapi.com"
-    },
-    body: JSON.stringify({
-      language_id: languageId,
-      source_code: codeBase64,
-      //stdin: ""
-    })
-  };
-  */
 
   const getSubmissionOptions = {
     method: "GET",
   }
-  /*
-  const getSubmissionOptions = {
-    method: "GET",
-    headers: {
-      "X-RapidAPI-Key": apiKey,
-      "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"      
-    }
-  }
-  */
 
   let result = "";
   let isInQueue = true;
@@ -85,7 +51,6 @@ export async function runCode(code: string, language: string): Promise<string> {
         isInQueue = false
       }
 
-      // TODO: Enforce class Main for Java
       const compileOutput = submissionDetails["compile_output"];
       const stdout = submissionDetails["stdout"];
       const stderr = submissionDetails["stderr"];
