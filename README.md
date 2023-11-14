@@ -4,7 +4,7 @@
 
 ## Instructions
 
-Start both the Question and Frontend service to begin using the application. Make sure the environment variables are set correctly as mentioned in their individual instructions.
+Start the Question, User and Frontend services to begin using the application. Make sure the environment variables are set correctly as mentioned in their individual instructions.
 
 ## Question Service
 
