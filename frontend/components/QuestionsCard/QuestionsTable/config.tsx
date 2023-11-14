@@ -3,7 +3,7 @@ import ComplexityChip from "@/components/ComplexityChip";
 import DeleteButton from "@/components/QuestionsCard/QuestionsTable/DeleteButton";
 import { getUpdateQuestionPath } from "@/routes";
 import { Button, Chip } from "@nextui-org/react";
-import { CheckCircle, Pencil } from "lucide-react";
+import {  Pencil } from "lucide-react";
 import Link from "next/link";
 
 export enum ColumnKey {
@@ -11,7 +11,6 @@ export enum ColumnKey {
   TITLE = "title",
   CATEGORY = "category",
   DIFFCULTY = "complexity",
-  STATUS = "wasAttempted",
 }
 
 export enum ColumnKeyAdminOnly {
@@ -30,7 +29,6 @@ interface ColumnConfig {
 }
 
 export const COLUMNS = [
-  ColumnKey.STATUS,
   ColumnKey.ID,
   ColumnKey.TITLE,
   ColumnKey.CATEGORY,
@@ -40,17 +38,6 @@ export const COLUMNS = [
 export const COLUMNS_ADMIN = [...COLUMNS, ColumnKeyAdminOnly.ACTION];
 
 export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
-  [ColumnKey.STATUS]: {
-    name: "Status",
-    uid: ColumnKey.STATUS,
-    align: "start",
-    width: 10,
-    render: (question: QuestionBase) => (
-      <div>
-        {question.wasAttempted && <CheckCircle color="green" size={20} />}
-      </div>
-    ),
-  },
   [ColumnKey.ID]: {
     name: "ID",
     uid: ColumnKey.ID,
@@ -75,10 +62,6 @@ export const COLUMN_CONFIGS: Record<ColumnKey, ColumnConfig> = {
     ),
     align: "start",
   },
-  // [ColumnKey.ATTEMPTS]: {
-  //   name: "Attempts",
-  //   uid: ColumnKey.ATTEMPTS,
-  // },
   [ColumnKey.DIFFCULTY]: {
     name: "Difficulty",
     uid: ColumnKey.DIFFCULTY,
