@@ -17,8 +17,11 @@ Initially when started up, Peerprep has no initial user or question data. Thus, 
 
 Here are the instructions to load all of the 20 sample questions from the assignments document into the database
 
-1. Run `node backend/services/question/scripts/populate_sample_data.js`
-  *If you are running the question mongoDB database at a custom-set specific port (you have changed the port for pp-question-mongodb), make sure to set the `MONGO_URI` variable in the backend/services/question/scripts/populate_sample_data.js file to the URI of your local questions mongodb, if not just leave it as the default.*
+1. Ensure that no other MongoDB instances are running on port 27018.
+2. `cd` into the [question service directory](backend/services/question) e.g. `cd backend/services/question`
+3. Run `npm ci` to install dependencies that are needed for the script.
+4. Run `node scripts/populate_sample_data.js`
+  *If you are running the question mongoDB database at a custom-set specific port (you have changed the port for pp-question-mongodb), make sure to set the `MONGO_URI` variable in the scripts/populate_sample_data.js file to the URI of your local questions mongodb, if not just leave it as the default.*
 
 The sample questions will be loaded into your local questions database instance (refer to terminal output to check for successful addition). You should now be able to see the questions in the Peerprep webpage.
 
@@ -26,7 +29,10 @@ The sample questions will be loaded into your local questions database instance 
 
 Before you follow these instructions, please make sure that you have logged in to Peerprep with your Google account, and followed the prompt to create your user account on Peerprep. (the screen that you will be redirected to after logging in with your Google account for the first time).
 
-1. Run `node backend/services/user/scripts/makeUserAdmin.js <email of user to make admin>`
-  *If you have changed the POSTGRES_USER, POSTGRES_PASSWORD and/or PG_PORT environment variables used for the postgres docker container in .deployment/local-docker/compose.yaml , make sure to change their corresponding variable values in the backend/services/user/scripts/makeUserAdmin.js file, if not their defaults will work as is.*
+1. Ensure that no other PostgreSQL instances are running on port 5432.
+2. `cd` into the [user service directory](backend/services/user). e.g. `cd backend/services/user`
+3. Run `npm ci` to install dependencies that are needed for the script.
+4. Run `node scripts/makeUserAdmin.js <email of user to make admin>`
+  *If you have changed the POSTGRES_USER, POSTGRES_PASSWORD and/or PG_PORT environment variables used for the postgres docker container in .deployment/local-docker/compose.yaml , make sure to change their corresponding variable values in the scripts/makeUserAdmin.js file, if not their defaults will work as is.*
 
-2. You should see the output "\<email you passed as argument\> has been made an administrator", indicating that the user with the given email been successfully made an admin.
+You should see the output "\<email you passed as argument\> has been made an administrator", indicating that the user with the given email been successfully made an admin.
