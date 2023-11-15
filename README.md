@@ -3,7 +3,7 @@
 
 ## Instructions to running the Dockerized Peerprep application in your local environment
 
-1. Copy all the environment variables in the project-submission-env.txt file (submitted on canvas) into a ".env" file to be saved in the ".deployment/local-docker" directory. 
+1. Copy all the secret environment variables in the `project-environmentVariables.txt` file (submitted on canvas) into a `.env` file to be saved in the `.deployment/local-docker` directory. 
 2. To start up all containerized services in the local environment, simply run  
    ```
    docker compose -f ".deployment/local-docker/compose.yaml" --profile frontend up -d --build
@@ -21,7 +21,7 @@ Here are the instructions to load all of the 20 sample questions from the assign
 2. `cd` into the [question service directory](backend/services/question) e.g. `cd backend/services/question`
 3. Run `npm ci` to install dependencies that are needed for the script.
 4. Run `node scripts/populate_sample_data.js`
-  *If you are running the question mongoDB database at a custom-set specific port (you have changed the port for pp-question-mongodb), make sure to set the `MONGO_URI` variable in the scripts/populate_sample_data.js file to the URI of your local questions mongodb, if not just leave it as the default.*
+  *If you are running the question mongoDB database at a custom-set specific port (you have changed the port for pp-question-mongodb), make sure to set the MONGO_URI variable in the `scripts/populate_sample_data.js` file to the URI of your local questions mongodb, if not just leave it as the default.*
 
 The sample questions will be loaded into your local questions database instance (refer to terminal output to check for successful addition). You should now be able to see the questions in the Peerprep webpage.
 
@@ -33,6 +33,6 @@ Before you follow these instructions, please make sure that you have logged in t
 2. `cd` into the [user service directory](backend/services/user). e.g. `cd backend/services/user`
 3. Run `npm ci` to install dependencies that are needed for the script.
 4. Run `node scripts/makeUserAdmin.js <email of user to make admin>`
-  *If you have changed the POSTGRES_USER, POSTGRES_PASSWORD and/or PG_PORT environment variables used for the postgres docker container in .deployment/local-docker/compose.yaml , make sure to change their corresponding variable values in the scripts/makeUserAdmin.js file, if not their defaults will work as is.*
+  *If you have changed the POSTGRES_USER, POSTGRES_PASSWORD and/or PG_PORT environment variables used for the postgres docker container in `.deployment/local-docker/compose.yaml` , make sure to change their corresponding variable values in the scripts/makeUserAdmin.js file, if not their defaults will work as is.*
 
 You should see the output "\<email you passed as argument\> has been made an administrator", indicating that the user with the given email been successfully made an admin.
