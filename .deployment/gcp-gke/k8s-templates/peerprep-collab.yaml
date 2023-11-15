@@ -12,7 +12,7 @@ spec:
         app: peerprep-collab
     spec:
       containers:
-        - name: peerprep-frontend
+        - name: peerprep-collab
           image: asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-collab:latest
           imagePullPolicy: Always
           resources:
