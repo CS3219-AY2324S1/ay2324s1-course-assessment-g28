@@ -2,6 +2,8 @@
 
 ## Instructions
 
+Install all dependencies with `yarn install`
+
 ### Development
 
 Run `yarn dev` from this directory. The webpage will be accessible at localhost:3000
