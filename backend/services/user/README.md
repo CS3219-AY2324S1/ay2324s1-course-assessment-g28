@@ -1,13 +1,17 @@
 ## Quick Start
 
 ## Docker Container Startup
+
 The instructions here are for running the user service in a docker container.
 
-1. Create a file called `.env` and follow `.env.example` to populate the fields. You may use the default values from .env.example (recommended)
-2. Run `docker compose up --build` to start the user service using the docker-compose in this directory.
+1. Ensure port 5432 on your machine is unoccupied (recommended)
+2. Create a file called `.env` and follow `.env.example` to populate the fields. You may use the default values from .env.example (recommended)
+3. Run `docker compose up --build` to start the user service using the docker-compose in this directory.
 
 ## Local Environment Startup
+
 The instructions here are for running the user service directly on your system.
+
 1. Ensure PostgreSQL is running on your local machine, (e.g. on mac `brew services start postgresql`)
 2. If this has not been done before, cd into `scripts` and run `node createDatabase.js` to create the database. You can open the file to adjust parameters (e.g. port), but do not alter the DB_NAME.
 3. If this has not been done before, cd into `scripts` and run `node createTables.js` to create the necessary tables. You can open the file to adjust parameters as in step 2, but please make sure they are consistent.
