@@ -65,7 +65,6 @@ export default function QuestionCreationForm({
       }
     } catch (e) {
       if (
-        !originalQuestion &&
         e instanceof RequestError &&
         e.response.status === HttpStatus.INTERNAL_SERVER_ERROR
       ) {
