@@ -57,7 +57,6 @@ export async function deleteUser() {
   }
 }
 
-
 export async function addUser(userInfo: CreateUserRequestBody) {
   const res = await fetch(getRoute(USER_API, false), {
     method: HttpMethod.POST,
