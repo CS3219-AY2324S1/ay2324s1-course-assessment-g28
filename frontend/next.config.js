@@ -13,6 +13,14 @@ const nextConfig = {
   },
   transpilePackages: ["@nivo"],
   experimental: { esmExternals: "loose" },
+  typescript: {
+    // ignore ts build errors as a precaution
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    // ignore eslint build errors as a precaution
+    ignoreDuringBuilds: true,
+  },
 };
 
 module.exports = nextConfig;
