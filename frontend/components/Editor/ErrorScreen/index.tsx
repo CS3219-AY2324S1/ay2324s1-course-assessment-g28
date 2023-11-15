@@ -12,7 +12,7 @@ export default function ErrorScreen({ displayText }: ErrorScreenProps) {
 
   return (
     <div
-      className="absolute h-full w-full bg-content1 flex flex-col 
+      className="absolute h-full w-full bg-content1 flex flex-col
                     z-50 items-center justify-center"
     >
       <div className="flex flex-col items-center gap-5">

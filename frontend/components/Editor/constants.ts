@@ -59,40 +59,31 @@ export const CLASSNAME_PARTNER_MESSAGE =
 
 export type WSMessageType = {
   data: string;
-}
+};
 
 export type WSMessageDataType = {
   method: WS_METHODS;
   [key: string]: any;
-}
+};
 
 export type PartnerDetailsType = {
   email: string;
   username: string;
   favouriteProgrammingLanguage: LanguageType;
-}
+};
 
 export enum LoadingScreenText {
-  FINISHED_LOADING =
-    ``,
-  INITIALIZING_EDITOR =
-    `Please wait while we connect you to a coding session!`,
-  CONNECTION_LOST =
-    `You are disconnected from this session.
+  FINISHED_LOADING = "",
+  INITIALIZING_EDITOR = "Please wait while we connect you to a coding session!",
+  CONNECTION_LOST = `You are disconnected from this session.
     Please check your network and reload the page.`,
-  LOADING_NEXT_QUESTION =
-    `Hold on tight! We're fetching the next question.`
+  LOADING_NEXT_QUESTION = "Hold on tight! We're fetching the next question.",
 }
 
 export enum ErrorScreenText {
-  NO_ERROR = 
-    ``,
-  CANNOT_CONNECT_TO_WS = 
-    `Oops! The URL appears to be broken.`,
-  INVALID_WSURL_PARAMS = 
-    `Oops! This session does not exist.`,
-  DUPLICATE_SESSION_ERROR = 
-    `This session is already active on another tab!`,
-  UNEXPECTED_ERROR = 
-    `Oops, an unexpected error occurred!`
+  NO_ERROR = "",
+  CANNOT_CONNECT_TO_WS = "Oops! The URL appears to be broken.",
+  INVALID_WSURL_PARAMS = "Oops! This session does not exist.",
+  DUPLICATE_SESSION_ERROR = "This session is already active on another tab!",
+  UNEXPECTED_ERROR = "Oops, an unexpected error occurred!",
 }

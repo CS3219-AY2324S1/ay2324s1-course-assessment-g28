@@ -38,7 +38,6 @@ export default function QuestionCreationForm({
   originalQuestion,
 }: QuestionCreationFormProps) {
   const {
-    register,
     handleSubmit,
     control,
     formState: { errors },
