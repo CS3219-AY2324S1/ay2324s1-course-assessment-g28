@@ -20,14 +20,14 @@ import {
 } from "./config";
 import { QuestionBase } from "@/api/questions/types";
 import { getQuestions } from "@/api/questions";
-import useSWR from "swr";
 import { useRouter } from "next/router";
 import { getQuestionPath } from "@/routes";
-import { QUESTION_API } from "@/api/routes";
 import { useQuestionTableContext } from "../QuestionsTableContext";
 import TableSelectors from "./TableSelectors";
 import TablePagination from "./TablePagination";
 import ErrorCard from "@/components/ErrorCard";
+import useSWR from "swr";
+import { QUESTION_API } from "@/api/routes";
 
 interface QuestionTableProps {
   userIsAdmin: boolean;
