@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  pp-frontend:
+    image: peerprep/frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - QUESTIONS_API=${QUESTIONS_API}
+      - USER_API=${USER_API}

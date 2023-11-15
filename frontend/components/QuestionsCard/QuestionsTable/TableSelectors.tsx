@@ -5,7 +5,6 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-  Checkbox,
 } from "@nextui-org/react";
 import { QuestionComplexity } from "@/api/questions/types";
 import { ChevronDown, PlusSquare, X } from "lucide-react";
