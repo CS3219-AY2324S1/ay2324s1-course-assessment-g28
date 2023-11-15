@@ -36,3 +36,8 @@ Before you follow these instructions, please make sure that you have logged in t
   *If you have changed the POSTGRES_USER, POSTGRES_PASSWORD and/or PG_PORT environment variables used for the postgres docker container in `.deployment/local-docker/compose.yaml` , make sure to change their corresponding variable values in the scripts/makeUserAdmin.js file, if not their defaults will work as is.*
 
 You should see the output "\<email you passed as argument\> has been made an administrator", indicating that the user with the given email been successfully made an admin.
+
+#### Making an existing user an administrator on the deployment
+1. Ensure that `psql` is installed on your terminal
+2. Run the script with an email argument: `scripts/pp-admin.sh <email of the user to make admin> <Postgres password>`
+- Note that you many need to escape the postgres password with double quotes `"` if the password contains single quotes `'` 
