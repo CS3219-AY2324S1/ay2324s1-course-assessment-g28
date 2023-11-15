@@ -40,7 +40,7 @@ You should see the output "\<email you passed as argument\> has been made an adm
 #### Making an existing user an administrator on the Google Cloud Platform (GCP) PeerPrep
 PeerPrep is deployed on GCP at http://34.143.142.116:3000 
 **These instructions are to make an existing user on that platform an admin.**
-You will need the password for the PostgreSQL database hosted on GCP. Please retrieve it from the ""
+You will need the password for the PostgreSQL database hosted on GCP. Please retrieve it from the "project-gcp-postgresPassword.txt" file submitted on Canvas.
 1. Ensure that `psql` is installed on your terminal
-2. Run the script with an email argument: `scripts/pp-admin.sh <email of the user to make admin> <Postgres password>`
+2. Run the script with an email argument: `scripts/pp-admin.sh <email of the user to make admin> <PostgresSQL password>`
 - Note that you many need to escape the postgres password with double quotes `"` if the password contains single quotes `'` 
