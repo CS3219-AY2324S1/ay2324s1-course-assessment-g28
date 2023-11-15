@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const fs = require("fs");
 
-const MONGO_URI = "mongodb://localhost:27017";
+const MONGO_URI = "mongodb://localhost:27017/questions";
 
 const questionSchema = new mongoose.Schema({
   id: { type: Number, unique: true, index: true },
