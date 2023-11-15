@@ -1,13 +1,14 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/6BOvYMwN)
+
 # Peerprep by G28
 
 ## Instructions to running the Dockerized Peerprep application in your local environment
 
-1. Copy all the secret environment variables in the `project-environmentVariables.txt` file (submitted on canvas) into a `.env` file to be saved in the `.deployment/local-docker` directory. 
-2. To start up all containerized services in the local environment, simply run  
+1. Copy all the secret environment variables in the `project-environmentVariables.txt` file (submitted on canvas) into a `.env` file to be saved in the `.deployment/local-docker` directory.
+2. To start up all containerized services in the local environment, simply run
    ```
    docker compose -f ".deployment/local-docker/compose.yaml" --profile frontend up -d --build
-   ```  
+   ```
 
 You may now access the Peerprep webpage at http://localhost:3000
 
@@ -21,7 +22,7 @@ Here are the instructions to load all of the 20 sample questions from the assign
 2. `cd` into the [question service directory](backend/services/question) e.g. `cd backend/services/question`
 3. Run `npm ci` to install dependencies that are needed for the script.
 4. Run `node scripts/populate_sample_data.js`
-  *If you are running the question mongoDB database at a custom-set specific port (you have changed the port for pp-question-mongodb), make sure to set the MONGO_URI variable in the `scripts/populate_sample_data.js` file to the URI of your local questions mongodb, if not just leave it as the default.*
+   _If you are running the question mongoDB database at a custom-set specific port (you have changed the port for pp-question-mongodb), make sure to set the MONGO_URI variable in the `scripts/populate_sample_data.js` file to the URI of your local questions mongodb, if not just leave it as the default._
 
 The sample questions will be loaded into your local questions database instance (refer to terminal output to check for successful addition). You should now be able to see the questions in the Peerprep webpage.
 
@@ -33,6 +34,30 @@ Before you follow these instructions, please make sure that you have logged in t
 2. `cd` into the [user service directory](backend/services/user). e.g. `cd backend/services/user`
 3. Run `npm ci` to install dependencies that are needed for the script.
 4. Run `node scripts/makeUserAdmin.js <email of user to make admin>`
-  *If you have changed the POSTGRES_USER, POSTGRES_PASSWORD and/or PG_PORT environment variables used for the postgres docker container in `.deployment/local-docker/compose.yaml` , make sure to change their corresponding variable values in the scripts/makeUserAdmin.js file, if not their defaults will work as is.*
+   _If you have changed the POSTGRES_USER, POSTGRES_PASSWORD and/or PG_PORT environment variables used for the postgres docker container in `.deployment/local-docker/compose.yaml` , make sure to change their corresponding variable values in the scripts/makeUserAdmin.js file, if not their defaults will work as is._
 
 You should see the output "\<email you passed as argument\> has been made an administrator", indicating that the user with the given email been successfully made an admin.
+
+## Instructions to run Kubernetes Locally
+
+1. Ensure that Docker and kubectl command is installed locally
+2. Ensure that kubectl is configured to connect to a cluster. This can be checked by runnning `kubectl cluster-info` in the command line
+3. Create a `.env` file in `.deployment/local-k8s/` to match the example below
+4. Run `.deployment/local-k8s/build.sh` to build all docker images
+5. Run `.deployment/local-k8s/start.sh` to start the local Kubernetes cluster
+6. The frontend should be accessible from `http://localhost:3000`
+
+```bash
+NEXTAUTH_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+MONGO_URI=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_URI=
+RABBITMQ_URL=
+REDIS_HOST=
+REDIS_PASSWORD=
+REDIS_PORT=
+
+```
