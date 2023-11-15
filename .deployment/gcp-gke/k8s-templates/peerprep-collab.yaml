@@ -36,7 +36,7 @@ spec:
                   key: MONGO_URI
             - name: JUDGE0_URL
               value: "http://34.126.172.186:2358"
-            - name: QUESTIONS_API
+            - name: QUESTION_API
               value: "http://peerprep-question.default.svc.cluster.local:1234"
 ---
 apiVersion: v1
