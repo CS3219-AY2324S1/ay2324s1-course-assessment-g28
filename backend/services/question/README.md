@@ -13,7 +13,7 @@ The instructions here are for running the user service in a docker container.
 
 There is a script that can be run to populate 20 sample questions into the database quickly.
 
-1. Ensure that no other instances of MongoDB are running at port 27017
+1. Ensure that no other instances of MongoDB are running at port 27018
 2. Install all required dependencies (e.g. `npm ci`).
 3. Open `scripts/populate_sample_data.js`.
    _if you are running the question mongoDB database at a custom-set specific port, make sure to set the `MONGO_URI` variable to the URI of your local questions mongodb, if not just leave it as the default. This is the same as configured in the local docker-compose file._
