@@ -30,7 +30,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - PORT=1234
-      - MONGO_URI=mongodb://pp-question-mongodb:27017/questions
+      - MONGO_URI=mongodb://pp-question-mongodb:27017
       - USER_API=http://pp-user:1235
     expose:
       - 1234
