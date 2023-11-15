@@ -6,7 +6,7 @@ services:
     environment:
       MONGO_INITDB_DATABASE: questions
     ports:
-      - 27018:27017
+      - 27017:27017
 
   question-service:
     build:
