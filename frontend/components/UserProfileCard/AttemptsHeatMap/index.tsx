@@ -4,7 +4,7 @@ import HeatMap from "@uiw/react-heat-map";
 import { CSSProperties, useMemo } from "react";
 import dayjs from "dayjs";
 import Card from "@/components/Card";
-import { BE_DATE_FORMAT, CHART_DATE_FORMAT } from "../config";
+import { CHART_DATE_FORMAT } from "../config";
 import { useForceRerender } from "./useForceRerender";
 import { useTheme } from "next-themes";
 
@@ -27,8 +27,8 @@ const AttemptsHeatMap = ({ data }: { data?: User }) => {
       ?.map((qn) => {
         return {
           ...qn,
-          date: dayjs(qn.attemptDate, BE_DATE_FORMAT).format(CHART_DATE_FORMAT),
-          day: dayjs(qn.attemptDate, BE_DATE_FORMAT),
+          date: dayjs(qn.attemptDate).format(CHART_DATE_FORMAT),
+          day: dayjs(qn.attemptDate),
         };
       })
       // filter out dates > 1 year ago
