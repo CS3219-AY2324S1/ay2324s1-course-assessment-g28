@@ -10,6 +10,7 @@ import { Question } from "./models/question";
 
 import { config } from "dotenv";
 import fuse from "fuse.js";
+import { MongoServerError } from "mongodb";
 
 config();
 
@@ -120,6 +121,7 @@ export const getQuestions = async (req: Request, res: Response) => {
 export const updateQuestionById = async (req: Request, res: Response) => {
   try {
     const questionId = req.params.id;
+
     const question = await Question.findOneAndUpdate(
       { id: questionId },
       req.body
@@ -127,10 +129,11 @@ export const updateQuestionById = async (req: Request, res: Response) => {
 
     res.status(204).json(`Successfully updated question ${questionId}!`);
   } catch (error) {
-    if (error instanceof QuestionError) {
-      res
-        .status(500)
-        .json({ errorCode: error.errorCode, message: error.message });
+    if ("codeName" in (error as any) && (error as any).codeName === "DuplicateKey") {
+      res.status(500).json({
+        errorCode: QUESTION_TITLE_EXISTS_ERROR_CODE,
+        message: `Cannot update title with duplicate title`,
+      });
     } else if (error instanceof Error) {
       res
         .status(500)
