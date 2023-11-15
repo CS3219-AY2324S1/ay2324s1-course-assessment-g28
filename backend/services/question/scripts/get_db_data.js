@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const fs = require("fs");
 
-const MONGO_URI = "mongodb://localhost:27018/questions";
+const MONGO_URI = "mongodb://localhost:27018";
 
 const questionSchema = new mongoose.Schema({
   id: { type: Number, unique: true, index: true },
@@ -50,11 +50,8 @@ const getNextSequenceValue = async (sequenceName) => {
 async function getQuestions() {
   try {
     mongoose.connect(MONGO_URI);
-    const data = await Question.find({});
-    fs.writeFileSync(
-      __dirname + "/sample_questions.json",
-      JSON.stringify(data)
-    );
+    const data = await Question.find({})
+    fs.writeFileSync(__dirname + "/sample_questions.json", JSON.stringify(data));
   } catch (error) {
     console.log(`saveQuestions failed: error ${error}`);
   } finally {
