@@ -31,7 +31,11 @@ const UserInfo = ({ data }: { data?: User }) => {
           <div>
             <div className="font-extrabold text-l flex flex-row items-center gap-x-3">
               <span>{name}</span>
-              {data?.isAdmin && <Chip color="secondary" size="sm">Admin</Chip>}
+              {data?.isAdmin && (
+                <Chip color="secondary" size="sm">
+                  Admin
+                </Chip>
+              )}
             </div>
             <div className="font-extralight  text-xs">@{username}</div>
           </div>

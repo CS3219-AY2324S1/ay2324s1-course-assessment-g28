@@ -15,4 +15,3 @@ export const getQuestionPath = (questionId: number) =>
 export const getUpdateQuestionPath = (questionId: number) =>
   QUESTION_DIRECTORY + "/" + questionId.toString() + UPDATE_PATH_SEGMENT;
 export const UNAUTHORIZED_PAGE = "/error/unauthorized";
-

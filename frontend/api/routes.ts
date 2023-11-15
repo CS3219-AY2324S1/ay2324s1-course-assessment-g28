@@ -18,4 +18,3 @@ export const getUserPublicInfoPath = (userEmail: string) =>
   `${API_PREFIX}/${USER_PUBLIC_API}/${userEmail}`;
 export const getIsUsernameExistsPath = (username: string) =>
   `${USER_API}/exists/${username}`;
-
