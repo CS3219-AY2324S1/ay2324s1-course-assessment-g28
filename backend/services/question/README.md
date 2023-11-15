@@ -9,17 +9,6 @@ The instructions here are for running the user service in a docker container.
 1. Run `docker-compose up --build`
 1. Verify that the server is running by checking `localhost:PORT`
 
-## Local Environment Startup
-
-The instructions here are for running the user service directly on your system.
-
-1. Ensure mongodb is installed on your local machine, and start it (e.g. on Mac, `brew services start mongodb-community@7.0`)
-2. Create a file called `.env` and follow `.env.example` to populate the fields. For example, PORT=1234 and MONGO_URI=mongodb://127.0.0.1:27017
-3. Install all required dependencies (e.g. `npm ci`).
-4. Run the server using `npm run dev` or `npm run start`.
-5. Verify that the server is running by checking `localhost:{PORT}/questions`.
-6. The server is now ready to perform basic CRUD. Follow the instructions below to use a script to quickly populate sample questions, or make a POST request to populate your own questions.
-
 ## Populating Sample Questions
 
 There is a script that can be run to populate 20 sample questions into the database quickly.
