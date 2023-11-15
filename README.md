@@ -53,7 +53,7 @@ You will need the password for the PostgreSQL database hosted on GCP. Please ret
 
 1. Ensure that Docker and kubectl command is installed locally
 2. Ensure that kubectl is configured to connect to a cluster. This can be checked by runnning `kubectl cluster-info` in the command line
-3. Create a `.env` file in `.deployment/local-k8s/` to match the example below
+3. Create a `.env` file in `.deployment/local-k8s/` to match the example below. You can get all the values for the environment variables in the "project-localKube-environmentVariables.txt"
 4. Run `.deployment/local-k8s/build.sh` to build all docker images
 5. Run `.deployment/local-k8s/start.sh` to start the local Kubernetes cluster
 6. The frontend should be accessible from `http://localhost:3000`
