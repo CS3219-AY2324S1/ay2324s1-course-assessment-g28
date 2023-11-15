@@ -9,18 +9,13 @@ import { User, UserZod } from "@/api/user/types";
 class UserDoesNotExist extends Error {}
 
 export async function getUserInfoServerSide(userEmail: string) {
-  try {
-    const res = await fetch(
-      `${process.env.USER_API as string}${USER_API}/${userEmail}`,
-    );
-    if (res.status === HttpStatus.NOT_FOUND) {
-      throw new UserDoesNotExist();
-    }
-    const userData = await res.json();
-    UserZod.parse(userData);
-    return userData as User;
-  } catch (e) {
-    console.log(e);
-    throw e;
+  const res = await fetch(
+    `${process.env.USER_API as string}${USER_API}/${userEmail}`,
+  );
+  if (res.status === HttpStatus.NOT_FOUND) {
+    throw new UserDoesNotExist();
   }
+  const userData = await res.json();
+  UserZod.parse(userData);
+  return userData as User;
 }

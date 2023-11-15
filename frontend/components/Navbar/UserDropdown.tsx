@@ -30,7 +30,7 @@ const UserDropdown = () => {
               alt="User Thumbnail"
               className="rounded-full"
             />
-            <div className="text-foreground">{username ? username : name}</div>
+            <div>{username ? username : name}</div>
           </Button>
         </DropdownTrigger>
         <DropdownMenu aria-label="User actions">

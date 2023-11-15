@@ -29,8 +29,6 @@ const TableSelectors = ({ userIsAdmin }: TableSelectorsProps) => {
     selectedComplexity,
     setSelectedComplexity,
     setPage,
-    onlyUnattemptedFilter,
-    setOnlyUnattemptedFilter,
   } = useQuestionTableContext();
   const router = useRouter();
 
@@ -105,13 +103,6 @@ const TableSelectors = ({ userIsAdmin }: TableSelectorsProps) => {
           </Button>
         )}
       </div>
-      <Checkbox
-        isSelected={onlyUnattemptedFilter}
-        onValueChange={setOnlyUnattemptedFilter}
-        color="secondary"
-      >
-        Unattempted only
-      </Checkbox>
       {userIsAdmin && (
         <Button
           className="ml-auto"

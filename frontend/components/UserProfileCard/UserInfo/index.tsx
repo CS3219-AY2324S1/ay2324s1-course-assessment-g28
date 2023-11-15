@@ -6,6 +6,7 @@ import DeleteUserButton from "@/components/UserProfileCard/UserInfo/DeleteUserBu
 import { User } from "@/api/user/types";
 import { UNDEFINED_VALUE } from "../config";
 import EditUserButton from "./EditUserButton";
+import { Chip } from "@nextui-org/react";
 
 const UserInfo = ({ data }: { data?: User }) => {
   const { image, name, username } = useUserInfo();
@@ -28,7 +29,10 @@ const UserInfo = ({ data }: { data?: User }) => {
             />
           </div>
           <div>
-            <div className="font-extrabold text-l">{name}</div>
+            <div className="font-extrabold text-l flex flex-row items-center gap-x-3">
+              <span>{name}</span>
+              {data?.isAdmin && <Chip color="secondary" size="sm">Admin</Chip>}
+            </div>
             <div className="font-extralight  text-xs">@{username}</div>
           </div>
         </div>

@@ -24,7 +24,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - PG_PORT=${PG_PORT}
-      - POSTGRES_URI=${POSTGRES_URI}
+      - POSTGRES_URI=postgres
 
     depends_on:
       - postgres

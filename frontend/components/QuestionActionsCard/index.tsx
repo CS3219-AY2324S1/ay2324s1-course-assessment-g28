@@ -1,6 +1,5 @@
 import { deleteQuestion } from "@/api/questions";
 import { Question } from "@/api/questions/types";
-import QuestionAttemptButton from "@/components/QuestionAttemptButton";
 import useUserInfo from "@/hooks/useUserInfo";
 import { HOME, getUpdateQuestionPath } from "@/routes";
 import {
@@ -86,7 +85,6 @@ export default function QuestionActionsCard({
               title="Navigate to edit question page"
               onPress={editQuestionCallback}
               endContent={<Pencil size="18" />}
-              className="text-foreground"
             >
               Edit
             </Button>
@@ -101,10 +99,6 @@ export default function QuestionActionsCard({
             </Button>
           </div>
         )}
-
-        <div className="flex flex-row gap-2">
-          <QuestionAttemptButton question={question} />
-        </div>
       </div>
     </>
   );

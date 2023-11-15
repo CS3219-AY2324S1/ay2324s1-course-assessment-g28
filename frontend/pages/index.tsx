@@ -1,5 +1,3 @@
-import ActiveSessions from "@/components/ActiveSessions";
-import MatchingUI from "@/components/MatchingUI";
 import QuestionsCard from "@/components/QuestionsCard";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
@@ -18,9 +16,7 @@ export default function Home({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <div className="w-full">
-      <MatchingUI />
       <QuestionsCard userIsAdmin={userIsAdmin} />
-      <ActiveSessions />
     </div>
   );
 }

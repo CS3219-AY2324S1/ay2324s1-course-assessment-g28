@@ -1,4 +1,4 @@
-import { HttpMethod, HttpStatus } from "@/api/constants";
+import { HttpStatus } from "@/api/constants";
 import {
   checkIfUserIsAdmin,
   forwardRequestAndGetResponse,
@@ -28,7 +28,7 @@ export default async function handler(
   }
 
   // add email to query params for GET
-  if (req.method === HttpMethod.GET) {
+  if (req.method === "GET") {
     req.url += `&user=${session.user.email}`;
   }
 

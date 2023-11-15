@@ -12,9 +12,6 @@ export const QUESTION_API = "/questions";
 export const USER_API = "/users";
 export const getQuestionByIdPath = (id: number) =>
   `${QUESTION_API}/${id.toString()}`;
-export const QUESTION_ATTEMPT_API_DIRECTORY = "/question-attempt";
-export const getQuestionAttemptPath = (attemptId: number) =>
-  `${USER_API}${QUESTION_ATTEMPT_API_DIRECTORY}/${attemptId.toString()}`;
 
 export const USER_PUBLIC_API = "/users/public";
 export const getUserPublicInfoPath = (userEmail: string) =>
@@ -22,9 +19,3 @@ export const getUserPublicInfoPath = (userEmail: string) =>
 export const getIsUsernameExistsPath = (username: string) =>
   `${USER_API}/exists/${username}`;
 
-export const QUESTION_ATTEMPT_API = USER_API + QUESTION_ATTEMPT_API_DIRECTORY;
-export const EXECUTION_API = "/execution";
-
-export const COLLAB_PATH = "/collab";
-export const getActiveSessionsPath = (userId: string) =>
-  `${COLLAB_PATH}/active-sessions?userId=${userId}`;

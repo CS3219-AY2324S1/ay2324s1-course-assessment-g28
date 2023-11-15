@@ -38,7 +38,6 @@ export default function QuestionCreationForm({
   originalQuestion,
 }: QuestionCreationFormProps) {
   const {
-    register,
     handleSubmit,
     control,
     formState: { errors },
@@ -49,7 +48,6 @@ export default function QuestionCreationForm({
     },
     values: originalQuestion,
   });
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isEdited, setIsEdited] = useState<boolean>(false);
   const onSubmit: SubmitHandler<QuestionCreation> = async (data) => {
@@ -88,10 +86,18 @@ export default function QuestionCreationForm({
       <div className="flex flex-row w-full gap-x-2">
         <div className="flex-grow">
           <label>Title</label>
-          <Input
-            {...register("title")}
-            errorMessage={errors.title?.message}
-            onValueChange={() => setIsEdited(true)}
+          <Controller
+            name="title"
+            control={control}
+            defaultValue={""}
+            render={({ field: { onChange, value } }) => (
+              <Input
+                value={value}
+                onValueChange={onChange}
+                errorMessage={errors.title?.message}
+                size="lg"
+              ></Input>
+            )}
           />
         </div>
         <div>

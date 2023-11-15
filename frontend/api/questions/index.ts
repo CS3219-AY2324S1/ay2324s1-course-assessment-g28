@@ -15,7 +15,7 @@ export async function getQuestions({
   offset,
   keyword,
   complexity,
-  onlyUnattempted
+  onlyUnattempted,
 }: GetQuestionRequest) {
   const params = new URLSearchParams({
     size: size.toString(),
