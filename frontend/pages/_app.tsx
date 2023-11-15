@@ -6,20 +6,17 @@ import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "next-themes";
 import { QuestionTableProvider } from "@/components/QuestionsCard/QuestionsTableContext";
 
-export default function App({
-  Component,
-  pageProps,
-}: AppProps) {
+export default function App({ Component, pageProps }: AppProps) {
   return (
     <NextUIProvider>
-        <ThemeProvider attribute="class" defaultTheme="system">
-          <QuestionTableProvider>
-            <Toaster />
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </QuestionTableProvider>
-        </ThemeProvider>
+      <ThemeProvider attribute="class" defaultTheme="system">
+        <QuestionTableProvider>
+          <Toaster />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </QuestionTableProvider>
+      </ThemeProvider>
     </NextUIProvider>
   );
 }

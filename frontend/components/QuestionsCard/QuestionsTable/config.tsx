@@ -3,7 +3,7 @@ import ComplexityChip from "@/components/ComplexityChip";
 import DeleteButton from "@/components/QuestionsCard/QuestionsTable/DeleteButton";
 import { getUpdateQuestionPath } from "@/routes";
 import { Button, Chip } from "@nextui-org/react";
-import {  Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 import Link from "next/link";
 
 export enum ColumnKey {

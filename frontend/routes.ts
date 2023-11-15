@@ -10,5 +10,3 @@ export const getQuestionPath = (questionId: number) =>
   QUESTION_DIRECTORY + "/" + questionId.toString();
 export const getUpdateQuestionPath = (questionId: number) =>
   QUESTION_DIRECTORY + "/" + questionId.toString() + UPDATE_PATH_SEGMENT;
-
-

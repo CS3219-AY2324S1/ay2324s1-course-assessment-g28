@@ -62,7 +62,7 @@ export default function QuestionTable() {
   }, [data]);
 
   if (error) {
-    console.log(error)
+    console.log(error);
     return (
       <ErrorCard
         isLoading={isLoading}
@@ -84,9 +84,7 @@ export default function QuestionTable() {
       onRowAction={(key) => router.push(getQuestionPath(Number(key)))}
     >
       <TableHeader
-        columns={
-            COLUMNS_ADMIN.map((col) => COLUMN_CONFIGS_ADMIN?.[col])
-        }
+        columns={COLUMNS_ADMIN.map((col) => COLUMN_CONFIGS_ADMIN?.[col])}
       >
         {(column) => (
           <TableColumn
