@@ -94,7 +94,10 @@ export default function QuestionCreationForm({
             render={({ field: { onChange, value } }) => (
               <Input
                 value={value}
-                onValueChange={onChange}
+                onValueChange={(s) => {
+                  setIsEdited(true);
+                  onChange(s);
+                }}
                 errorMessage={errors.title?.message}
                 size="lg"
               ></Input>
