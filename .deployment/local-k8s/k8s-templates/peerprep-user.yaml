@@ -70,7 +70,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: peerprep-user-autoscaler
+    name: peerprep-user
   minReplicas: 1
   maxReplicas: 3
   metrics:

@@ -34,7 +34,7 @@ async function updateCache() {
 }
 
 export function getRandomQuestion(complexity?: Complexity): Question | null {
-  let questions = complexity
+  let questions = complexity != null
     ? cache.filter((q) => q.complexity === complexity)
     : cache;
 
