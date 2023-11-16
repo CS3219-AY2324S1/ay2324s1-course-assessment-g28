@@ -1,0 +1,135 @@
+steps:
+  # Build and push peerprep-frontend image
+  - id: "docker build peerprep-frontend"
+    name: "gcr.io/cloud-builders/docker"
+    args: [
+        "build",
+        "-t",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-frontend",
+        "--cache-from",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-frontend:latest",
+        "--build-arg",
+        "NEXT_PUBLIC_PAIRING_API=ws://34.143.195.2:4000",
+        "./frontend/",
+      ]
+
+  - id: "docker push peerprep-frontend"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-frontend",
+      ]
+
+  # Build and push peerprep-question image
+  - id: "docker build peerprep-question"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-question",
+        "--cache-from",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-question:latest",
+        "./backend/services/question",
+      ]
+
+  - id: "docker push peerprep-question"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-question",
+      ]
+
+  # Build and push peerprep-user image
+  - id: "docker build peerprep-user"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-user",
+        "--cache-from",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-user:latest",
+        "./backend/services/user",
+      ]
+
+  - id: "docker push peerprep-user"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-user",
+      ]
+
+  # Build and push peerprep-pairing images
+  - id: "docker build peerprep-pairing-front"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-front",
+        "--cache-from",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-front:latest",
+        "./backend/services/pairing/pairing-front",
+      ]
+
+  - id: "docker push peerprep-pairing-front"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-front",
+      ]
+
+  - id: "docker build peerprep-pairing-back"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-back",
+        "--cache-from",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-back:latest",
+        "./backend/services/pairing/pairing-back",
+      ]
+
+  - id: "docker push peerprep-pairing-back"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-pairing-back",
+      ]
+
+  # Build and push peerprep-collab images
+  - id: "docker build peerprep-collab"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-collab",
+        "--cache-from",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-collab:latest",
+        "./backend/services/collab",
+      ]
+
+  - id: "docker push peerprep-collab"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "asia-southeast1-docker.pkg.dev/ay2324s1-course-assessment-g28/ay2324s1-course-assessment-g28/peerprep-collab",
+      ]
+
+  # Deploy to GKE
+  - id: "gke apply config"
+    name: "gcr.io/cloud-builders/gke-deploy"
+    args:
+      - apply
+      - --filename=./.deployment/gcp-gke/k8s-templates/
+      - --location=asia-southeast1
+      - --cluster=autopilot-cluster-1

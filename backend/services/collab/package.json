@@ -1,0 +1,48 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=16.17.1"
+  },
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc",
+    "start": "ts-node src/index.ts",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@codemirror/collab": "^6.1.1",
+    "@codemirror/state": "^6.3.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.9.0",
+    "mongoose": "^7.0.0",
+    "node-fetch": "^2.6.6",
+    "ts-node": "^10.9.1",
+    "uuid": "^9.0.0",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.4.8",
+    "@types/uuid": "^9.0.2",
+    "concurrently": "^8.2.0",
+    "dotenv": "^16.3.1",
+    "nodemon": "^2.0.20",
+    "typescript": "^5.1.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CS3219-AY2324S1/ay2324s1-course-assessment-g28.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CS3219-AY2324S1/ay2324s1-course-assessment-g28/issues"
+  },
+  "homepage": "https://github.com/CS3219-AY2324S1/ay2324s1-course-assessment-g28#readme",
+  "description": ""
+}

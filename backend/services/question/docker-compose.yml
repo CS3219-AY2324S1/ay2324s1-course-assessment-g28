@@ -1,0 +1,22 @@
+version: "3"
+services:
+  mongodb:
+    image: mongo
+    container_name: question-mongodb
+    environment:
+      MONGO_INITDB_DATABASE: questions
+    ports:
+      - 27018:27017
+
+  question-service:
+    build:
+      context: .
+    container_name: question-service
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      - PORT=${PORT}
+      - MONGO_URI=${MONGO_URI}
+      - USER_API=${USER_API}
+    depends_on:
+      - mongodb
