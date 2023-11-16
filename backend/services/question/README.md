@@ -10,7 +10,7 @@
 ## Populating Sample Questions
 
 1. There is a script that can be run to populate 20 sample questions into the database quickly.
-2. Open `scripts/populate_sample_data.js`.
+2. Ensure that the question service is already running, as per the previous instructions.
 3. Run `node scripts/populate_sample_data.js` which will add the questions into the database.
 
 ## Information
